@@ -1,4 +1,4 @@
-from imports import *
+
 
 DEFAULT_CAMERA_RESOLUTION = (640,480) # Use the holy resolution of 640x480
 DEFAULT_CAMERA_FRAMERATE = 30
@@ -40,7 +40,7 @@ class DepthCamera:
 
         resized_depth_image = cv2.resize(depth_image, dsize=self.resolution)  #, interpolation=cv2.INTER_AREA)
         dist = (resized_depth_image[y][x]/100)-1.06299213
-        print("HARDWARE Z: {} cm".format(dist*2.54))
+        # print("HARDWARE Z: {} cm".format(dist*2.54))
         # cv2.imshow('RealSense depth', resized_depth_image)
 
     # Callback function to process a frame
@@ -48,9 +48,11 @@ class DepthCamera:
         # Extract color frame and depth frame from frame
         color_frame = rgb_d_frame.get_color_frame()
         depth_frame = rgb_d_frame.get_depth_frame()
-        if not depth_frame or not color_frame:
-            # print("Skipping frame due to missing data")
-            return
+        # if not depth_frame or not color_frame:
+        #     # print("Skipping frame due to missing data")
+        #     return
+
+        # return c, d
 
         self.display_color_frame(color_frame)
         self.display_distance_frame(depth_frame, TEST_POSITION)

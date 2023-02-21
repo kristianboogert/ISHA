@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
-from imports import *
+from newDepthCamera import NewDepthCamera
+from plotting import Plot3D
 
 previousTime = 0
 currentTime = 0
 
-
-
-camera = DepthCamera()
+camera = NewDepthCamera()
 camera.run()
+plot3d = Plot3D()
+
+# while True:
+#     color, depth = camera.getFrame()
+
+
