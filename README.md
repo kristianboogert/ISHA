@@ -1,2 +1,0 @@
-# ISHA
-ISHA Minor InHolland
