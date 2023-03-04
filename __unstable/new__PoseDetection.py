@@ -1,6 +1,7 @@
 import mediapipe
 import math
 from enum import IntEnum
+import cv2
 
 class BodyPart(IntEnum):
     NOSE = 0,
@@ -41,7 +42,8 @@ class PoseDetection:
     ###
     # Public
     ###
-    def __init__(self):
+    def __init__(self, display_frames=False):
+        self.display_frames = display_frames
         # Define pose detection model
         self.mpPose = mediapipe.solutions.pose
         self.pose = self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
@@ -51,9 +53,22 @@ class PoseDetection:
         # Define mediapipe drawing util
         self.draw = mediapipe.solutions.drawing_utils
     def getPose(self, cameraFrame):
+        # if self.display_frames:
+        #     # cv2.imshow('orig', cameraFrame)
         # Get the pose data from mediapipe
+        cameraFrame = cv2.cvtColor(cameraFrame, cv2.COLOR_BGR2RGB)
+        cameraFrame.flags.writeable = False
         poseData = self.pose.process(cameraFrame)
         handData = self.hands.process(cameraFrame)
+        cameraFrame.flags.writeable = True
+        cameraFrame = cv2.cvtColor(cameraFrame, cv2.COLOR_RGB2BGR)
+        # If required, display the data
+        if self.display_frames:
+            self.draw.draw_landmarks(cameraFrame, poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+            if handData.multi_hand_landmarks:
+                for hand, hand_landmarks in enumerate(handData.multi_hand_landmarks):
+                    self.draw.draw_landmarks(image=cameraFrame, landmark_list=hand_landmarks, connections=self.mpHands.HAND_CONNECTIONS)
+            cv2.imshow('pose', cameraFrame)
         return (poseData, handData)
     def getPoseLandmark(self, poseData, limb):
         try:

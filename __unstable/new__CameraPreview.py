@@ -7,7 +7,7 @@ class CameraPreview:
 
     def __init__(self, camera):
         self.camera = camera
-    def show_preview(self):
+    def show(self):
         try:
             self.camera.start()
             while True:

@@ -4,8 +4,10 @@ from new__PoseDetection import BodyPart, PoseDetection
 
 def main():
     camera = Camera()
-    camera.start()
-    poseDetection = PoseDetection()
+    camera.start(cameraId=0)
+    poseDetection = PoseDetection(display_frames=True)
+    # cam = CameraPreview(camera)
+    # cam.show()
     while True:
         frame = camera.getFrame()
         if frame is not None:
