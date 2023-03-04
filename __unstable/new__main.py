@@ -1,8 +1,6 @@
 from new__Camera import Camera
 from new__CameraPreview import CameraPreview
-from new__PoseDetection import PoseDetection
-
-from mayavi import mlab
+from new__PoseDetection import BodyPart, PoseDetection
 
 def main():
     camera = Camera()
@@ -12,10 +10,11 @@ def main():
         frame = camera.getFrame()
         if frame is not None:
             poseData, _ = poseDetection.getPose(frame)
-            nosepos = poseDetection.getPoseLandmark(poseData, 0)
-            lshoulderpos = poseDetection.getPoseLandmark(poseData, 11)
-            rshoulderpos = poseDetection.getPoseLandmark(poseData, 12)
-            print(nosepos)
-            print(lshoulderpos)
-            print(rshoulderpos)
+            nosepos = poseDetection.getPoseLandmark(poseData, BodyPart.NOSE)
+            lshoulderpos = poseDetection.getPoseLandmark(poseData, BodyPart.LEFT_SHOULDER)
+            rshoulderpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_SHOULDER)
+            print("NOSE:          ", nosepos)
+            print("LEFT SHOULDER: ", lshoulderpos)
+            print("RIGHT SHOULDER:", rshoulderpos)
+            print("NOSE_ANGLE:    ", poseDetection.getAngles(nosepos, lshoulderpos))
 main()
