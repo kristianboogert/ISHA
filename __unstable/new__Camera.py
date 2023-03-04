@@ -26,7 +26,6 @@ class Camera:
         if self.videoCapture is not None:
             _, frame = self.videoCapture.read()
             if frame is not None:
-                cv2.imshow('frame', frame)
                 return self._resize(frame)
         return None
 
@@ -36,4 +35,5 @@ class Camera:
 
     # Resize a frame
     def _resize(self, frame):
-        return cv2.resize(frame, dsize=self.resolution)
+        resized_frame = cv2.resize(frame, dsize=self.resolution)
+        return resized_frame
