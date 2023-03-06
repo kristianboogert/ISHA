@@ -14,7 +14,7 @@ class Camera:
         self.running = False
 
     # Start collecting frames
-    def start(self, cameraId=0):
+    def start(self, cameraId=None):
         self.videoCapture = cv2.VideoCapture(cameraId)
 
     # Stop the collection of frames
@@ -25,7 +25,8 @@ class Camera:
     def getFrame(self):
         if self.videoCapture is not None:
             _, frame = self.videoCapture.read()
-            return self._resize(frame)
+            if frame is not None:
+                return self._resize(frame)
         return None
 
     ###
@@ -34,4 +35,5 @@ class Camera:
 
     # Resize a frame
     def _resize(self, frame):
-        return cv2.resize(frame, dsize=self.resolution)
+        resized_frame = cv2.resize(frame, dsize=self.resolution)
+        return resized_frame

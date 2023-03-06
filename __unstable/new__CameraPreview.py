@@ -5,15 +5,13 @@ class CameraPreview:
     # Public
     ###
 
-    def __init__(self, camera):
-        self.camera = camera
-    def show_preview(self):
+    def show(self, camera):
         try:
-            self.camera.start()
+            camera.start()
             while True:
-                frame = self.camera.getFrame()
+                frame = camera.getFrame()
                 cv2.imshow('frame', frame)
                 if cv2.waitKey(1) == ord('q'):
                     break
         finally:
-            self.camera.stop()
+            camera.stop()
