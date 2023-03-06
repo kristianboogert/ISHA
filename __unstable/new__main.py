@@ -9,7 +9,7 @@ def main():
     camera.start(cameraId=0)
     preview = CameraPreview()
     # preview.show(camera)
-    poseDetection = PoseDetection(display_frames=True)
+    poseDetection = PoseDetection(display_pose=True)
     while True:
         frame = camera.getFrame()
         print(frame)
@@ -22,18 +22,22 @@ def main():
                 rshoulderpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_SHOULDER)
                 lelbowpos = poseDetection.getPoseLandmark(poseData, BodyPart.LEFT_ELBOW)
                 relbowpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_ELBOW)
-                try:
-                    shoulder_angle = poseDetection.getShoulderAngle(lshoulderpos, rshoulderpos)
-                    depth_angle = poseDetection.getDepthAngle(lshoulderpos, lelbowpos)
-                    lshoulder_lelbow_angle = abs((180-shoulder_angle))-abs(poseDetection.getElbowShoulderAngle(lshoulderpos, lelbowpos))
-                    rshoulder_relbow_angle = abs((shoulder_angle))-abs(poseDetection.getElbowShoulderAngle(rshoulderpos, relbowpos))
-                    print(lshoulder_lelbow_angle)
-                    print(rshoulder_relbow_angle)
-                    print("sitting up:", poseDetection.isSittingUp(shoulder_angle))
-                    print("asserting dominance:", poseDetection.isTPosing(lshoulder_lelbow_angle, rshoulder_relbow_angle))
-                    print("depth:", depth_angle)
-                except:
-                    pass
+                # print(poseDetection.getDirectionVectorForBodypart(BodyPart.LEFT_ELBOW, poseData))
+                shoulders_direction_vector = poseDetection.getDirectionVectorForBodypart(BodyPart.LEFT_SHOULDER, poseData, originBodyPart=BodyPart.RIGHT_SHOULDER)
+                print("T-POSING:", poseDetection.isTPosing(poseData))
+                # try:
+                #     shoulder_angle = poseDetection.getShoulderAngle(lshoulderpos, rshoulderpos)
+                #     depth_angle = poseDetection.getDepthAngle(lshoulderpos, lelbowpos)
+                #     lshoulder_lelbow_angle = abs((180-shoulder_angle))-abs(poseDetection.getElbowShoulderAngle(lshoulderpos, lelbowpos))
+                #     rshoulder_relbow_angle = abs((shoulder_angle))-abs(poseDetection.getElbowShoulderAngle(rshoulderpos, relbowpos))
+                #     print(lshoulder_lelbow_angle)
+                #     print(rshoulder_relbow_angle)
+                #     print("VECTOR:", vector)
+                #     print("sitting up:", poseDetection.isSittingUp(shoulder_angle))
+                #     print("T-pose detected:", poseDetection.isTPosing(lshoulder_lelbow_angle, rshoulder_relbow_angle))
+                #     print("depth:", depth_angle)
+                # except:
+                #     pass
                 # print(lelbowpos, lshoulderpos)
                 # relbowpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_ELBOW)
 
