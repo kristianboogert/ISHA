@@ -1,3 +1,7 @@
+import cv2
+from handDetection import HandDetection
+import time
+from test_pose import DEFAULT_CAMERA_RESOLUTION
 
 class BuiltinCamera:
     def __init__(self, resolution=DEFAULT_CAMERA_RESOLUTION):
