@@ -12,5 +12,3 @@ plot3d = Plot3D()
 
 # while True:
 #     color, depth = camera.getFrame()
-
-
