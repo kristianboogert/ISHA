@@ -1,14 +1,14 @@
 # ISHA
 ISHA Minor InHolland
 
-Create Fugl-Meyer score using computer vision and pose detection
+Create CVA appropriate score using computer vision and pose detection
 
 # How to install
 
 Python dependencies
 
 ```sh
-pip3 install mediapipe opencv-python pyrealsense2
+python3 -m pip install -r requirements.txt
 ```
 
 # How to run
