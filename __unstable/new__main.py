@@ -5,8 +5,9 @@ from new__PoseDetection import BodyPart, PoseDetection
 import cv2
 
 def main():
-    camera = Camera()
-    camera.start(cameraId=0)
+    # camera = Camera(cameraId=0)
+    camera = Camera(use_realsense=True)
+    camera.start()
     preview = CameraPreview()
     # preview.show(camera)
     poseDetection = PoseDetection(display_pose=True)
@@ -15,8 +16,8 @@ def main():
         print(frame)
         try:
             while True:
-                frame = camera.getFrame()
-                poseData, handData, frame = poseDetection.getPose(frame)
+                color_frame, depth_frame = camera.getFrame()
+                poseData, handData, frame = poseDetection.getPose(color_frame)
                 # get torso angle
                 lshoulderpos = poseDetection.getPoseLandmark(poseData, BodyPart.LEFT_SHOULDER)
                 rshoulderpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_SHOULDER)
@@ -24,6 +25,7 @@ def main():
                 relbowpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_ELBOW)
                 # print(poseDetection.getDirectionVectorForBodypart(BodyPart.LEFT_ELBOW, poseData))
                 shoulders_direction_vector = poseDetection.getDirectionVectorForBodypart(BodyPart.LEFT_SHOULDER, poseData, originBodyPart=BodyPart.RIGHT_SHOULDER)
+                print("SHOULDERS STRAIGHT:", poseDetection.isSittingUp(poseData))
                 print("T-POSING:", poseDetection.isTPosing(poseData))
                 # try:
                 #     shoulder_angle = poseDetection.getShoulderAngle(lshoulderpos, rshoulderpos)

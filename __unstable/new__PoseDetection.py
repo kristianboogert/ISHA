@@ -111,7 +111,7 @@ class PoseDetection:
         return None
     # TODO: GET DATA FROM DEPTH CAMERA AND SCALE THE X THRESHOLD!
     # TODO: WE DOEN DAT ZEKER WEL OP BASIS VAN EMPIRISCH NATTEVINGERWERK!
-    def isTPosing(self, poseData, x_threshold=0.15, x_threshold_depth_scale=1.0):
+    def isTPosing(self, poseData, x_threshold=0.13, x_threshold_depth_scale=1.0):
         if poseData.pose_landmarks is None:
             return None
         landmarks = poseData.pose_landmarks.landmark
