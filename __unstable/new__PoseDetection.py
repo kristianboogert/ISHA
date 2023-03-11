@@ -76,32 +76,12 @@ class PoseDetection:
             return poseData.pose_landmarks.landmark[limb]
         except:
             None
-    # TODO: also see if the user is not laying down
-    def isSittingUp(self, shoulders_direction_vector, penalty_threshold=0.05, tolerance=0.02):
-        try:
-            return (abs(shoulders_direction_vector["y"])-tolerance) < penalty_threshold
-        except:
-            return None
     def getDirectionVectorForBodypart(self, bodyPart, poseData, originBodyPart=None):
         if poseData.pose_landmarks is None:
             return None
         landmarks = poseData.pose_landmarks.landmark
-        if bodyPart == BodyPart.LEFT_ELBOW:
-            return self._getDirectionVector(landmarks[BodyPart.LEFT_ELBOW], landmarks[BodyPart.LEFT_SHOULDER])
-        elif bodyPart == BodyPart.LEFT_WRIST:
-            return self._getDirectionVector(landmarks[BodyPart.LEFT_WRIST], landmarks[BodyPart.LEFT_ELBOW])
-        elif bodyPart == BodyPart.LEFT_INDEX:
-            return self._getDirectionVector(landmarks[BodyPart.LEFT_INDEX], landmarks[BodyPart.LEFT_WRIST])
-        elif bodyPart == BodyPart.RIGHT_ELBOW:
-            return self._getDirectionVector(landmarks[BodyPart.RIGHT_ELBOW], landmarks[BodyPart.RIGHT_SHOULDER])
-        elif bodyPart == BodyPart.RIGHT_WRIST:
-            return self._getDirectionVector(landmarks[BodyPart.RIGHT_WRIST], landmarks[BodyPart.RIGHT_ELBOW])
-        elif bodyPart == BodyPart.RIGHT_INDEX:
-            return self._getDirectionVector(landmarks[BodyPart.RIGHT_INDEX], landmarks[BodyPart.RIGHT_WRIST])
-        elif originBodyPart is not None:
-            return self._getDirectionVector(landmarks[bodyPart], landmarks[originBodyPart])
+        return self._getDirectionVector(landmarks[bodyPart], landmarks[originBodyPart])
     def _getDirectionVector(self, landmark_1, landmark_2, visibility_threshold=0.75):
-        print(landmark_1, landmark_2)
         if landmark_1.visibility > visibility_threshold and landmark_2.visibility > visibility_threshold:
             return {
                 "x": landmark_1.x - landmark_2.x,
@@ -109,101 +89,74 @@ class PoseDetection:
                 "z": landmark_1.z - landmark_2.z
             }
         return None
-    # TODO: GET DATA FROM DEPTH CAMERA AND SCALE THE X THRESHOLD!
-    # TODO: WE DOEN DAT ZEKER WEL OP BASIS VAN EMPIRISCH NATTEVINGERWERK!
-    def isTPosing(self, poseData, x_threshold=0.13, x_threshold_depth_scale=1.0):
-        if poseData.pose_landmarks is None:
+    def getAnglesFromDirectionVector(self, directionVector):
+        if directionVector is None:
             return None
-        landmarks = poseData.pose_landmarks.landmark
-        # see if the left upper arm is pointing to the left
-        left_upper_arm_direction = self.getDirectionVectorForBodypart(BodyPart.LEFT_ELBOW, poseData)
-        left_lower_arm_direction = self.getDirectionVectorForBodypart(BodyPart.LEFT_WRIST, poseData)
-        left_index_finger_direction = self.getDirectionVectorForBodypart(BodyPart.LEFT_INDEX, poseData)
-        right_upper_arm_direction = self.getDirectionVectorForBodypart(BodyPart.RIGHT_ELBOW, poseData)
-        right_lower_arm_direction = self.getDirectionVectorForBodypart(BodyPart.RIGHT_WRIST, poseData)
-        right_index_finger_direction = self.getDirectionVectorForBodypart(BodyPart.RIGHT_INDEX, poseData)
-        print("left upper arm", left_upper_arm_direction)
-        print("left lower arm", left_lower_arm_direction)
-        print("left finger", left_index_finger_direction)
-        print("right upper arm", right_upper_arm_direction)
-        print("right lower arm", right_lower_arm_direction)
-        print("right finger", right_index_finger_direction)
+        x, y, z = directionVector["x"], directionVector["y"], directionVector["z"]
+        xyAngle = math.degrees(math.atan2(y,x))
+        yzAngle = math.degrees(math.atan2(z,y))
+        xzAngle = math.degrees(math.atan2(z,x))
+        return {
+            "xy": xyAngle,
+            "yz": yzAngle,
+            "xz": xzAngle
+        }
+    def getAnglesForBodyPart(self, bodyPart, poseData):
+        if bodyPart == BodyPart.LEFT_SHOULDER:
+            leftShoulderDirectionVector = self.getDirectionVectorForBodypart(bodyPart, poseData, originBodyPart=BodyPart.RIGHT_SHOULDER)
+            leftShoulderAngles = self.getAnglesFromDirectionVector(leftShoulderDirectionVector)
+            leftShoulderAngles["xy"] = -leftShoulderAngles["xy"]
+            return leftShoulderAngles
+        if bodyPart == BodyPart.RIGHT_SHOULDER:
+            rightShoulderDirectionVector = self.getDirectionVectorForBodypart(BodyPart.LEFT_SHOULDER, poseData, originBodyPart=bodyPart)
+            rightShoulderAngles = self.getAnglesFromDirectionVector(rightShoulderDirectionVector)
+            return rightShoulderAngles
+        if bodyPart == BodyPart.LEFT_ELBOW:
+            leftShoulderAngles = self.getAnglesForBodyPart(BodyPart.LEFT_SHOULDER, poseData)
+            leftElbowDirectionVector = self.getDirectionVectorForBodypart(bodyPart, poseData, originBodyPart=BodyPart.LEFT_SHOULDER)
+            leftElbowAngles = self.getAnglesFromDirectionVector(leftElbowDirectionVector)
+            leftElbowAngles["xy"] = leftShoulderAngles["xy"]+leftElbowAngles["xy"]
+            return leftElbowAngles
+        if bodyPart == BodyPart.RIGHT_ELBOW:
+            rightShoulderAngles = self.getAnglesForBodyPart(BodyPart.RIGHT_SHOULDER, poseData)
+            rightElbowDirectionVector = self.getDirectionVectorForBodypart(bodyPart, poseData, originBodyPart=BodyPart.RIGHT_SHOULDER)
+            rightElbowAngles = self.getAnglesFromDirectionVector(rightElbowDirectionVector)
+            rightElbowAngles["xy"] = self.correctAngle(rightElbowAngles["xy"])
+            rightElbowAngles["xy"] = -(rightShoulderAngles["xy"] - rightElbowAngles["xy"])
+            return rightElbowAngles
+        if bodyPart == BodyPart.LEFT_WRIST:
+            leftElbowAngles = self.getAnglesForBodyPart(BodyPart.LEFT_ELBOW, poseData)
+            leftWristDirectionVector = self.getDirectionVectorForBodypart(bodyPart, poseData, originBodyPart=BodyPart.LEFT_ELBOW)
+            leftWristAngles = self.getAnglesFromDirectionVector(leftWristDirectionVector)
+            leftWristAngles["xy"] = -(leftElbowAngles["xy"]+leftWristAngles["xy"])
+            return leftWristAngles
+        if bodyPart == BodyPart.RIGHT_WRIST:
+            rightElbowAngles = self.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
+            print("RIGHT ELBOW:", rightElbowAngles["xy"])
+            rightWristDirectionVector = self.getDirectionVectorForBodypart(bodyPart, poseData, originBodyPart=BodyPart.RIGHT_ELBOW)
+            rightWristAngles = self.getAnglesFromDirectionVector(rightWristDirectionVector)
+            rightWristAngles["xy"] = self.correctAngle(rightWristAngles["xy"])
+            rightWristAngles["xy"] = rightWristAngles["xy"]-rightElbowAngles["xy"]
+            return rightWristAngles
+    def correctAngle(self, angle):
+        if angle <= 180 and angle >= 0:
+            return -(180-angle)
+        if angle >= -180:
+            return 180+angle
+    def isSittingUp(self, poseData, threshold=10):
         try:
-            if left_upper_arm_direction["x"] >= x_threshold and \
-               left_lower_arm_direction["x"] >= x_threshold and \
-               abs(left_index_finger_direction["y"]) <= x_threshold/2 and \
-               right_upper_arm_direction["x"] <= -x_threshold and \
-               right_lower_arm_direction["x"] <= -x_threshold and \
-               abs(right_index_finger_direction["y"]) <= x_threshold/2:
+            leftShoulderAngles = self.getAnglesForBodyPart(BodyPart.LEFT_SHOULDER, poseData)
+            if abs(leftShoulderAngles["xy"]) <= threshold:
                 return True
+            return False
         except:
-            pass
-
-        return False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # # om te testen
-    # def correct_z_using_realsense(body_position, depth_image):
-    #     landmarks = np.array([[lmk.x, lmk.y, lmk.z] for lmk in body_position.landmark])
-    #     xs = (landmarks[:,0] * int(depth_image.shape[1]))
-    #     ys = (landmarks[:,1] * int(depth_image.shape[0]))
-    #     depths = depth_image[ys, xs]
-    #     z_scale_factor = np.median(depths) / np.median(landmarks[:,2])
-    #     corrected_landmarks = landmarks.copy()
-    #     corrected_landmarks[:,2] *= z_scale_factor
-    #     corrected_body_position = mp.solutions.pose.PoseLandmarkList()
-    #     for i in range(len(body_position.landmark)):
-    #         corrected_lmk = mp.solutions.pose.PoseLandmark()
-    #         corrected_lmk.x, corrected_lmk.y, corrected_lmk.z = corrected_landmarks[i]
-    #         corrected_lmk.visibility = body_position.landmark[i].visibility
-    #         corrected_lmk.presence = body_position.landmark[i].presence
-    #         corrected_body_position.landmark.append(corrected_lmk)
-    #     return corrected_body_position
-
-
-
-
-
-    # def getAngle(self, point_1, point_2):
-    #     if (point_1 is None or point_2 is None) or (point_1.visibility < 0.9 or point_2.visibility < 0.9):
-    #         return None
-    #     # Check the order of the points and calculate the direction vector
-    #     direction_vector = [point_2.x - point_1.x, point_2.y - point_1.y, point_2.z - point_1.z]
-    #     # Normalize the direction vector
-    #     length = math.sqrt(direction_vector[0]**2 + direction_vector[1]**2 + direction_vector[2]**2)
-    #     direction_vector = [direction_vector[0]/length, direction_vector[1]/length, direction_vector[2]/length]
-    #     # Calculate the heading angle
-    #     heading = math.degrees(math.atan2(direction_vector[1], direction_vector[0]))
-    #     # Calculate the pitch angle
-    #     pitch = math.degrees(math.atan2(-direction_vector[2], math.sqrt(direction_vector[0]**2 + direction_vector[1]**2)))
-    #     # Calculate the bank angle
-    #     bank = math.degrees(math.atan2(direction_vector[0], direction_vector[2]))
-    #     return (heading, pitch, bank)
-
-    # def getAngle(self, point_1, point_2):
-    #     if (point_1 is None or point_2 is None) or (point_1.visibility < 0.9 or point_2.visibility < 0.9):
-    #         return None
-    #     # Calculate the direction vector from point 1 to point 2
-    #     direction_vector = [point_2.x - point_1.x, point_2.y - point_1.y, point_2.z - point_1.z]
-    #     # Calculate the heading angle
-    #     heading = math.degrees(math.atan2(direction_vector[1], direction_vector[0]))
-    #     # Calculate the pitch angle
-    #     pitch = math.degrees(math.atan2(-direction_vector[2], math.sqrt(direction_vector[0]**2 + direction_vector[1]**2)))
-    #     # Calculate the bank angle
-    #     bank = math.degrees(math.atan2(direction_vector[0], direction_vector[2]))
-    #     return (heading, pitch, bank)
+            return None
+    def isTPosing(self, poseData, threshold=10):
+        try:
+            leftWristAngles = self.getAnglesForBodyPart(BodyPart.LEFT_WRIST, poseData)
+            rightwristAngles = self.getAnglesForBodyPart(BodyPart.RIGHT_WRIST, poseData)
+            if abs(leftWristAngles["xy"]) <= threshold and abs(rightWristAngles["xy"]) <= threshold:
+                return True
+            return False
+        except:
+            return None
