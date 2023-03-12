@@ -51,7 +51,7 @@ class Camera:
             if self.videoCapture is not None:
                 _, frame = self.videoCapture.read()
                 if frame is not None:
-                    return self._resize(frame)
+                    return self._resize(frame), None
             return None
 
     ###
