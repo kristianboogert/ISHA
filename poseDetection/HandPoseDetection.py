@@ -35,4 +35,16 @@ class HandPoseDetection:
             }
         except:
             return None
+    def getAnglesFromDirectionVector(self, directionVector):
+        if directionVector is None:
+            return None
+        x, y, z = directionVector["x"], directionVector["y"], directionVector["z"]
+        xyAngle = math.degrees(math.atan2(y,x))
+        yzAngle = math.degrees(math.atan2(z,y))
+        xzAngle = math.degrees(math.atan2(z,x))
+        return {
+            "xy": xyAngle,
+            "yz": yzAngle,
+            "xz": xzAngle
+        }
     # TODO: FINISH THIS CLASS

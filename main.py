@@ -23,8 +23,10 @@ def main():
                 left_index = handPoseDetection.getHandLandmark(handPoseData, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
                 right_index = handPoseDetection.getHandLandmark(handPoseData, Hand.RIGHT_HAND, HandPart.INDEX_FINGER_TIP)
                 print(left_index, right_index)
-                vector = handPoseDetection._getDirectionVector(left_index, right_index)
+                vector = handPoseDetection.getDirectionVector(left_index, right_index)
+                angles = handPoseDetection.getAnglesFromDirectionVector(vector)
                 print("vector:", vector)
+                print("angles:", angles)
                 try:
                     print("SITTING UP:", bodyPoseDetection.isSittingUp(bodyPoseData))
                     print("T POSING:  ", bodyPoseDetection.isTPosing(bodyPoseData))
