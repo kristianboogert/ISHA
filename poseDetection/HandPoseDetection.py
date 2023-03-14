@@ -51,45 +51,67 @@ class HandPoseDetection:
             "yz": yzAngle,
             "xz": xzAngle
         }
-    # Function only works if both hands are visible
-    # TODO: FINISH THE CALCULATIONS FOR THE LEFT HAND
+    # Function only works if both hands are visible and
+    # if the hand is facing the camera!
+    # All else is out of scope for this project.
     # TODO: TEST THE FUNCTION ON THE RIGHT HAND
     def getHandRotation(self, hand, handPoseData):
-        # Get normal vector for hand, to see which rotation value to grab
-        wrist = self.getHandLandmark(handPoseData, hand, HandPart.WRIST)
-        middle_finger_mcp = self.getHandLandmark(handPoseData, hand, HandPart.MIDDLE_FINGER_MCP)
-        hand_normal_vector = self.getDirectionVector(wrist, middle_finger_mcp)
-        hand_normal_vector_angles = self.getAnglesFromDirectionVector(hand_normal_vector)
-        print("hand direction:", hand_normal_vector_angles)
-        # Get the rotations of the hand
+        # Get direction vector between index_finger_mcp and ring_finger_mcp
         index_finger_mcp = self.getHandLandmark(handPoseData, hand, HandPart.INDEX_FINGER_MCP)
         ring_finger_mcp = self.getHandLandmark(handPoseData, hand, HandPart.RING_FINGER_MCP)
-        hand_rotation_vector = self.getDirectionVector(index_finger_mcp, ring_finger_mcp)
-        hand_rotation = self.getAnglesFromDirectionVector(hand_rotation_vector)
-        # Grab the right angle
+        knuckle_rotation_vector = self.getDirectionVector(index_finger_mcp, ring_finger_mcp)
+        knuckle_rotation_vector_angles = self.getAnglesFromDirectionVector(knuckle_rotation_vector)
+        try:
+            # TODO: OPTIMIZE THIS CORRECTION IF-ELSE BLOCK!
+            angle = knuckle_rotation_vector_angles["xy"]
+            if angle < 180 and angle >= 0:
+                angle = 180-angle
+            else:
+                angle = 180+angle
+            return angle
+        except:
+            return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # # Grab the right angle
+        # # try:
         # try:
-        try:
-            hand_rotation.x -= hand_normal_vector_angles.x
-            hand_rotation.y -= hand_normal_vector_angles.y
-            hand_rotation.z -= hand_normal_vector_angles.z
-        except:
-            pass
-        print("hand rotation total:", hand_rotation)
-        print("hand vector:", hand_normal_vector)
-        try:
-            if abs(hand_normal_vector_angles["xy"]) > abs(hand_normal_vector_angles["xz"]) and \
-                abs(hand_normal_vector_angles["xy"]) > abs(hand_normal_vector_angles["yz"]):
-                print("hand rotation chosen (sideways):     ", hand_rotation["yz"])
-                return hand_rotation["yz"]
-            elif abs(hand_normal_vector_angles["xz"]) > abs(hand_normal_vector_angles["xy"]) and \
-                abs(hand_normal_vector_angles["xz"]) > abs(hand_normal_vector_angles["yz"]):
-                print("hand rotation chosen (facing camera):", hand_rotation["yz"])
-                return hand_rotation["yz"]
-            elif abs(hand_normal_vector_angles["yz"]) > abs(hand_normal_vector_angles["xy"]) and \
-                abs(hand_normal_vector_angles["yz"]) > abs(hand_normal_vector_angles["xz"]):
-                print("hand rotation chosen (facing up):    ", hand_rotation["xy"])
-                return hand_rotation["yz"]
-        except:
-            pass
+        #     hand_rotation.x -= hand_normal_vector_angles.x
+        #     hand_rotation.y -= hand_normal_vector_angles.y
+        #     hand_rotation.z -= hand_normal_vector_angles.z
+        # except:
+        #     pass
+        # print("hand rotation total:", hand_rotation)
+        # print("hand vector:", hand_normal_vector)
+        # try:
+        #     if abs(hand_normal_vector_angles["xy"]) > abs(hand_normal_vector_angles["xz"]) and \
+        #         abs(hand_normal_vector_angles["xy"]) > abs(hand_normal_vector_angles["yz"]):
+        #         print("hand rotation chosen (sideways):     ", hand_rotation["yz"])
+        #         return hand_rotation["yz"]
+        #     elif abs(hand_normal_vector_angles["xz"]) > abs(hand_normal_vector_angles["xy"]) and \
+        #         abs(hand_normal_vector_angles["xz"]) > abs(hand_normal_vector_angles["yz"]):
+        #         print("hand rotation chosen (facing camera):", hand_rotation["yz"])
+        #         return hand_rotation["yz"]
+        #     elif abs(hand_normal_vector_angles["yz"]) > abs(hand_normal_vector_angles["xy"]) and \
+        #         abs(hand_normal_vector_angles["yz"]) > abs(hand_normal_vector_angles["xz"]):
+        #         print("hand rotation chosen (facing up):    ", hand_rotation["xy"])
+        #         return hand_rotation["yz"]
+        # except:
+        #     pass
         # except:
         #     return None
