@@ -4,6 +4,7 @@ import cv2
 
 from .BodyPart import *
 
+# TODO: remove body pose jitter!
 class BodyPoseDetection:
     ###
     # Public
@@ -21,10 +22,10 @@ class BodyPoseDetection:
         self.poseData = self.pose.process(cameraColorFrame)
         cameraColorFrame.flags.writeable = True
         cameraColorFrame = cv2.cvtColor(cameraColorFrame, cv2.COLOR_RGB2BGR)
-        if self.displayPose:
-            self.draw.draw_landmarks(cameraColorFrame, self.poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
-        return (self.poseData, cameraColorFrame)
-    def getPoseLandmark(self, poseData, limb):
+        # if self.displayPose:
+        #     self.draw.draw_landmarks(cameraColorFrame, self.poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+        return self.poseData
+    def getPoseLandmark(self, limb, poseData):
         try:
             return poseData.pose_landmarks.landmark[limb]
         except:
@@ -78,10 +79,13 @@ class BodyPoseDetection:
             rightShoulderAngles = self.getAnglesForBodyPart(BodyPart.RIGHT_SHOULDER, poseData)
             rightElbowDirectionVector = self.getDirectionVectorForBodyParts(BodyPart.RIGHT_SHOULDER, poseData, originBodyPart=BodyPart.RIGHT_ELBOW)
             rightElbowAngles = self.getAnglesFromDirectionVector(rightElbowDirectionVector)
-            rightElbowAngles["xy"] = -(rightShoulderAngles["xy"]-rightElbowAngles["xy"])
-            rightElbowAngles["yz"] = -(rightShoulderAngles["yz"]-rightElbowAngles["yz"])
-            rightElbowAngles["xz"] = -(rightShoulderAngles["xz"]-rightElbowAngles["xz"])
-            return rightElbowAngles
+            try:
+                rightElbowAngles["xy"] = -(rightShoulderAngles["xy"]-rightElbowAngles["xy"])
+                rightElbowAngles["yz"] = -(rightShoulderAngles["yz"]-rightElbowAngles["yz"])
+                rightElbowAngles["xz"] = -(rightShoulderAngles["xz"]-rightElbowAngles["xz"])
+                return rightElbowAngles
+            except:
+                return None
         if bodyPart == BodyPart.LEFT_WRIST:
             leftShoulderAngles = self.getAnglesForBodyPart(BodyPart.LEFT_SHOULDER, poseData)
             leftElbowAngles = self.getAnglesForBodyPart(BodyPart.LEFT_ELBOW, poseData)
