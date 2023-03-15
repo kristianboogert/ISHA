@@ -38,6 +38,8 @@ class Camera:
         else:
             self.videoCapture = None
         
+    def is_running(self):
+        return (self.videoCapture is None and self.realsense_pipeline is None)
 
     # Get current frame
     def getFrame(self):
@@ -51,7 +53,7 @@ class Camera:
             if self.videoCapture is not None:
                 _, frame = self.videoCapture.read()
                 if frame is not None:
-                    return self._resize(frame), None
+                    return self._resize(frame)
             return None
 
     ###

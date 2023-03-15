@@ -20,11 +20,11 @@ class HandPoseDetection:
         self.handData = self.hands.process(cameraColorFrame)
         cameraColorFrame.flags.writeable = True
         cameraColorFrame = cv2.cvtColor(cameraColorFrame, cv2.COLOR_RGB2BGR)
-        if self.displayPose:
-            if self.handData.multi_hand_landmarks:
-                for hand, hand_landmarks in enumerate(self.handData.multi_hand_landmarks):
-                    self.draw.draw_landmarks(image=cameraColorFrame, landmark_list=hand_landmarks, connections=self.mpHands.HAND_CONNECTIONS)
-        return (self.handData, cameraColorFrame)
+        # if self.displayPose:
+        #     if self.handData.multi_hand_landmarks:
+        #         for hand, hand_landmarks in enumerate(self.handData.multi_hand_landmarks):
+        #             self.draw.draw_landmarks(image=cameraColorFrame, landmark_list=hand_landmarks, connections=self.mpHands.HAND_CONNECTIONS)
+        return self.handData
     def getHandLandmark(self, handData, hand, handPart):
         try:
             return handData.multi_hand_landmarks[hand].landmark[handPart]
