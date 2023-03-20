@@ -4,7 +4,7 @@ from poseDetection.HandPoseDetection import HandPoseDetection
 from poseDetection.BodyPart import *
 from poseDetection.HandPart import *
 from stereoscopic.DepthImage import DepthImage
-# from exercise.FuglMeyer import FuglMeyer
+from dataExporter.ExcelExporter import *
 
 import cv2
 
@@ -21,6 +21,10 @@ def hand_test(camera, handPoseDetection):
             break
         cv2.imshow('hand frame', cv2.flip(frame, 1))
         poseData = handPoseDetection.getPose(frame)
+        poseFrame = handPoseDetection.drawPose(frame, poseData)
+        cv2.imshow('hand frame', cv2.flip(poseFrame, 1))
+        if cv2.waitKey(1) == ord('q'):
+            break
         if testphases[current_testphase] == "image_capture":
             landmark = handPoseDetection.getHandLandmark(poseData, Hand.LEFT_HAND, HandPart.WRIST)
             if landmark is not None:
@@ -35,64 +39,90 @@ def hand_test(camera, handPoseDetection):
                 print("Rotate hand 180 degrees and return it to neutral position")
                 handRotation = handPoseDetection.getHandRotation(Hand.LEFT_HAND, poseData)
                 neutral_position = handRotation
-                current_testphase+=1
-        if testphases[current_testphase] == "rotation":
-            landmark = handPoseDetection.getHandLandmark(poseData, Hand.LEFT_HAND, HandPart.WRIST)
+                current_testphase = 3
+        else:
             handRotation = handPoseDetection.getHandRotation(Hand.LEFT_HAND, poseData)
-            if handRotation is not None and handRotation > highest_rotation:
-                highest_rotation = handRotation
-            if highest_rotation > 25 and (handRotation is None or abs(handRotation) < 25):
-                print("Done!")
-                print("Neutral position:", neutral_position)
-                print("Highest measured hand rotation:", highest_rotation)
-                exit(0)
+            print(handRotation)
+                
+        # if testphases[current_testphase] == "rotation":
+        #     landmark = handPoseDetection.getHandLandmark(poseData, Hand.LEFT_HAND, HandPart.WRIST)
+        #     handRotation = handPoseDetection.getHandRotation(Hand.LEFT_HAND, poseData)
+        #     if handRotation is not None and handRotation > highest_rotation:
+        #         highest_rotation = handRotation
+        #     if highest_rotation > 25 and (handRotation is None or abs(handRotation) < 25):
+        #         print("Done!")
+        #         print("Neutral position:", neutral_position)
+        #         print("Highest measured hand rotation:", highest_rotation)
+        #         return
 
 def arm_side_test(camera, bodyPoseDetection):
     testphases = ["image_capture", "neutral_position", "rotation", "end"]
     highest_arm_angle = -999999999
     current_testphase = 0
-    print("Put right arm in front of screen")
+    # print("Put right arm in front of screen")
     while True:
         frame = camera.getFrame()
+        poseData = bodyPoseDetection.getPose(frame)
+        poseFrame = bodyPoseDetection.drawPose(frame, poseData)
+        cv2.imshow('body frame', cv2.flip(poseFrame, 1))
         if cv2.waitKey(1) == ord('q'):
             break
-        cv2.imshow('hand frame', cv2.flip(frame, 1))
+        landmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseData)
+        upper_arm_rotation = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
+        # print(upper_arm_rotation[])
+        try:
+            print(int(90+upper_arm_rotation["xy"]), ",", int(upper_arm_rotation["yz"]), ",", int(upper_arm_rotation["xz"]))
+        except:
+            print(0)
+            # if upper_arm_rotation is not None:
+            #     print("Current rotation:", 90+upper_arm_rotation["xy"])
+            # if upper_arm_rotation is not None and upper_arm_rotation["xy"] > highest_arm_angle:
+            #     highest_arm_angle = upper_arm_rotation["xy"]
+            # if upper_arm_rotation is not None and upper_arm_rotation["xy"] < -70 and highest_arm_angle > -60:
+            #     # print("Done!")
+            #     # print("Highest measured angle:", int(90+highest_arm_angle), "degrees")
+            #     return
+        # elif current_testphase > len(testphases):
+        #     print("Error! testphase:", current_testphase)
+        #     exit(1)
+
+def right_arm_angle_excel_test(camera, bodyPoseDetection):
+    data = [[], [], []]
+    while True:
+        frame = camera.getFrame()
         poseData = bodyPoseDetection.getPose(frame)
-        if testphases[current_testphase] == "image_capture":
-            landmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseData)
-            if landmark is not None:
-                print("Done!")
-                print("Put arm in neutral position")
-                current_testphase+=1
-        elif testphases[current_testphase] == "neutral_position":
-            upper_arm_rotation = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
-            if upper_arm_rotation is not None and upper_arm_rotation["xy"] <= -75:
-                print("Done!")
-                print("Move arm up to about 90 degrees")
-                current_testphase+=1
-        elif testphases[current_testphase] == "rotation":
-            upper_arm_rotation = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
-            if upper_arm_rotation is not None and upper_arm_rotation["xy"] > highest_arm_angle:
-                highest_arm_angle = upper_arm_rotation["xy"]
-            if upper_arm_rotation is not None and upper_arm_rotation["xy"] < -70 and highest_arm_angle > -60:
-                print("Done!")
-                print("Highest measured angle:", int(90+highest_arm_angle), "degrees")
-                exit(0)
-        elif current_testphase > len(testphases):
-            print("Error! testphase:", current_testphase)
-            exit(1)
+        poseFrame = bodyPoseDetection.drawPose(frame, poseData)
+        cv2.imshow('body frame', cv2.flip(poseFrame, 1))
+        if cv2.waitKey(1) == ord('q'):
+            break
+        landmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseData)
+        upper_arm_rotation = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
+        try:
+            data[0].append(upper_arm_rotation["xy"])
+            data[1].append(upper_arm_rotation["yz"])
+            data[2].append(upper_arm_rotation["xz"])
+        except:
+            data[0].append(None)
+            data[1].append(None)
+            data[2].append(None)
+    export_to_line_chart("data.xlsx", data)
 
 def main():
     camera = Camera(cameraId=0)           # if using a webcam
     camera.start()
-    # camera2 = Camera(cameraId=1)           # if using a webcam
-    # camera2.start()
     bodyPoseDetection = BodyPoseDetection(displayPose=True)
-    handPoseDetection = HandPoseDetection(displayPose=True)
-    depthImage = DepthImage()
-    arm_side_test(camera, bodyPoseDetection)
+    right_arm_angle_excel_test(camera, bodyPoseDetection)
+
+    # # camera2 = Camera(cameraId=1)           # if using a webcam
+    # # camera2.start()
+    # bodyPoseDetection = BodyPoseDetection(displayPose=True)
+    # handPoseDetection = HandPoseDetection(displayPose=True)
+    # depthImage = DepthImage()
+    # arm_side_test(camera, bodyPoseDetection)
+    # # hand_test(camera, handPoseDetection)
+    # # right_arm_angle_live(camera, bodyPoseDetection)
    
-    camera.stop()
+    # camera.stop()
 main()
 
 

@@ -22,9 +22,11 @@ class BodyPoseDetection:
         self.poseData = self.pose.process(cameraColorFrame)
         cameraColorFrame.flags.writeable = True
         cameraColorFrame = cv2.cvtColor(cameraColorFrame, cv2.COLOR_RGB2BGR)
-        # if self.displayPose:
-        #     self.draw.draw_landmarks(cameraColorFrame, self.poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
         return self.poseData
+    def drawPose(self, cameraColorFrame, poseData=None):
+        if poseData is not None:
+            self.draw.draw_landmarks(cameraColorFrame, poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+            return cameraColorFrame
     def getPoseLandmark(self, limb, poseData):
         try:
             return poseData.pose_landmarks.landmark[limb]
