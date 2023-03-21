@@ -17,4 +17,3 @@ class PoseDetection:
         self.draw.draw_landmarks(color_frame, results.pose_landmarks, self.mp_pose.POSE_CONNECTIONS)
         
         return results, color_frame
-    

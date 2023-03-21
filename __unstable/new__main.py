@@ -12,7 +12,7 @@ def main():
     poseDetection = PoseDetection(display_pose=True)
     while True:
         frame = camera.getFrame()
-        print(frame)
+        # print(frame)
         try:
             while True:
                 frame = camera.getFrame()
@@ -24,7 +24,7 @@ def main():
                 relbowpos = poseDetection.getPoseLandmark(poseData, BodyPart.RIGHT_ELBOW)
                 # print(poseDetection.getDirectionVectorForBodypart(BodyPart.LEFT_ELBOW, poseData))
                 shoulders_direction_vector = poseDetection.getDirectionVectorForBodypart(BodyPart.LEFT_SHOULDER, poseData, originBodyPart=BodyPart.RIGHT_SHOULDER)
-                print("T-POSING:", poseDetection.isTPosing(poseData))
+                # print("T-POSING:", poseDetection.isTPosing(poseData))
                 # try:
                 #     shoulder_angle = poseDetection.getShoulderAngle(lshoulderpos, rshoulderpos)
                 #     depth_angle = poseDetection.getDepthAngle(lshoulderpos, lelbowpos)

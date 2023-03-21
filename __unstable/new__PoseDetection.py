@@ -101,7 +101,6 @@ class PoseDetection:
         elif originBodyPart is not None:
             return self._getDirectionVector(landmarks[bodyPart], landmarks[originBodyPart])
     def _getDirectionVector(self, landmark_1, landmark_2, visibility_threshold=0.75):
-        print(landmark_1, landmark_2)
         if landmark_1.visibility > visibility_threshold and landmark_2.visibility > visibility_threshold:
             return {
                 "x": landmark_1.x - landmark_2.x,
@@ -111,7 +110,7 @@ class PoseDetection:
         return None
     # TODO: GET DATA FROM DEPTH CAMERA AND SCALE THE X THRESHOLD!
     # TODO: WE DOEN DAT ZEKER WEL OP BASIS VAN EMPIRISCH NATTEVINGERWERK!
-    def isTPosing(self, poseData, x_threshold=0.15, x_threshold_depth_scale=1.0):
+    def isTPosing(self, poseData, x_threshold=0.13, x_threshold_depth_scale=1.0):
         if poseData.pose_landmarks is None:
             return None
         landmarks = poseData.pose_landmarks.landmark
@@ -122,12 +121,12 @@ class PoseDetection:
         right_upper_arm_direction = self.getDirectionVectorForBodypart(BodyPart.RIGHT_ELBOW, poseData)
         right_lower_arm_direction = self.getDirectionVectorForBodypart(BodyPart.RIGHT_WRIST, poseData)
         right_index_finger_direction = self.getDirectionVectorForBodypart(BodyPart.RIGHT_INDEX, poseData)
-        print("left upper arm", left_upper_arm_direction)
-        print("left lower arm", left_lower_arm_direction)
-        print("left finger", left_index_finger_direction)
-        print("right upper arm", right_upper_arm_direction)
-        print("right lower arm", right_lower_arm_direction)
-        print("right finger", right_index_finger_direction)
+        # print("left upper arm", left_upper_arm_direction)
+        # print("left lower arm", left_lower_arm_direction)
+        # print("left finger", left_index_finger_direction)
+        # print("right upper arm", right_upper_arm_direction)
+        # print("right lower arm", right_lower_arm_direction)
+        # print("right finger", right_index_finger_direction)
         try:
             if left_upper_arm_direction["x"] >= x_threshold and \
                left_lower_arm_direction["x"] >= x_threshold and \
