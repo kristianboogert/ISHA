@@ -86,7 +86,7 @@ def arm_side_test(camera, bodyPoseDetection):
         #     print("Error! testphase:", current_testphase)
         #     exit(1)
 
-def right_arm_angle_excel_test(camera, bodyPoseDetection):
+def right_arm_angle_excel_test(camera, bodyPoseDetection, bodyPart):
     data = [[], [], []]
     while True:
         frame = camera.getFrame()
@@ -95,8 +95,8 @@ def right_arm_angle_excel_test(camera, bodyPoseDetection):
         cv2.imshow('body frame', cv2.flip(poseFrame, 1))
         if cv2.waitKey(1) == ord('q'):
             break
-        landmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseData)
-        upper_arm_rotation = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
+        landmark = bodyPoseDetection.getPoseLandmark(bodyPart, poseData)
+        upper_arm_rotation = bodyPoseDetection.getAnglesForBodyPart(bodyPart, poseData)
         try:
             data[0].append(upper_arm_rotation["xy"])
             data[1].append(upper_arm_rotation["yz"])
@@ -110,8 +110,15 @@ def right_arm_angle_excel_test(camera, bodyPoseDetection):
 def main():
     camera = Camera(cameraId=0)           # if using a webcam
     camera.start()
-    bodyPoseDetection = BodyPoseDetection(displayPose=True)
-    right_arm_angle_excel_test(camera, bodyPoseDetection)
+    handPoseDetection = HandPoseDetection(displayPose=True)
+    while True:
+        frame = camera.getFrame()
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) == ord('q'):
+            break
+        handPoseData = handPoseDetection.getPose(frame)
+        print("LEFT: ", handPoseDetection.getHandRotation(Hand.LEFT_HAND, handPoseData))
+        print("RIGHT:", handPoseDetection.getHandRotation(Hand.RIGHT_HAND, handPoseData))
 
     # # camera2 = Camera(cameraId=1)           # if using a webcam
     # # camera2.start()
