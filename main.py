@@ -107,18 +107,44 @@ def right_arm_angle_excel_test(camera, bodyPoseDetection, bodyPart):
             data[2].append(None)
     export_to_line_chart("data.xlsx", data)
 
+def finger_tracker_excel_test(camera, handPoseDetection, hand, handPart):
+    data = [[], [], []]
+    while True:
+        frame = camera.getFrame()
+        handPoseData = handPoseDetection.getPose(frame)
+        cv2.imshow('body frame', cv2.flip(frame, 1))
+        if cv2.waitKey(1) == ord('q'):
+            break
+        landmark = handPoseDetection.getHandLandmark(hand, handPart, handPoseData)
+        hand_angle = handPoseDetection.getAnglesForHandPart(hand, HandPart.INDEX_FINGER_MCP, handPoseData)
+        angles = handPoseDetection.getAnglesForHandPart(hand, handPart, handPoseData)
+        try:
+            data[0].append(angles["xy"])
+            data[1].append(angles["yz"])
+            data[2].append(angles["xz"])
+        except:
+            data[0].append(None)
+            data[1].append(None)
+            data[2].append(None)
+    export_to_line_chart("data.xlsx", data)
+
 def main():
     camera = Camera(cameraId=0)           # if using a webcam
     camera.start()
-    handPoseDetection = HandPoseDetection(displayPose=True)
-    while True:
-        frame = camera.getFrame()
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(1) == ord('q'):
-            break
-        handPoseData = handPoseDetection.getPose(frame)
-        print("LEFT: ", handPoseDetection.getHandRotation(Hand.LEFT_HAND, handPoseData))
-        print("RIGHT:", handPoseDetection.getHandRotation(Hand.RIGHT_HAND, handPoseData))
+    bodyPoseDetection = BodyPoseDetection()
+    handPoseDetection = HandPoseDetection()
+    finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.THUMB_MCP)
+    # while True:
+    #     frame = camera.getFrame()
+    #     cv2.imshow('frame', frame)
+    #     if cv2.waitKey(1) == ord('q'):
+    #         break
+    #     # bodyPoseData = bodyPoseDetection.getPose(frame)
+    #     handPoseData = handPoseDetection.getPose(frame)
+    #     # hand_angle = handPoseDetection.getAnglesForHandPart(Hand.LEFT_HAND, HandPart.MIDDLE_FINGER_MCP, handPoseData)
+    #     middle_finger_angle = handPoseDetection.getAnglesForHandPart(Hand.LEFT_HAND, HandPart.MIDDLE_FINGER_TIP, handPoseData)
+    #     # print("HAND ANGLE:          ", hand_angle)
+    #     print("MIDDLE FINGER ANGLE: ", middle_finger_angle)
 
     # # camera2 = Camera(cameraId=1)           # if using a webcam
     # # camera2.start()
