@@ -28,27 +28,51 @@ class FuglMeyer:
         nonImpairedAngleMax = None
         impairedAngleMin = None
         impairedAngleMax = None
+        exerciseStarted = False
         # Handle exercise
         while True:
+            ###
+            # Get camera frame
+            ###
             frame = camera.getFrame()
+            ###
+            # Detect body pose (mediapipe)
+            ###
             poseData = bodyPoseDetection.getPose(frame)
+            frame = bodyPoseDetection.drawPose(frame, poseData)
             cv2.imshow('body frame', cv2.flip(frame, 1))
             if cv2.waitKey(1) == ord('q'):
                 break
+            ###
+            # Are all relevant joints in frame?
+            ###
             leftShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_SHOULDER, poseData)
             rightShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_SHOULDER, poseData)
             leftElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_ELBOW, poseData)
             rightElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseData)
-            # See if the user is in frame by checking the visibility of key landmarks
-            if self.landmarksAreVisible([leftShoulderLandmark, rightShoulderLandmark, leftElbowLandmark, rightElbowLandmark]):
-                print("user is in frame")
-                # TODO: handle exercise activities
-            else:
-                print("user is not in frame")
-                # TODO: give suggestions of how to put the user in frame
+            if not self.landmarksAreVisible([leftShoulderLandmark, rightShoulderLandmark, leftElbowLandmark, rightElbowLandmark]):
+                print("user is not fully in frame for this exercise")
+                continue
+            ###
+            # Has exercise been started?
+            ###
+            if not exerciseStarted:
+                exerciseStarted = True
+                continue
+            ###
+            # Has user pressed "quit"?
+            ###
+            # TODO: FIND OUT HOW TO DO THIS! MAYBE SOME DBUS MAGIC SO OTHER PROCESSES CAN TALK TO US?
 
-# TODO: See if user is completely in frame
-# TODO: See if user is raising their arm
-# TODO: See if user has rotated the left hand 180-ish degrees
-# TODO: See if user has rotated the left hand back to 0-ish degrees
-# TODO: Maybe not the full 180-ish degrees
+            ###
+            # Calculate relevant joint angles
+            ###
+            leftUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_ELBOW, poseData)
+            rightUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
+            leftLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_WRIST, poseData)
+            rightLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_WRIST, poseData)
+            print("ARM ANGLES:\nLeft: ", leftUpperArmAngle["xy"],
+                  "\nRight:", rightUpperArmAngle["xy"], "\n",
+                  "WRIST ANGLES:\nLeft: ", leftLowerArmAngle["xy"],
+                  "\nRight:", rightLowerArmAngle["xy"], "\n",
+                 )
