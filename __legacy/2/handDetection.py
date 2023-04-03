@@ -1,6 +1,10 @@
 import cv2 
+<<<<<<< HEAD:handDetection.py
 # from mediapipe import mp
 import mediapipe as mp
+=======
+from mediapipe import mp
+>>>>>>> b65200c1d19b6f7570d00dca913eb88bdc44ac64:__legacy/2/handDetection.py
 
 class HandDetection:
     def __init__(self, static_image_mode=False, max_num_hands=2, min_detection_confidence=0.3):
