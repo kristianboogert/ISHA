@@ -5,7 +5,8 @@ from poseDetection.BodyPart import *
 from poseDetection.HandPart import *
 from stereoscopic.DepthImage import DepthImage
 from dataExporter.ExcelExporter import *
-from exercise.FuglMeyer import FuglMeyer
+from exerciseScorer.FuglMeyer import FuglMeyer
+from exerciseCreator.ExerciseCreator import ExerciseCreator, ImpairedSide
 from time import time
 
 import cv2
@@ -89,14 +90,41 @@ def depth_excel_test(camera, bodyPoseDetection):
     export_to_line_chart("data_user_sitting_up_depth_test.xlsx", data)
 
 def main():
-    fuglMeyer = FuglMeyer()
-    camera = Camera(cameraId=0)           # if using a webcam
-    camera.start()
-    # handPoseDetection = HandPoseDetection()
-    bodyPoseDetection = BodyPoseDetection()
-    # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
-    # depth_excel_test(camera, bodyPoseDetection)
-    fuglMeyer.exerciseRaiseArmToSide(camera, bodyPoseDetection, BodyPart.LEFT_ELBOW)
+    exerciseCreator = ExerciseCreator()
+    print(exerciseCreator.createExercise('', ImpairedSide.LEFT))
+    print(exerciseCreator.createExercise('', ImpairedSide.RIGHT))
+
+    # fuglMeyer = FuglMeyer()
+    # camera = Camera(cameraId=0)           # if using a webcam
+    # camera.start()
+    # # handPoseDetection = HandPoseDetection()
+    # bodyPoseDetection = BodyPoseDetection()
+    # # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
+    # # depth_excel_test(camera, bodyPoseDetection)
+    # exerciseData = '{\
+    #                     "name": "Raise arms",\
+    #                     "parts":\
+    #                     [\
+    #                         {\
+    #                             "body_parts": [12, 14],\
+    #                             "angles": {\
+    #                                 "score_1_angle_difference": 20,\
+    #                                 "score_2_angle": 80,\
+    #                                 "plane": "xy"\
+    #                             }\
+    #                         },\
+    #                         {\
+    #                             "body_parts": [11, 13],\
+    #                             "angles": {\
+    #                                 "score_1_angle_difference": 20,\
+    #                                 "score_2_angle_difference": 80,\
+    #                                 "plane": "xz"\
+    #                             }\
+    #                         }\
+    #                     ]\
+    #                 }'
+    #
+    # fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
 main()
 
 
