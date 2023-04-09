@@ -52,8 +52,8 @@ class FuglMeyer:
             user_in_view = True
             for exercise_part in exerciseData["parts"]:
                 # check landmark visibility for each body part
-                for body_part in exercise_part:
-                    if not bodyPoseDetection.isBodyPartVisible(body_part["body_part"], poseData):
+                for bodyPart in exercise_part:
+                    if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseData):
                         user_in_view = False
                         break
             if not user_in_view:
@@ -73,19 +73,19 @@ class FuglMeyer:
             # Score the first exercise part
             ###
             exercisePartData = exerciseData["parts"][exercisePart]
-            bodyPart = BodyPart(0) # Only used for the serialize function
-            for body_part in exercisePartData:
+            _bodyPart = BodyPart(0) # Only used for the serialize function
+            for bodyPart in exercisePartData:
                 # Get bodypart angle
-                currentBodyPart = bodyPoseDetection.getAnglesForBodyPart(body_part["body_part"], poseData)
+                currentBodyPart = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
                 if currentBodyPart is None:
                     print(time.time(), "Skipping frame, because user is not fully in view anymore (?)")
                     break
-                currentBodyPartAngle = currentBodyPart[body_part["angles"]["plane"]]
-                given_angles = body_part["angles"]
+                currentBodyPartAngle = currentBodyPart[bodyPart["angles"]["plane"]]
+                givenAngles = bodyPart["angles"]
                 # print("CURRENT_ANGLE:", currentBodyPartAngle)
-                # print("GIVEN ANGLES: ", given_angles)
-                if given_angles["score_2_min"] < currentBodyPartAngle < given_angles["score_2_max"]:
-                    print(time.time(), "user scored 2 on bodypart:", bodyPart.serialize(body_part["body_part"]))
+                # print("GIVEN ANGLES: ", givenAngles)
+                if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
+                    print(time.time(), "user scored 2 on bodypart:", _bodyPart.serialize(bodyPart["body_part"]))
                     score[exercisePart] = 2
                 else:
                     if score[exercisePart] == 2:
