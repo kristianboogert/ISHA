@@ -27,6 +27,7 @@ class FuglMeyer:
         exerciseData = json.loads(exerciseData)
         score = 0
         exercisePart = 0
+        neutralBodyPose = None # TODO: save the neutral pose for later comparison, so a core of 1 can be generated
         while True:
             ###
             # Get camera frame
@@ -44,14 +45,15 @@ class FuglMeyer:
             # Are all relevant joints in frame?
             ###
             user_in_view = True
-            for description in exerciseData["parts"]:
+            for exercise_part in exerciseData["parts"]:
                 # check landmark visibility for each body part
-                for body_part in description["body_parts"]:
-                    landmark = bodyPoseDetection.getPoseLandmark(body_part, poseData)
-                    if landmark is None or landmark.visibility <= visibilityThreshold:
+                for body_part in exercise_part:
+                    if not bodyPoseDetection.isBodyPartVisible(body_part["body_part"], poseData):
                         user_in_view = False
                         break
-            print("user_in_view =", user_in_view)
+            if not user_in_view:
+                print("user is not in view")
+                continue
             ###
             # Has exercise been started?
             ###
@@ -63,8 +65,19 @@ class FuglMeyer:
             ###
             # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION!
             ###
-            #############!!!!!!!!!!!! CHECK USER VISIBILITY FOR EACH EXERCISE PART, BUT SCORE THE USER PER EXERCISE PART
+            # Score the first exercise part
             ###
+            exercisePartData = exerciseData["parts"][exercisePart]
+            for body_part in exercisePartData:
+                # Get bodypart angle
+                current_body_part_angle = bodyPoseDetection.getAnglesForBodyPart(body_part["body_part"], poseData)[body_part["angles"]["plane"]]
+                given_angles = body_part["angles"]
+                print("CURRENT_ANGLE:", current_body_part_angle)
+                print("GIVEN ANGLES: ", given_angles)
+                if given_angles["score_2_min"] < current_body_part_angle < given_angles["score_2_max"]:
+                    print("user scored 2 on bodypart!")
+                    # TODO: Make sure the scoresystem moves on to the next bodypart after a score of 1 or two has been seen!
+
     def exerciseRaiseArmToSide(self, camera, bodyPoseDetection, nonImpairedElbowBodyPart, visibilityThreshold=0.85):
         if not camera.is_running():
             camera.start()

@@ -6,7 +6,7 @@ from poseDetection.HandPart import *
 from stereoscopic.DepthImage import DepthImage
 from dataExporter.ExcelExporter import *
 from exerciseScorer.FuglMeyer import FuglMeyer
-from exerciseCreator.ExerciseCreator import ExerciseCreator, ImpairedSide
+from exerciseCreator.ExerciseCreator import ExerciseCreator, ImpairedSide, PoseDetectionType, BodyPartDescription
 from time import time
 
 import cv2
@@ -91,40 +91,45 @@ def depth_excel_test(camera, bodyPoseDetection):
 
 def main():
     exerciseCreator = ExerciseCreator()
-    print(exerciseCreator.createExercise('', ImpairedSide.LEFT))
-    print(exerciseCreator.createExercise('', ImpairedSide.RIGHT))
+    exerciseDescription = '\
+    {\
+        "name": "Raise arm to side",\
+        "pose_detection_type": '+str(int(PoseDetectionType.BODY_POSE))+',\
+        "body_parts":\
+        [\
+            {\
+                "body_part": '+str(int(BodyPartDescription.UPPER_ARM))+',\
+                "angles":\
+                {\
+                    "plane": "xy",\
+                    "score_1_min_diff": 20,\
+                    "score_2_min": -15,\
+                    "score_2_max": 15\
+                }\
+            },\
+            {\
+                "body_part": '+str(int(BodyPartDescription.FOREARM))+',\
+                "angles":\
+                {\
+                    "plane": "xy",\
+                    "score_1_min_diff": 20,\
+                    "score_2_min": -15,\
+                    "score_2_max": 15\
+                }\
+            }\
+        ]\
+    }\
+    '
+    exerciseData = exerciseCreator.createExercise(exerciseDescription, ImpairedSide.RIGHT)
 
-    # fuglMeyer = FuglMeyer()
-    # camera = Camera(cameraId=0)           # if using a webcam
-    # camera.start()
-    # # handPoseDetection = HandPoseDetection()
-    # bodyPoseDetection = BodyPoseDetection()
-    # # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
-    # # depth_excel_test(camera, bodyPoseDetection)
-    # exerciseData = '{\
-    #                     "name": "Raise arms",\
-    #                     "parts":\
-    #                     [\
-    #                         {\
-    #                             "body_parts": [12, 14],\
-    #                             "angles": {\
-    #                                 "score_1_angle_difference": 20,\
-    #                                 "score_2_angle": 80,\
-    #                                 "plane": "xy"\
-    #                             }\
-    #                         },\
-    #                         {\
-    #                             "body_parts": [11, 13],\
-    #                             "angles": {\
-    #                                 "score_1_angle_difference": 20,\
-    #                                 "score_2_angle_difference": 80,\
-    #                                 "plane": "xz"\
-    #                             }\
-    #                         }\
-    #                     ]\
-    #                 }'
-    #
-    # fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
+    fuglMeyer = FuglMeyer()
+    camera = Camera(cameraId=0)           # if using a webcam
+    camera.start()
+    # handPoseDetection = HandPoseDetection()
+    bodyPoseDetection = BodyPoseDetection()
+    # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
+    # depth_excel_test(camera, bodyPoseDetection)
+    fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
 main()
 
 

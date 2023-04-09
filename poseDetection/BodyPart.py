@@ -6,4 +6,4 @@ class BodyPart(IntEnum):
     LEFT_UPPER_ARM = 2,
     RIGHT_UPPER_ARM = 3,
     LEFT_FOREARM = 4,
-    RIGHT_FOREARM = 5,
+    RIGHT_FOREARM = 5
