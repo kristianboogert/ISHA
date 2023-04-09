@@ -125,9 +125,9 @@ class BodyPoseDetection:
             leftWristDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_WRIST, poseData, originBodyPart=BodyJoint.LEFT_ELBOW)
             leftWristAngles = self.getAnglesFromDirectionVector(leftWristDirectionVector)
             try:
-                leftWristAngles["xy"] = leftWristAngles["xy"]-leftElbowAngles["xy"]+leftShoulderAngles["xy"]
-                leftWristAngles["yz"] = leftWristAngles["yz"]-leftElbowAngles["yz"]+leftShoulderAngles["yz"]
-                leftWristAngles["xz"] = leftWristAngles["xz"]-leftElbowAngles["xz"]+leftShoulderAngles["xz"]
+                leftWristAngles["xy"] = -(leftWristAngles["xy"]-leftElbowAngles["xy"]+leftShoulderAngles["xy"])
+                leftWristAngles["yz"] = -(leftWristAngles["yz"]-leftElbowAngles["yz"]+leftShoulderAngles["yz"])
+                leftWristAngles["xz"] = -(leftWristAngles["xz"]-leftElbowAngles["xz"]+leftShoulderAngles["xz"])
                 return leftWristAngles
             except:
                 return None

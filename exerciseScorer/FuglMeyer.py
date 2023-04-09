@@ -68,15 +68,19 @@ class FuglMeyer:
             # Score the first exercise part
             ###
             exercisePartData = exerciseData["parts"][exercisePart]
+            bodyPart = BodyPart(0) # Only used for the serialize function
             for body_part in exercisePartData:
                 # Get bodypart angle
                 current_body_part_angle = bodyPoseDetection.getAnglesForBodyPart(body_part["body_part"], poseData)[body_part["angles"]["plane"]]
                 given_angles = body_part["angles"]
-                print("CURRENT_ANGLE:", current_body_part_angle)
-                print("GIVEN ANGLES: ", given_angles)
+                # print("CURRENT_ANGLE:", current_body_part_angle)
+                # print("GIVEN ANGLES: ", given_angles)
+                if bodyPart.serialize(body_part["body_part"]) == "LEFT_FOREARM":
+                    print("CURRENT_ANGLE:", current_body_part_angle)
                 if given_angles["score_2_min"] < current_body_part_angle < given_angles["score_2_max"]:
-                    print("user scored 2 on bodypart!")
+                    print("user scored 2 on bodypart:", bodyPart.serialize(body_part["body_part"]))
                     # TODO: Make sure the scoresystem moves on to the next bodypart after a score of 1 or two has been seen!
+            print("Onto the next frame we go!")
 
     def exerciseRaiseArmToSide(self, camera, bodyPoseDetection, nonImpairedElbowBodyPart, visibilityThreshold=0.85):
         if not camera.is_running():

@@ -94,11 +94,11 @@ def main():
     exerciseDescription = '\
     {\
         "name": "Raise arm to side",\
-        "pose_detection_type": '+str(int(PoseDetectionType.BODY_POSE))+',\
+        "pose_detection_type": "BODY_POSE",\
         "body_parts":\
         [\
             {\
-                "body_part": '+str(int(BodyPartDescription.UPPER_ARM))+',\
+                "body_part": "UPPER_ARM",\
                 "angles":\
                 {\
                     "plane": "xy",\
@@ -108,13 +108,13 @@ def main():
                 }\
             },\
             {\
-                "body_part": '+str(int(BodyPartDescription.FOREARM))+',\
+                "body_part": "FOREARM",\
                 "angles":\
                 {\
                     "plane": "xy",\
                     "score_1_min_diff": 20,\
-                    "score_2_min": -15,\
-                    "score_2_max": 15\
+                    "score_2_min": -20,\
+                    "score_2_max": 20\
                 }\
             }\
         ]\
