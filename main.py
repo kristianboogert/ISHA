@@ -94,11 +94,11 @@ def main():
     exerciseDescription = '\
     {\
         "name": "Raise arm to side",\
-        "pose_detection_type": "BODY_POSE",\
+        "pose_detection_type": "body_pose",\
         "body_parts":\
         [\
             {\
-                "body_part": "UPPER_ARM",\
+                "body_part": "upper_arm",\
                 "angles":\
                 {\
                     "plane": "xy",\
@@ -108,7 +108,7 @@ def main():
                 }\
             },\
             {\
-                "body_part": "FOREARM",\
+                "body_part": "forearm",\
                 "angles":\
                 {\
                     "plane": "xy",\
@@ -129,7 +129,8 @@ def main():
     bodyPoseDetection = BodyPoseDetection()
     # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
     # depth_excel_test(camera, bodyPoseDetection)
-    fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
+    score = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
+    print(score)
 main()
 
 
