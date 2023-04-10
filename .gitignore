@@ -1,3 +1,5 @@
 __pycache__
 excel_files/*
 *.xlsx
+tests/
+tests/*

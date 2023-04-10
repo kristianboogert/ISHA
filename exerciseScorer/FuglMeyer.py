@@ -4,6 +4,7 @@
 import sys
 import json
 from time import time
+from datetime import datetime
 sys.path.append("..")
 from poseDetection.HandPoseDetection import *
 from poseDetection.HandPart import *
