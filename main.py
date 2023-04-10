@@ -129,7 +129,6 @@ def main():
     bodyPoseDetection = BodyPoseDetection()
     # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
     # depth_excel_test(camera, bodyPoseDetection)
-    impairedSide = ImpairedSide(0)
     score, metadata = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
     print(score)
     print(metadata)

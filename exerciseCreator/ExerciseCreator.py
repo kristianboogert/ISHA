@@ -51,7 +51,6 @@ class ExerciseCreator:
         data_in = json.loads(exerciseDescription)
         # Deserialize pose type entry in exerciseDescription
         poseDetectionType = PoseDetectionType(0) # Only used for deserializing a string value
-        poseDetectionTypeString = poseDetectionType.deserialize(data_in["pose_detection_type"])
         # Deserialize body parts in exerciseDescription
         bodyPart = BodyPartDescription(0) # Only used for deserializing a string value
         for body_part in data_in["body_parts"]:
@@ -60,7 +59,7 @@ class ExerciseCreator:
         data_out = {}
         # Add exercise name to out
         data_out.update({"name": data_in["name"]})
-        data_out.update({"pose_detection_type": poseDetectionTypeString})
+        data_out.update({"pose_detection_type": data_in["pose_detection_type"].upper()})
         data_out.update({"parts": [[], []]})
         if impairedSide == ImpairedSide.LEFT:
             print("Impaired side is left, making sure the user does right body parts first")
