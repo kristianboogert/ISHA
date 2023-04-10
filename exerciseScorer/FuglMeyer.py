@@ -3,7 +3,7 @@
 
 import sys
 import json
-import time
+from time import time
 sys.path.append("..")
 from poseDetection.HandPoseDetection import *
 from poseDetection.HandPart import *
@@ -23,12 +23,38 @@ class FuglMeyer:
             if landmark is None or landmark.visibility < visibilityThreshold:
                 return False
         return True
+    def metadataCreate(self, exerciseName, poseTrackerTypeString, impairedSideString):
+        metadata = {}
+        metadata.update({"name": exerciseName})
+        metadata.update({"pose_detection_type": poseTrackerTypeString})
+        metadata.update({"impaired_side": impairedSideString})
+        metadata.update({"exercise_parts": [[], []]})
+        return metadata
+    def metadataAddPose(self, metadata, currentExercisePart, startTime, pose):
+        currentTime = int(time()*1000)
+        msSinceStart = currentTime - startTime
+        pose.update({"ms_since_exercise_start": msSinceStart})
+        metadata["exercise_parts"][currentExercisePart].append(pose)
+        return metadata
+    def metadataSetScore(self, metadata, currentExercisePart, score):
+        metadata["scores"][currentExercisePart] = score
+        return metadata
+    def metadataFixTimestamps(self, metadata):
+        # fix time in data
+        startTime = metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
+        for exercisePart in range(len(metadata["exercise_parts"])):
+            for pose in range(len(metadata["exercise_parts"][exercisePart])):
+                fixedTime = metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
+                metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
+        return metadata
     def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
-        score = [0, 0] # [left side, right side]
+        score = [0, 0] # [first part, second part]
         exercisePart = 0
         neutralBodyPose = None # TODO: save the neutral pose for later comparison, so a core of 1 can be generated
+        metadata = self.metadataCreate(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
+        startTime = int(time()*1000) # in ms
         while True:
             ###
             # Get camera frame
@@ -76,20 +102,31 @@ class FuglMeyer:
             _bodyPart = BodyPart(0) # Only used for the serialize function
             for bodyPart in exercisePartData:
                 # Get bodypart angle
-                currentBodyPart = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
-                if currentBodyPart is None:
-                    print(time.time(), "Skipping frame, because user is not fully in view anymore (?)")
+                currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
+                if currentBodyPartAngles is None:
+                    print(time(), "Skipping frame, because user is not fully in view anymore (?)")
                     break
-                currentBodyPartAngle = currentBodyPart[bodyPart["angles"]["plane"]]
+                print("TESTING:", currentBodyPartAngles)
+                plane = bodyPart["angles"]["plane"]
+                currentBodyPartAngle = currentBodyPartAngles[plane]
                 givenAngles = bodyPart["angles"]
                 # print("CURRENT_ANGLE:", currentBodyPartAngle)
                 # print("GIVEN ANGLES: ", givenAngles)
+                poseMetadata = {
+                    "body_part": _bodyPart.serialize(bodyPart["body_part"]),
+                    "plane": plane,
+                    "angles": currentBodyPartAngles,
+                    "score": 0
+                }
                 if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
-                    print(time.time(), "user scored 2 on bodypart:", _bodyPart.serialize(bodyPart["body_part"]))
+                    print(time(), "user scored 2 on bodypart:", _bodyPart.serialize(bodyPart["body_part"]))
                     score[exercisePart] = 2
+                    poseMetadata.update({"score": 2})
                 else:
                     if score[exercisePart] == 2:
                         score[exercisePart] = 1
+                        poseMetadata.update({"score": 1})
+                self.metadataAddPose(metadata, exercisePart, startTime, poseMetadata)
             if score[exercisePart] == 2:
                 exercisePart += 1
                 if exercisePart >= 2:
@@ -100,7 +137,8 @@ class FuglMeyer:
             # Relevant joints are close to neutral position?
             ###
             # TODO: DIT VEREIST OOK DAT WE DE RUSTPOSITIE INLEZEN VOORDAT DE OEFENING WORDT BEGONNEN!!!!
-        return score
+        self.metadataFixTimestamps(metadata)
+        return score, json.dumps(metadata, indent=4)
 
 
 

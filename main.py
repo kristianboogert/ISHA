@@ -33,7 +33,7 @@ def right_arm_angle_excel_test(camera, bodyPoseDetection, bodyPart):
     export_to_line_chart("data.xlsx", data)
 
 def finger_tracker_excel_test(camera, handPoseDetection, hand, handPart):
-    data = [[], [], [], []]
+    metadata = [[], [], [], []]
     start_time = int(time()*1000) # in ms
     while True:
         frame = camera.getFrame()
@@ -48,15 +48,15 @@ def finger_tracker_excel_test(camera, handPoseDetection, hand, handPart):
         current_time = int(time()*1000)
         ms_since_start = current_time - start_time
         try:
-            data[0].append(angles["xy"])
-            data[1].append(angles["yz"])
-            data[2].append(angles["xz"])
-            data[3].append(ms_since_start)
+            metadata[0].append(angles["xy"])
+            metadata[1].append(angles["yz"])
+            metadata[2].append(angles["xz"])
+            metadata[3].append(ms_since_start)
         except:
-            data[0].append(None)
-            data[1].append(None)
-            data[2].append(None)
-            data[3].append(ms_since_start)
+            metadata[0].append(None)
+            metadata[1].append(None)
+            metadata[2].append(None)
+            metadata[3].append(ms_since_start)
     export_to_line_chart("finger_test.xlsx", data)
 
 # Test if we can see depth using only mediapipe
@@ -121,7 +121,7 @@ def main():
     }\
     '
     exerciseData = exerciseCreator.createExercise(exerciseDescription, ImpairedSide.RIGHT)
-
+    print("exerciseData:", exerciseData)
     fuglMeyer = FuglMeyer()
     camera = Camera(cameraId=0)           # if using a webcam
     camera.start()
@@ -129,8 +129,10 @@ def main():
     bodyPoseDetection = BodyPoseDetection()
     # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
     # depth_excel_test(camera, bodyPoseDetection)
-    score = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
+    impairedSide = ImpairedSide(0)
+    score, metadata = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
     print(score)
+    print(metadata)
 main()
 
 

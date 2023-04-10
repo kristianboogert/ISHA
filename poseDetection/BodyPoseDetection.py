@@ -89,9 +89,9 @@ class BodyPoseDetection:
         if bodyJoint == BodyJoint.LEFT_SHOULDER:
             leftShoulderDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_SHOULDER, poseData, originBodyPart=BodyJoint.RIGHT_SHOULDER)
             leftShoulderAngles = self.getAnglesFromDirectionVector(leftShoulderDirectionVector)
-            leftShoulderAngles["xy"] = -leftShoulderAngles["xy"]
-            leftShoulderAngles["yz"] = -leftShoulderAngles["yz"]
-            leftShoulderAngles["xz"] = -leftShoulderAngles["xz"]
+            # leftShoulderAngles["xy"] = -leftShoulderAngles["xy"]
+            # leftShoulderAngles["yz"] = -leftShoulderAngles["yz"]
+            # leftShoulderAngles["xz"] = -leftShoulderAngles["xz"]
             return leftShoulderAngles
         if bodyJoint == BodyJoint.RIGHT_SHOULDER:
             rightShoulderDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_SHOULDER, poseData, originBodyPart=BodyJoint.RIGHT_SHOULDER)

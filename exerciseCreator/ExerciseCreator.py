@@ -5,6 +5,11 @@ from enum import IntEnum
 class ImpairedSide(IntEnum):
     LEFT = 0,
     RIGHT = 1
+    def serialize(self, impairedSide):
+        if impairedSide == self.LEFT:
+            return "LEFT"
+        if impairedSide == self.RIGHT:
+            return "RIGHT"
 
 class PoseDetectionType(IntEnum):
     BODY_POSE = 0,
@@ -46,7 +51,7 @@ class ExerciseCreator:
         data_in = json.loads(exerciseDescription)
         # Deserialize pose type entry in exerciseDescription
         poseDetectionType = PoseDetectionType(0) # Only used for deserializing a string value
-        data_in["pose_detection_type"] = poseDetectionType.deserialize(data_in["pose_detection_type"])
+        poseDetectionTypeString = poseDetectionType.deserialize(data_in["pose_detection_type"])
         # Deserialize body parts in exerciseDescription
         bodyPart = BodyPartDescription(0) # Only used for deserializing a string value
         for body_part in data_in["body_parts"]:
@@ -55,9 +60,13 @@ class ExerciseCreator:
         data_out = {}
         # Add exercise name to out
         data_out.update({"name": data_in["name"]})
+        data_out.update({"pose_detection_type": poseDetectionTypeString})
         data_out.update({"parts": [[], []]})
         if impairedSide == ImpairedSide.LEFT:
             print("Impaired side is left, making sure the user does right body parts first")
+            tmp = ImpairedSide(0)
+            impairedSideString = tmp.serialize(ImpairedSide.LEFT)
+            data_out.update({"impaired_side": impairedSideString})
             for body_part in range(len(data_in["body_parts"])):
                 data_out["parts"][0].append({
                     "body_part": int(data_in["body_parts"][body_part]["body_part"])+1,
@@ -70,6 +79,9 @@ class ExerciseCreator:
                 })
         elif impairedSide == ImpairedSide.RIGHT:
             print("Impaired side is right, making sure the user does left body parts first")
+            tmp = ImpairedSide(0)
+            impairedSideString = tmp.serialize(ImpairedSide.RIGHT)
+            data_out.update({"impaired_side": impairedSideString})
             for body_part in range(len(data_in["body_parts"])):
                 data_out["parts"][0].append({
                     "body_part": int(data_in["body_parts"][body_part]["body_part"])+0,
