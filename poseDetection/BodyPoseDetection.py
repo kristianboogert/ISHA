@@ -14,7 +14,7 @@ class BodyPoseDetection:
         self.displayPose = displayPose
         self.visibilityThreshold = visibilityThreshold
         self.mpPose = mediapipe.solutions.pose
-        self.pose = self.mpPose.Pose(min_detection_confidence=0.2, min_tracking_confidence=0.2, model_complexity=1)
+        self.pose = self.mpPose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6, model_complexity=0)
         self.draw = mediapipe.solutions.drawing_utils
         self.poseData = None
     def getPose(self, cameraColorFrame):

@@ -42,7 +42,7 @@ depthImage = DepthImage()
 while True:
     # Capture frame-by-frame
     # ret0, frame0 = video_capture_0.read()
-    ret1, frame1 = video_capture_1.read()
+    ret1, frame1 = video_capture_0.read()
     ret2, frame2 = video_capture_2.read()
 
     if (ret1):

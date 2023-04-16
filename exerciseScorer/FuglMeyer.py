@@ -41,12 +41,15 @@ class FuglMeyer:
         metadata["scores"][currentExercisePart] = score
         return metadata
     def metadataFixTimestamps(self, metadata):
-        # fix time in data
-        startTime = metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
-        for exercisePart in range(len(metadata["exercise_parts"])):
-            for pose in range(len(metadata["exercise_parts"][exercisePart])):
-                fixedTime = metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
-                metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
+        try:
+            # fix time in data
+            startTime = metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
+            for exercisePart in range(len(metadata["exercise_parts"])):
+                for pose in range(len(metadata["exercise_parts"][exercisePart])):
+                    fixedTime = metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
+                    metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
+        except:
+            pass
         return metadata
     def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
@@ -64,9 +67,14 @@ class FuglMeyer:
             ###
             # Detect body pose (mediapipe)
             ###
+            frame_start = time()*1000
             poseData = bodyPoseDetection.getPose(frame)
             frame = bodyPoseDetection.drawPose(frame, poseData)
-            cv2.imshow('body frame', cv2.flip(frame, 1))
+            frame_end = time()*1000
+            FPS = int(1000/(frame_end-frame_start))
+            frame = cv2.flip(frame, 1)
+            cv2.putText(frame, "FPS: "+str(FPS), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 2, cv2.LINE_AA)
+            cv2.imshow('body frame', frame)
             if cv2.waitKey(1) == ord('q'):
                 exercisePart += 1
                 if exercisePart >= 2:
@@ -84,7 +92,7 @@ class FuglMeyer:
                         user_in_view = False
                         break
             if not user_in_view:
-                print("user is not in view")
+                print("not all bodyparts are in view, pausing score system until user becomes (partially) visible again")
                 continue
             ###
             # Has exercise been started?
