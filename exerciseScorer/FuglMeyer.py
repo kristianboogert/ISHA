@@ -16,6 +16,27 @@ from poseDetection.BodyPart import *
 #spreiden sluiten vingers (oefening 9: alleen de eerste, voor de leuk ook de tweede)
 ###
 
+class NeutralPose:
+    def __init__(self, bodyPoseDetection):
+        self.neutralPose = []
+        self.bodyPoseDetection = bodyPoseDetection
+    def addToNeutralPose(self, angleData):
+        self.neutralPose.append(angleData)
+    def createNeutralPose(self, poseData, exerciseData):
+        for exercisePart in range(len(exerciseData["parts"])):
+            for bodyPart in exerciseData["parts"][exercisePart]:
+                directionAngles = self.bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
+                if directionAngles is None:
+                    continue
+                heightAngles = self.bodyPoseDetection.getHeightAnglesForBodyPart(bodyPart["body_part"], poseData)
+                self.neutralPose.append({
+                    "exercise_part": exercisePart,
+                    "body_part": bodyPart["body_part"],
+                    "direction_angles": directionAngles,
+                    "height_angles": heightAngles
+                })
+        return self.neutralPose
+
 class FuglMeyer:
     def __init__(self):
         self.none = None
@@ -51,12 +72,13 @@ class FuglMeyer:
         except:
             pass
         return metadata
+
     def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]
         exercisePart = 0
-        neutralBodyPose = None # TODO: save the neutral pose for later comparison, so a core of 1 can be generated
+        neutralBodyPose = NeutralPose(bodyPoseDetection) # TODO: FINISH IMPLEMENTNING THIS
         metadata = self.metadataCreate(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
         startTime = int(time()*1000) # in ms
         while True:
@@ -99,6 +121,10 @@ class FuglMeyer:
             ###
             if user_in_view == True and exerciseStarted == False:
                 exerciseStarted = True
+                neutral_pose = neutralBodyPose.createNeutralPose(poseData, exerciseData)
+                print("\n\n\n\nUW POSITIE IN RUST\n\n\n\n")
+                print(json.dumps(neutral_pose, indent=4))
+                exit(1)
                 continue
             ###
             # Does user want to quit?

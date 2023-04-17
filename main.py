@@ -48,33 +48,6 @@ def main():
     fuglMeyer = FuglMeyer()
     camera = Camera(cameraId=0)
     camera.start()
-    camera2 = Camera(cameraId=2)
-    camera2.start()
-    for _ in range(10):
-        camera.getFrame()
-        camera2.getFrame()
-    imgs = []
-    imgs.append(camera.getFrame());
-    imgs.append(camera2.getFrame());
-    for img in range(len(imgs)):
-        cv2.imwrite("frame{}.jpg".format(img), imgs[img])
-    exit(1)
-    out = None
-    try:
-        stitcher = cv2.createStitcher(True)
-    except:
-        stitcher = cv2.Stitcher.create()
-    frame1 = camera.getFrame()
-    frame2 = camera2.getFrame()
-    cv2.imshow("frame1", frame1)
-    cv2.imshow("frame2", frame2)
-    cv2.waitKey(0)
-    result, out = stitcher.stitch((frame1, frame2))
-    print(result)
-    print(out)
-    cv2.imshow("camera", result)
-    cv2.waitKey(10000)
-    exit(1)
     # handPoseDetection = HandPoseDetection()
     bodyPoseDetection = BodyPoseDetection()
     # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
@@ -93,6 +66,72 @@ main()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # camera2 = Camera(cameraId=2)
+    # camera2.start()
+    # for _ in range(10):
+    #     camera.getFrame()
+    #     camera2.getFrame()
+    # imgs = []
+    # imgs.append(camera.getFrame());
+    # imgs.append(camera2.getFrame());
+    # for img in range(len(imgs)):
+    #     cv2.imwrite("frame{}.jpg".format(img), imgs[img])
+    # exit(1)
+    # out = None
+    # try:
+    #     stitcher = cv2.createStitcher(True)
+    # except:
+    #     stitcher = cv2.Stitcher.create()
+    # frame1 = camera.getFrame()
+    # frame2 = camera2.getFrame()
+    # cv2.imshow("frame1", frame1)
+    # cv2.imshow("frame2", frame2)
+    # cv2.waitKey(0)
+    # result, out = stitcher.stitch((frame1, frame2))
+    # print(result)
+    # print(out)
+    # cv2.imshow("camera", result)
+    # cv2.waitKey(10000)
+    # exit(1)
 
 
 

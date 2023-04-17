@@ -41,11 +41,11 @@ class BodyPoseDetection:
                 "z": landmark1.z - landmark2.z
             }
         return None
-    def getDirectionVectorForBodyJoints(self, bodyPart, poseData, originBodyPart=None):
+    def getDirectionVectorForBodyJoints(self, bodyPart, poseData, originBodyJoint=None):
         if poseData.pose_landmarks is None:
             return None
         landmarks = poseData.pose_landmarks.landmark
-        return self.getDirectionVector(landmarks[bodyPart], landmarks[originBodyPart])
+        return self.getDirectionVector(landmarks[bodyPart], landmarks[originBodyJoint])
     def getAnglesFromDirectionVector(self, directionVector):
         if directionVector is None:
             return None
@@ -85,21 +85,27 @@ class BodyPoseDetection:
             wristBodyJoint = self.getPoseLandmark(BodyJoint.RIGHT_SHOULDER, poseData)
             return (elbowBodyJoint is not None and elbowBodyJoint.visibility > visibilityThreshold) and \
                    (wristBodyJoint is not None and wristBodyJoint.visibility > visibilityThreshold)
-    def getAnglesForBodyJoint(self, bodyJoint, poseData):
+    def getAnglesForBodyJoint(self, bodyJoint, poseData, originBodyJoint=None):
+        # if a certain origin is specified, use that origin,
+        # otherwise, use a predefined origin
+        if originBodyJoint is not None:
+            directionVector = self.getDirectionVectorForBodyJoints(bodyJoint, poseData, originBodyJoint)
+            angles = self.getAnglesFromDirectionVector(directionVector)
+            return angles
         if bodyJoint == BodyJoint.LEFT_SHOULDER:
-            leftShoulderDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_SHOULDER, poseData, originBodyPart=BodyJoint.RIGHT_SHOULDER)
+            leftShoulderDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_SHOULDER, poseData, originBodyJoint=BodyJoint.RIGHT_SHOULDER)
             leftShoulderAngles = self.getAnglesFromDirectionVector(leftShoulderDirectionVector)
             # leftShoulderAngles["xy"] = -leftShoulderAngles["xy"]
             # leftShoulderAngles["yz"] = -leftShoulderAngles["yz"]
             # leftShoulderAngles["xz"] = -leftShoulderAngles["xz"]
             return leftShoulderAngles
         if bodyJoint == BodyJoint.RIGHT_SHOULDER:
-            rightShoulderDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_SHOULDER, poseData, originBodyPart=BodyJoint.RIGHT_SHOULDER)
+            rightShoulderDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_SHOULDER, poseData, originBodyJoint=BodyJoint.RIGHT_SHOULDER)
             rightShoulderAngles = self.getAnglesFromDirectionVector(rightShoulderDirectionVector)
             return rightShoulderAngles
         if bodyJoint == BodyJoint.LEFT_ELBOW:
             leftShoulderAngles = self.getAnglesForBodyJoint(BodyJoint.LEFT_SHOULDER, poseData)
-            leftElbowDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_ELBOW, poseData, originBodyPart=BodyJoint.LEFT_SHOULDER)
+            leftElbowDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_ELBOW, poseData, originBodyJoint=BodyJoint.LEFT_SHOULDER)
             leftElbowAngles = self.getAnglesFromDirectionVector(leftElbowDirectionVector)
             try:
                 leftElbowAngles["xy"] = -(leftShoulderAngles["xy"]+leftElbowAngles["xy"])
@@ -110,7 +116,7 @@ class BodyPoseDetection:
                 return None
         if bodyJoint == BodyJoint.RIGHT_ELBOW:
             rightShoulderAngles = self.getAnglesForBodyJoint(BodyJoint.RIGHT_SHOULDER, poseData)
-            rightElbowDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.RIGHT_SHOULDER, poseData, originBodyPart=BodyJoint.RIGHT_ELBOW)
+            rightElbowDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.RIGHT_SHOULDER, poseData, originBodyJoint=BodyJoint.RIGHT_ELBOW)
             rightElbowAngles = self.getAnglesFromDirectionVector(rightElbowDirectionVector)
             try:
                 rightElbowAngles["xy"] = -(rightShoulderAngles["xy"]-rightElbowAngles["xy"])
@@ -122,7 +128,7 @@ class BodyPoseDetection:
         if bodyJoint == BodyJoint.LEFT_WRIST:
             leftShoulderAngles = self.getAnglesForBodyJoint(BodyJoint.LEFT_SHOULDER, poseData)
             leftElbowAngles = self.getAnglesForBodyJoint(BodyJoint.LEFT_ELBOW, poseData)
-            leftWristDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_WRIST, poseData, originBodyPart=BodyJoint.LEFT_ELBOW)
+            leftWristDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.LEFT_WRIST, poseData, originBodyJoint=BodyJoint.LEFT_ELBOW)
             leftWristAngles = self.getAnglesFromDirectionVector(leftWristDirectionVector)
             try:
                 leftWristAngles["xy"] = -(leftWristAngles["xy"]-leftElbowAngles["xy"]+leftShoulderAngles["xy"])
@@ -134,7 +140,7 @@ class BodyPoseDetection:
         if bodyJoint == BodyJoint.RIGHT_WRIST:
             rightShoulderAngles = self.getAnglesForBodyJoint(BodyJoint.RIGHT_SHOULDER, poseData)
             rightElbowAngles = self.getAnglesForBodyJoint(BodyJoint.RIGHT_ELBOW, poseData)
-            rightWristDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.RIGHT_ELBOW, poseData, originBodyPart=BodyJoint.RIGHT_WRIST)
+            rightWristDirectionVector = self.getDirectionVectorForBodyJoints(BodyJoint.RIGHT_ELBOW, poseData, originBodyJoint=BodyJoint.RIGHT_WRIST)
             rightWristAngles = self.getAnglesFromDirectionVector(rightWristDirectionVector)
             try:
                 rightWristAngles["xy"] = rightWristAngles["xy"]-rightElbowAngles["xy"]-rightShoulderAngles["xy"]
@@ -160,6 +166,14 @@ class BodyPoseDetection:
             return self.getAnglesForBodyJoint(BodyJoint.LEFT_WRIST, poseData)
         if bodyPart == BodyPart.RIGHT_FOREARM:
             return self.getAnglesForBodyJoint(BodyJoint.RIGHT_WRIST, poseData)
+
+    def getHeightAnglesForBodyPart(self, bodyPart, poseData):
+        if bodyPart == BodyPart.LEFT_FOREARM:
+            return self.getAnglesForBodyJoint(BodyJoint.LEFT_WRIST, poseData, BodyJoint.LEFT_SHOULDER)
+        if bodyPart == BodyPart.RIGHT_FOREARM:
+            return self.getAnglesForBodyJoint(BodyJoint.RIGHT_WRIST, poseData, BodyJoint.RIGHT_SHOULDER)
+        return None # the bodypart is not relevent for this project,
+                    # or should not be checked, like the upper arm.
 
     def isSittingUp(self, poseData, threshold=10):
         try:
