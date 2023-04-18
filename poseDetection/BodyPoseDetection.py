@@ -2,7 +2,7 @@ import mediapipe
 import math
 import cv2
 
-from .BodyPart import *
+from BodyPart import BodyPart
 
 # TODO: remove body pose jitter!
 class BodyPoseDetection:
