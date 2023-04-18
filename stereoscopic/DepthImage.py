@@ -23,11 +23,15 @@ class DepthImage:
             P2=32 * 1 * block_size * block_size,
         )
     def create(self, frame1, frame2):
-        depth_image = self.stereo.compute(frame1, frame2)
-        depth_image = cv2.normalize(depth_image, depth_image, alpha=255,
-                        beta=0, norm_type=cv2.NORM_MINMAX)
-        depth_image = np.uint8(depth_image)
-        return self._resize(depth_image)
+        stereo = cv.StereoBM_create(numDisparities=16, blockSize=15)
+        disparity = stereo.compute(imgL,imgR)
+        plt.imshow(disparity,'gray')
+        plt.show()
+        # depth_image = self.stereo.compute(frame1, frame2)
+        # # depth_image = cv2.normalize(depth_image, depth_image, alpha=255,
+        # #                 beta=0, norm_type=cv2.NORM_MINMAX)
+        # # depth_image = np.uint8(depth_image)
+        # return /*self._resize(*/depth_image)
     def _resize(self, frame):
         resized_frame = cv2.resize(frame, dsize=self.resolution)
         return resized_frame

@@ -1,36 +1,24 @@
 from enum import IntEnum
 
 class BodyPart(IntEnum):
-    NOSE = 0,
-    LEFT_EYE_INNER = 1,
-    LEFT_EYE = 2,
-    LEFT_EYE_OUTER = 3,
-    RIGHT_EYE_INNER = 4,
-    RIGHT_EYE = 5,
-    RIGHT_EYE_OUTER = 6,
-    LEFT_EAR = 7,
-    RIGHT_EAR = 8,
-    MOUTH_LEFT = 9,
-    MOUTH_RIGHT = 10,
-    LEFT_SHOULDER = 11,
-    RIGHT_SHOULDER = 12,
-    LEFT_ELBOW = 13,
-    RIGHT_ELBOW = 14,
-    LEFT_WRIST = 15,
-    RIGHT_WRIST = 16,
-    LEFT_PINKY = 17,
-    RIGHT_PINKY = 18,
-    LEFT_INDEX = 19,
-    RIGHT_INDEX = 20,
-    LEFT_THUMB = 21,
-    RIGHT_THUMB = 22,
-    LEFT_HIP = 23,
-    RIGHT_HIP = 24,
-    LEFT_KNEE = 25,
-    RIGHT_KNEE = 26,
-    LEFT_ANKLE = 27,
-    RIGHT_ANKLE = 28,
-    LEFT_HEEL = 29,
-    RIGHT_HEEL = 30,
-    LEFT_FOOT_INDEX = 31,
-    RIGHT_FOOT_INDEX = 32
+    LEFT_SHOULDER = 0,
+    RIGHT_SHOULDER = 1,
+    LEFT_UPPER_ARM = 2,
+    RIGHT_UPPER_ARM = 3,
+    LEFT_FOREARM = 4,
+    RIGHT_FOREARM = 5
+
+    def serialize(self, bodyPart):
+        if bodyPart == self.LEFT_SHOULDER:
+            return "LEFT_SHOULDER"
+        if bodyPart == self.RIGHT_SHOULDER:
+            return "RIGHT_SHOULDER"
+        if bodyPart == self.LEFT_UPPER_ARM:
+            return "LEFT_UPPER_ARM"
+        if bodyPart == self.RIGHT_UPPER_ARM:
+            return "RIGHT_UPPER_ARM"
+        if bodyPart == self.LEFT_FOREARM:
+            return "LEFT_FOREARM"
+        if bodyPart == self.RIGHT_FOREARM:
+            return "RIGHT_FOREARM"
+
