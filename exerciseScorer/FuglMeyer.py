@@ -36,6 +36,29 @@ class NeutralPose:
                     "height_angles": heightAngles
                 })
         return self.neutralPose
+    def getAngleDiffs(self, currentBodyPartAngles, bodyPart):
+        # Get neutral angles for body part
+        neutralAngles = None
+        for item in self.neutralPose:
+            print(item["body_part"], bodyPart["body_part"])
+            if item["body_part"] == bodyPart["body_part"]:
+                neutralAngles = item
+                break
+        if neutralAngles is None:
+            return None
+            exit(1)
+        # compare angles
+        print("ITEM: ", neutralAngles["direction_angles"]["xy"])
+        print("CURR: ", currentBodyPartAngles["xy"])
+        planes = ["xy", "yz", "xz"]
+        diffs = {}
+        for plane in planes:
+            diffs[plane] = currentBodyPartAngles[plane] - neutralAngles["direction_angles"][plane]
+        return diffs
+
+        # xy_diff = item["xy"] - currentBodyPartAngles["xy"]
+        # print(xy_diff)
+
 
 class FuglMeyer:
     def __init__(self):
@@ -72,7 +95,6 @@ class FuglMeyer:
         except:
             pass
         return metadata
-
     def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
@@ -124,7 +146,6 @@ class FuglMeyer:
                 neutral_pose = neutralBodyPose.createNeutralPose(poseData, exerciseData)
                 print("\n\n\n\nUW POSITIE IN RUST\n\n\n\n")
                 print(json.dumps(neutral_pose, indent=4))
-                exit(1)
                 continue
             ###
             # Does user want to quit?
@@ -171,6 +192,12 @@ class FuglMeyer:
             ###
             # Relevant joints are close to neutral position?
             ###
+            for exercise_part in exerciseData["parts"]:
+                # check landmark visibility for each body part
+                for bodyPart in exercise_part:
+                    currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
+                    angleDiffs = neutralBodyPose.getAngleDiffs(currentBodyPartAngles, bodyPart)
+                    print("BODY_PART:", bodyPart, "\nDIFFS:", angleDiffs)
             # TODO: DIT VEREIST OOK DAT WE DE RUSTPOSITIE INLEZEN VOORDAT DE OEFENING WORDT BEGONNEN!!!!
         self.metadataFixTimestamps(metadata)
         return score, json.dumps(metadata, indent=4)
