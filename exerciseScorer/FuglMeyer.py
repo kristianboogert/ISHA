@@ -3,6 +3,7 @@
 
 import sys
 import json
+from math import degrees, radians
 from time import time
 from datetime import datetime
 sys.path.append("..")
@@ -48,12 +49,12 @@ class NeutralPose:
             return None
             exit(1)
         # compare angles
-        print("ITEM: ", neutralAngles["direction_angles"]["xy"])
-        print("CURR: ", currentBodyPartAngles["xy"])
         planes = ["xy", "yz", "xz"]
         diffs = {}
         for plane in planes:
-            diffs[plane] = currentBodyPartAngles[plane] - neutralAngles["direction_angles"][plane]
+            print("CURR:", currentBodyPartAngles[plane], plane)
+            print("PREV:", neutralAngles["direction_angles"][plane], plane)
+            diffs[plane] = degrees(radians(currentBodyPartAngles[plane])) - degrees(radians(neutralAngles["direction_angles"][plane]))
         return diffs
 
         # xy_diff = item["xy"] - currentBodyPartAngles["xy"]
