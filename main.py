@@ -1,6 +1,6 @@
 from poseDetection.Camera import Camera
 from poseDetection.BodyPoseDetection import BodyPoseDetection
-from poseDetection.HandPoseDetection import HandPoseDetection
+# from poseDetection.HandPoseDetection import HandPoseDetection
 from poseDetection.BodyPart import *
 from poseDetection.HandPart import *
 from stereoscopic.DepthImage import DepthImage
@@ -74,9 +74,9 @@ def main():
             curr = currentBodyPose.getBodyPose()[1]["body_part"]
             prev = neutralBodyPose.getBodyPose()[1]["body_part"]
             print("SECOND DIFF:", curr.compare(prev))
-        cv2.imshow('body frame', frame)
-        if cv2.waitKey(1) == ord('q'):
-            exit(0)
+        # cv2.imshow('body frame', frame)
+        # if cv2.waitKey(1) == ord('q'):
+        #     exit(0)
     # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
     # depth_excel_test(camera, bodyPoseDetection)
     score, metadata = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)

@@ -21,7 +21,7 @@ class BodyPoseDetection:
         self.visibilityThreshold = visibilityThreshold
         self.mpPose = mediapipe.solutions.pose
         self.pose = self.mpPose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6, model_complexity=0)
-        self.draw = mediapipe.solutions.drawing_utils
+        # self.draw = mediapipe.solutions.drawing_utils # disabled, since the pi 4 does not like this
         self.poseData = None
     def getPose(self, cameraFrame):
         cameraFrame = cv2.cvtColor(cameraFrame, cv2.COLOR_BGR2RGB)
@@ -45,7 +45,7 @@ class BodyPoseDetection:
         return None
     def drawPose(self, cameraFrame, poseData=None):
         if poseData is not None:
-            self.draw.draw_landmarks(cameraFrame, poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS)
+            # self.draw.draw_landmarks(cameraFrame, poseData.pose_landmarks, self.mpPose.POSE_CONNECTIONS) # disabled, since the pi 4 does not like this
             return cameraFrame
     def getDirectionVectorForBodyJoints(self, bodyPart, poseData, originBodyJoint=None):
         if poseData.pose_landmarks is None:
