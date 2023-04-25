@@ -35,7 +35,6 @@ class BodyPart:
         # make sure both BodyParts share the same originBodyJoint and bodyPartType
         if self.getOriginBodyJoint().getBodyJointType() == otherBodyPart.getOriginBodyJoint().getBodyJointType() and \
            self.getBodyPartType() == otherBodyPart.getBodyPartType():
-            print("body parts seem to match")
             # get differnce between BodyParts.OriginBodyJoint.position
             x_diff = self.getOriginBodyJoint().getPosition()["x"] - otherBodyPart.getOriginBodyJoint().getPosition()["x"]
             y_diff = self.getOriginBodyJoint().getPosition()["y"] - otherBodyPart.getOriginBodyJoint().getPosition()["y"]
