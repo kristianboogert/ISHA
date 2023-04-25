@@ -7,7 +7,7 @@ from math import degrees, radians
 from time import time
 from datetime import datetime
 sys.path.append("..")
-from poseDetection.HandPoseDetection import *
+#from poseDetection.HandPoseDetection import *
 from poseDetection.HandPart import *
 from poseDetection.BodyPart import *
 

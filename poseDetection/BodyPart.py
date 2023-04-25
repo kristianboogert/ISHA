@@ -14,13 +14,16 @@ class BodyPart:
     def createFromLandmark(poseLandmarks, bodyPartTypeString, landmarkVisibilityThreshold=0.75):
         originBodyJointType, targetBodyJointType = BodyPart._findBodyJointTypes(bodyPartTypeString)
         # find both joints in landmarks
-        originBodyJointLandmark = poseLandmarks.pose_landmarks.landmark[originBodyJointType]
-        targetBodyJointLandmark = poseLandmarks.pose_landmarks.landmark[targetBodyJointType]
-        originBodyJoint = BodyJoint.createFromLandmark(BodyJointType.serialize(originBodyJointType), originBodyJointLandmark)
-        targetBodyJoint = BodyJoint.createFromLandmark(BodyJointType.serialize(targetBodyJointType), targetBodyJointLandmark)
-        if originBodyJointLandmark.visibility > landmarkVisibilityThreshold and targetBodyJointLandmark.visibility > landmarkVisibilityThreshold:
-            return BodyPart(bodyPartTypeString, originBodyJoint, targetBodyJoint)
-        return None
+        try:
+            originBodyJointLandmark = poseLandmarks.pose_landmarks.landmark[originBodyJointType]
+            targetBodyJointLandmark = poseLandmarks.pose_landmarks.landmark[targetBodyJointType]
+            originBodyJoint = BodyJoint.createFromLandmark(BodyJointType.serialize(originBodyJointType), originBodyJointLandmark)
+            targetBodyJoint = BodyJoint.createFromLandmark(BodyJointType.serialize(targetBodyJointType), targetBodyJointLandmark)
+            if originBodyJointLandmark.visibility > landmarkVisibilityThreshold and targetBodyJointLandmark.visibility > landmarkVisibilityThreshold:
+                return BodyPart(bodyPartTypeString, originBodyJoint, targetBodyJoint)
+        except:
+            print("CANNOT CREATE BODYPART FROM LANDMARK!")
+            return None
     def getBodyPartType(self):
         return BodyPartType.serialize(self.bodyPartType)
     def getOriginBodyJoint(self):

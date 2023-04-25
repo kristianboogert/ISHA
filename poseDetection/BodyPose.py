@@ -22,6 +22,7 @@ class BodyPose:
                     "body_part": bodyPart,
                     "timestamp": round(time()*1000)
                 })
+        print(self.bodyPose)
         return self.bodyPose
 
 
