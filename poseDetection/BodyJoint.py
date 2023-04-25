@@ -15,8 +15,6 @@ class BodyJoint:
     def setPosition(self, position):
         self.position = position
     @staticmethod
-    def createFromLandmark(bodyJointTypeString, landmark, visibilityThreshold=0.9):
-        if landmark.visibility >= visibilityThreshold:
-            x, y, z = landmark.x, landmark.y, landmark.z
-            return BodyJoint(bodyJointTypeString, {"x": x, "y": y, "z": z})
-        return None
+    def createFromLandmark(bodyJointTypeString, landmark):
+        x, y, z = landmark.x, landmark.y, landmark.z
+        return BodyJoint(bodyJointTypeString, {"x": x, "y": y, "z": z})

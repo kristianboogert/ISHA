@@ -1,24 +1,29 @@
 from math import degrees, radians, acos, dist
+from time import time
+from .BodyPart import BodyPart
 
 #class Pose bestaat uit meerdere BodyParts
 #class BodyPart kan niet zonder BodyJoint
 
-class Pose:
-    def __init__(self, poseType):
-        self.bodyPoseType = poseType
-        self.bodyPose = {}
+class BodyPose:
+    def __init__(self):
+        self.bodyPose = []
         self.clear()
     def clear(self):
-        self.bodyPose = {}
-        self.bodyPose.update({"pose_type": self.bodyPoseType})
-        self.bodyPose.update({"body_parts": []})
-    def addBodyPart(self, bodyPart):
-        self.bodyPose["body_parts"].append(bodyPart)
-    def getBodyPart(self, bodyPartTypeString):
-        for bodyPart in self.bodyPose:
-            if bodyPart.getBodyPartType() == bodyPartTypeString:
-                return bodyPart
-    # def createPose(self, poseDetectionData): # TODO!!!!!!!!!!!!!!
+        self.bodyPose = []
+    def getBodyPose(self):
+        return self.bodyPose
+    def createPose(self, poseLandmarks, relevantBodyPartTypeStrings=[]):
+        self.clear()
+        for bodyPartTypeString in relevantBodyPartTypeStrings:
+            bodyPart = BodyPart.createFromLandmark(poseLandmarks, bodyPartTypeString)
+            if bodyPart is not None:
+                self.bodyPose.append({
+                    "body_part": bodyPart,
+                    "timestamp": round(time()*1000)
+                })
+        print(self.bodyPose)
+        return self.bodyPose
 
 
 

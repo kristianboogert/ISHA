@@ -1,5 +1,7 @@
 from math import atan2, degrees
 from .BodyPartType import *
+from .BodyJointType import *
+from .BodyJoint import BodyJoint
 
 class BodyPart:
     def __init__(self, bodyPartTypeString, originBodyJoint, targetBodyJoint):
@@ -8,6 +10,17 @@ class BodyPart:
         self.heading = None
         if originBodyJoint is not None and targetBodyJoint is not None:
             self.heading = BodyPart._calculateHeading(originBodyJoint, targetBodyJoint)
+    @staticmethod
+    def createFromLandmark(poseLandmarks, bodyPartTypeString, landmarkVisibilityThreshold=0.75):
+        originBodyJointType, targetBodyJointType = BodyPart._findBodyJointTypes(bodyPartTypeString)
+        # find both joints in landmarks
+        originBodyJointLandmark = poseLandmarks.pose_landmarks.landmark[originBodyJointType]
+        targetBodyJointLandmark = poseLandmarks.pose_landmarks.landmark[targetBodyJointType]
+        originBodyJoint = BodyJoint.createFromLandmark(BodyJointType.serialize(originBodyJointType), originBodyJointLandmark)
+        targetBodyJoint = BodyJoint.createFromLandmark(BodyJointType.serialize(targetBodyJointType), targetBodyJointLandmark)
+        if originBodyJointLandmark.visibility > landmarkVisibilityThreshold and targetBodyJointLandmark.visibility > landmarkVisibilityThreshold:
+            return BodyPart(bodyPartTypeString, originBodyJoint, targetBodyJoint)
+        return None
     def getBodyPartType(self):
         return BodyPartType.serialize(self.bodyPartType)
     def getOriginBodyJoint(self):
@@ -22,6 +35,7 @@ class BodyPart:
         # make sure both BodyParts share the same originBodyJoint and bodyPartType
         if self.getOriginBodyJoint().getBodyJointType() == otherBodyPart.getOriginBodyJoint().getBodyJointType() and \
            self.getBodyPartType() == otherBodyPart.getBodyPartType():
+            print("body parts seem to match")
             # get differnce between BodyParts.OriginBodyJoint.position
             x_diff = self.getOriginBodyJoint().getPosition()["x"] - otherBodyPart.getOriginBodyJoint().getPosition()["x"]
             y_diff = self.getOriginBodyJoint().getPosition()["y"] - otherBodyPart.getOriginBodyJoint().getPosition()["y"]
@@ -36,6 +50,20 @@ class BodyPart:
             print("BodyParts do not match")
         return difference
     @staticmethod
+    def _findBodyJointTypes(bodyPartTypeString):
+        if bodyPartTypeString.upper() == "LEFT_SHOULDER":
+            return BodyJointType.deserialize("LEFT_SHOULDER"), BodyJointType.deserialize("RIGHT_SHOULDER")
+        if bodyPartTypeString.upper() == "RIGHT_SHOULDER":
+            return BodyJointType.deserialize("RIGHT_SHOULDER"), BodyJointType.deserialize("LEFT_SHOULDER")
+        if bodyPartTypeString.upper() == "LEFT_UPPER_ARM":
+            return BodyJointType.deserialize("LEFT_ELBOW"), BodyJointType.deserialize("LEFT_SHOULDER")
+        if bodyPartTypeString.upper() == "RIGHT_UPPER_ARM":
+            return BodyJointType.deserialize("RIGHT_SHOULDER"), BodyJointType.deserialize("RIGHT_ELBOW")
+        if bodyPartTypeString.upper() == "LEFT_FOREARM":
+            return BodyJointType.deserialize("LEFT_WRIST"), BodyJointType.deserialize("LEFT_ELBOW")
+        if bodyPartTypeString.upper() == "RIGHT_FOREARM":
+            return BodyJointType.deserialize("RIGHT_ELBOW"), BodyJointType.deserialize("RIGHT_WRIST")
+    @staticmethod
     def _calculateHeading(originBodyJoint, targetBodyJoint):
         # get direction vector between the two joints
         directionVector = {}
@@ -47,6 +75,10 @@ class BodyPart:
         xyAngle = degrees(atan2(y,x))
         yzAngle = degrees(atan2(z,y))
         xzAngle = degrees(atan2(z,x))
+        # if the left side is calculated, make sure to correct some angles
+        if "LEFT" in originBodyJoint.getBodyJointType().upper():
+            xyAngle*=-1
+            yzAngle+=180
         # return angles
         return {
             "xy": xyAngle,

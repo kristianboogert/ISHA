@@ -9,7 +9,7 @@ from poseDetection.BodyJointType import *
 from poseDetection.BodyJoint import BodyJoint
 from poseDetection.BodyPartType import *
 from poseDetection.BodyPart import BodyPart
-# from poseDetection.BodyPose import BodyPose
+from poseDetection.BodyPose import BodyPose
 from exerciseScorer.FuglMeyer import FuglMeyer
 from exerciseCreator.ExerciseCreator import ExerciseCreator, ImpairedSide, PoseDetectionType, BodyPartDescription
 from time import time
@@ -48,41 +48,31 @@ def main():
         ]\
     }\
     '
-    originBodyJoint = BodyJoint("left_shoulder", {"x": 0.1, "y": 0.1, "z": 0.1})
-    targetBodyJoint = BodyJoint("left_elbow", {"x": 0.2, "y": 0.2, "z": 0.2})
-    bodyPart1 = BodyPart("left_upper_arm", originBodyJoint, targetBodyJoint)
-    originBodyJoint = BodyJoint("left_shoulder", {"x": 0.2, "y": 0.3, "z": 0.4})
-    targetBodyJoint = BodyJoint("left_elbow", {"x": 0.3, "y": 0.4, "z": 0.5})
-    bodyPart2 = BodyPart("left_upper_arm", originBodyJoint, targetBodyJoint)
-    print(bodyPart1.getOriginBodyJoint().getPosition())
-    print(bodyPart2.getOriginBodyJoint().getPosition())
-    print(bodyPart1.getHeading())
-    print(bodyPart2.getHeading())
-    print(bodyPart1.compare(bodyPart2))
-    exit(1)
 
     exerciseData = exerciseCreator.createExercise(exerciseDescription, ImpairedSide.RIGHT)
     print("exerciseData:", exerciseData)
-    fuglMeyer = FuglMeyer()
     camera = Camera(cameraId=0)
     camera.start()
-    # handPoseDetection = HandPoseDetection()
-
-    exit(1)
-    #
-    # bodyPoseDetection = BodyPoseDetection()
-    # bodyPose1 = BodyPose(poseType="body_pose")
-    # bodyPose1.setPosition("upper_arm", {"x": -90, "y": 0, "z": 0})
-    # bodyPose1.setAngle("upper_arm", {"xy": -185, "yz": 25, "xz": 3})
-    # bodyPose2 = BodyPose(poseType="body_pose")
-    # bodyPose2.setPosition("upper_arm", {"x": 1, "y": 2, "z": 3})
-    # bodyPose2.setAngle("upper_arm", {"xy": 185, "yz": 18, "xz": -12})
-    # print(bodyPose1.compare(bodyPose2.get(), "upper_arm"))
-    exit(1)
+    bodyPoseDetection = BodyPoseDetection()
+    neutralBodyPose = BodyPose()
     while True:
         frame = camera.getFrame()
-        bodyPose = bodyPoseDetection.getPose(frame)
-        bodyPoseDetection.drawPose(frame, bodyPose)
+        neutralBodyPoseLandmarks = bodyPoseDetection.getPose(frame)
+        neutralBodyPose.createPose(neutralBodyPoseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
+        print("wud", len(neutralBodyPose.getBodyPose()))
+        if len(neutralBodyPose.getBodyPose()) >= 2:
+            break
+    currentBodyPose = BodyPose()
+    while True:
+        frame = camera.getFrame()
+        poseLandmarks = bodyPoseDetection.getPose(frame)
+        bodyPoseDetection.drawPose(frame, poseLandmarks)
+        currentBodyPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
+        if(len(currentBodyPose.getBodyPose()) >= 2):
+            curr = currentBodyPose.getBodyPose()[0]["body_part"]
+            prev = neutralBodyPose.getBodyPose()[0]["body_part"]
+            print(curr, prev)
+            print("DIFF:", curr.compare(prev))
         cv2.imshow('body frame', frame)
         if cv2.waitKey(1) == ord('q'):
             exit(0)

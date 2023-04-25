@@ -4,11 +4,13 @@ import cv2
 
 from .BodyPart import *
 from .BodyJoint import *
-from .Pose import Pose
 
-# TODO: ZORG ERVOOR DAT DE NIEUWE BODYPOSE CLASS EEN VOLLEDIGE LICHAAMSPOSITIE KAN OPBOUWEN!!!!!!!!!!
-# TODO: NIEUWE BODYPOSE CLASS: TEST OF DE ORIGINS EN HEADINGS GOED WERKEN!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# TODO: NIEUWE BODYPART CLASS: TEST DE COMPARE() FUNCTIE. ALS DEZE GOED WERKT KAN MOVEMENT DETECTION WORDEN GEIMPLEMENTEERD!!!!!!!!
+# TODO: IMPLEMENTEER EEN USER_HAS_MOVED()-ACHTIGE FUNCTIE, BODYPARTS VERGELIJKEN GAAT NU GOED GENOEG!
+# TODO: TEST OF DE YZ HOEK DIFF VOOR ZOWEL LINKS ALS RECHTS HETZELFDE IS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# TODO: FIX DE FUGL MEYER CLASS ZODAT HIJ MET DE NIEUWE POSE DETECTIE KAN OMGAAN!!!!!!!!!!!!!!!!!!!!!
+# TODO: ZORG ERVOOR DAT ER EEN COMPARE() FUNCTIE KOMT IN DE BODYPOSE CLASS! DOEL: ZONDER VEEL MOEITE TWEE BODY PARTS VERGELIJKEN!!!!!! EEN BODYPART CLASS HEEFT AL EEN WERKENDE COMPARE() FUNCTIE!!!!!
+# TODO: FIX DE EXCEL EXPORTER ZODAT HIJ MET EEN NIEUWE BODY POSE OVERWEG KAN! DOEL: DIEPTE TESTEN!!!!
+# TODO: DOE ALLE HAND DETECTIE OOK HERSCHRIJVEN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class BodyPoseDetection:
     ###
@@ -21,13 +23,7 @@ class BodyPoseDetection:
         self.pose = self.mpPose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6, model_complexity=0)
         self.draw = mediapipe.solutions.drawing_utils
         self.poseData = None
-    def getBodyPose(self, cameraFrame, bodyParts=[]): # where "parts" is either a list of body parts or a list of hand parts
-        mediapipePoseData = self._getBodyPose(cameraFrame)
-        bodyPose = Pose(poseType="body_pose")
-        for bodyPart in bodyParts:
-            # get the position of the body part
-            bodyJointPosition = self._getPoseLandmark(bodyPart)
-    def _getPose(self, cameraFrame):
+    def getPose(self, cameraFrame):
         cameraFrame = cv2.cvtColor(cameraFrame, cv2.COLOR_BGR2RGB)
         cameraFrame.flags.writeable = False
         self.poseData = self.pose.process(cameraFrame)
