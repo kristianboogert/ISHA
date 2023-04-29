@@ -74,6 +74,11 @@ class FuglMeyer:
         neutralBodyPoseCreator = BodyPose()
         currentBodyPoseCreator = BodyPose()
         metadata = BodyPoseMetadata(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
+        relevantBodyPartTypeStrings = [[], []]
+        for exercisePart in range(len(exerciseData["parts"])):
+            for bodyPartData in exerciseData["parts"][exercisePart]:
+                bodyPartTypeString = BodyPartType.serialize(bodyPartData["body_part"])
+                relevantBodyPartTypeStrings[exercisePart].append(bodyPartTypeString)
         startTime = int(time()*1000) # in ms
         while True:
             ###
@@ -115,7 +120,7 @@ class FuglMeyer:
             ###
             if user_in_view == True and exerciseStarted == False:
                 exerciseStarted = True
-                neutralBodyPose = neutralBodyPoseCreator.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
+                neutralBodyPose = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[0])
                 print(neutralBodyPose)
                 print("\n\n\n\nUW POSITIE IN RUST\n\n\n\n")
                 print(json.dumps(neutralBodyPose, indent=4))
@@ -127,9 +132,9 @@ class FuglMeyer:
             ###
             # Score the first exercise part
             ###
-            exercisePartData = exerciseData["parts"][exercisePart]
+            # exercisePartData = exerciseData["parts"][exercisePart]
             # Get current body pose
-            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
+            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[0])
             print("NEUTRAL:", neutralBodyPose)
             print("CURRENT:", currentBodyPose)
 
