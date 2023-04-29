@@ -25,6 +25,29 @@ class BodyPose:
                     "timestamp": round(time()*1000)
                 })
         return self.bodyPose
+    @staticmethod
+    def getDiffs(bodyPose, otherBodyPose):
+        diffs = []
+        for item in bodyPose:
+            # find the same item in otherBodyPose
+            for otherItem in otherBodyPose:
+                if item["body_part"] == otherItem["body_part"]:
+                    diffs.append({
+                        "body_part": item["body_part"],
+                        "origin": {
+                            "x": round(otherItem["origin"]["x"] - item["origin"]["x"]),
+                            "y": round(otherItem["origin"]["y"] - item["origin"]["y"]),
+                            "z": round(otherItem["origin"]["z"] - item["origin"]["z"])
+                        },
+                        "heading": {
+                            "xy": round(otherItem["heading"]["xy"] - item["heading"]["xy"]),
+                            "yz": round(otherItem["heading"]["yz"] - item["heading"]["yz"]),
+                            "xz": round(otherItem["heading"]["xz"] - item["heading"]["xz"])
+                        }
+                    })
+        return diffs
+        # print(bodyPose)
+        # print(otherBodyPose)
 
 
 

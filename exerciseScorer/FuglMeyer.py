@@ -73,6 +73,7 @@ class FuglMeyer:
         exercisePart = 0
         neutralBodyPoseCreator = BodyPose()
         currentBodyPoseCreator = BodyPose()
+        neutralBodyPoses = [None, None]
         metadata = BodyPoseMetadata(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
         relevantBodyPartTypeStrings = [[], []]
         for exercisePart in range(len(exerciseData["parts"])):
@@ -120,27 +121,37 @@ class FuglMeyer:
             ###
             if user_in_view == True and exerciseStarted == False:
                 exerciseStarted = True
-                neutralBodyPose = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[0])
-                print(neutralBodyPose)
-                print("\n\n\n\nUW POSITIE IN RUST\n\n\n\n")
-                print(json.dumps(neutralBodyPose, indent=4))
                 continue
             ###
             # Does user want to quit?
             ###
             # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION!
             ###
-            # Score the first exercise part
+            # Create neutral pose if it doesn't exist
             ###
-            # exercisePartData = exerciseData["parts"][exercisePart]
-            # Get current body pose
-            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[0])
-            print("NEUTRAL:", neutralBodyPose)
-            print("CURRENT:", currentBodyPose)
+            if neutralBodyPoses[exercisePart] is None:
+                print("CREATING NEUTRAL POSE SNAPSHOT!")
+                neutralBodyPoses[exercisePart] = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[exercisePart])
+            ###
+            # Create current body pose
+            ###
+            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[exercisePart])
+            ###
+            # See if the user moved (score 1)
+            ###
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPoses[exercisePart])
+            userHasMoved = False
+            for diff in bodyPoseDiffs:
+                if diff["heading"]["xy"]>10:
+                    userHasMoved = True
+            if userHasMoved:
+                print("you did well, AT LEAST IN THIS SOFTWARE VERSION! IN THE NEXT VERSION, YOU HAVE TO MOVE IN THE RIGHT DIRECTION!")
+                exit(1)
+            continue
+            
+            
 
-            # HIER WAS JE GEBLEVEN!!!!!!!!!!!!!!
 
-            exit(1)
             for bodyPart in exercisePartData:
                 # Get bodypart angle
                 currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
