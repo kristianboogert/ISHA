@@ -3,11 +3,13 @@
 
 import sys
 import json
+import cv2
 from math import degrees, radians
 from time import time
 from datetime import datetime
 sys.path.append("..")
 #from poseDetection.HandPoseDetection import *
+from poseDetection.BodyPose import BodyPose
 from poseDetection.HandPart import *
 from poseDetection.BodyPart import *
 
@@ -17,49 +19,44 @@ from poseDetection.BodyPart import *
 #spreiden sluiten vingers (oefening 9: alleen de eerste, voor de leuk ook de tweede)
 ###
 
-class NeutralPose:
-    def __init__(self, bodyPoseDetection):
-        self.neutralPose = []
-        self.bodyPoseDetection = bodyPoseDetection
-    def addToNeutralPose(self, angleData):
-        self.neutralPose.append(angleData)
-    def createNeutralPose(self, poseData, exerciseData):
-        for exercisePart in range(len(exerciseData["parts"])):
-            for bodyPart in exerciseData["parts"][exercisePart]:
-                directionAngles = self.bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
-                if directionAngles is None:
-                    continue
-                heightAngles = self.bodyPoseDetection.getHeightAnglesForBodyPart(bodyPart["body_part"], poseData)
-                self.neutralPose.append({
-                    "exercise_part": exercisePart,
-                    "body_part": bodyPart["body_part"],
-                    "direction_angles": directionAngles,
-                    "height_angles": heightAngles
-                })
-        return self.neutralPose
-    def getAngleDiffs(self, currentBodyPartAngles, bodyPart):
-        # Get neutral angles for body part
-        neutralAngles = None
-        for item in self.neutralPose:
-            print(item["body_part"], bodyPart["body_part"])
-            if item["body_part"] == bodyPart["body_part"]:
-                neutralAngles = item
-                break
-        if neutralAngles is None:
-            return None
-            exit(1)
-        # compare angles
-        planes = ["xy", "yz", "xz"]
-        diffs = {}
-        for plane in planes:
-            print("CURR:", currentBodyPartAngles[plane], plane)
-            print("PREV:", neutralAngles["direction_angles"][plane], plane)
-            diffs[plane] = degrees(radians(currentBodyPartAngles[plane])) - degrees(radians(neutralAngles["direction_angles"][plane]))
-        return diffs
-
-        # xy_diff = item["xy"] - currentBodyPartAngles["xy"]
-        # print(xy_diff)
-
+class BodyPoseMetadata:
+    def __init__(self, exerciseName, poseTrackerTypeString, impairedSideString):
+        self.metadata = None
+        self.exerciseName = exerciseName
+        self.poseTrackerTypeString = poseTrackerTypeString
+        self.impairedSideString = impairedSideString
+        self.clear()
+    def clear(self):
+        self.metadata = {}
+        self.metadata.update({"name": self.exerciseName})
+        self.metadata.update({"pose_detection_type": self.poseTrackerTypeString})
+        self.metadata.update({"impaired_side": self.impairedSideString})
+        self.metadata.update({"exercise_parts": [[], []]})
+        return self.metadata
+    def addPose(self, bodyPartTypeString, plane, angles, score, currentExercisePart, startTime):
+        currentTime = int(time()*1000)
+        msSinceStart = currentTime - startTime
+        poseLandmarks = {
+            "body_part": bodyPartTypeString,
+            "plane": plane,
+            "angles": angles,
+            "score": score,
+            "ms_since_exercise_start": msSinceStart
+        }
+        self.metadata["exercise_parts"][currentExercisePart].append(poseLandmarks)
+        return self.metadata
+    def fixTimeStamps(self):
+        try:
+            startTime = self.metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
+            for exercisePart in range(len(self.metadata["exercise_parts"])):
+                for pose in range(len(self.metadata["exercise_parts"][exercisePart])):
+                    fixedTime = self.metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
+                    self.metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
+        except:
+            pass
+        return self.metadata
+    def getMetadata(self):
+        return self.metadata
 
 class FuglMeyer:
     def __init__(self):
@@ -69,40 +66,14 @@ class FuglMeyer:
             if landmark is None or landmark.visibility < visibilityThreshold:
                 return False
         return True
-    def metadataCreate(self, exerciseName, poseTrackerTypeString, impairedSideString):
-        metadata = {}
-        metadata.update({"name": exerciseName})
-        metadata.update({"pose_detection_type": poseTrackerTypeString})
-        metadata.update({"impaired_side": impairedSideString})
-        metadata.update({"exercise_parts": [[], []]})
-        return metadata
-    def metadataAddPose(self, metadata, currentExercisePart, startTime, pose):
-        currentTime = int(time()*1000)
-        msSinceStart = currentTime - startTime
-        pose.update({"ms_since_exercise_start": msSinceStart})
-        metadata["exercise_parts"][currentExercisePart].append(pose)
-        return metadata
-    def metadataSetScore(self, metadata, currentExercisePart, score):
-        metadata["scores"][currentExercisePart] = score
-        return metadata
-    def metadataFixTimestamps(self, metadata):
-        try:
-            # fix time in data
-            startTime = metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
-            for exercisePart in range(len(metadata["exercise_parts"])):
-                for pose in range(len(metadata["exercise_parts"][exercisePart])):
-                    fixedTime = metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
-                    metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
-        except:
-            pass
-        return metadata
     def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]
         exercisePart = 0
-        neutralBodyPose = NeutralPose(bodyPoseDetection) # TODO: FINISH IMPLEMENTNING THIS
-        metadata = self.metadataCreate(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
+        neutralBodyPoseCreator = BodyPose()
+        currentBodyPoseCreator = BodyPose()
+        metadata = BodyPoseMetadata(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
         startTime = int(time()*1000) # in ms
         while True:
             ###
@@ -113,8 +84,8 @@ class FuglMeyer:
             # Detect body pose (mediapipe)
             ###
             frame_start = time()*1000
-            poseData = bodyPoseDetection.getPose(frame)
-            frame = bodyPoseDetection.drawPose(frame, poseData)
+            poseLandmarks = bodyPoseDetection.getPose(frame)
+            frame = bodyPoseDetection.drawPose(frame, poseLandmarks)
             frame_end = time()*1000
             FPS = int(1000/(frame_end-frame_start))
             frame = cv2.flip(frame, 1)
@@ -133,7 +104,7 @@ class FuglMeyer:
             for exercise_part in exerciseData["parts"]:
                 # check landmark visibility for each body part
                 for bodyPart in exercise_part:
-                    if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseData):
+                    if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
                         user_in_view = False
                         break
             if not user_in_view:
@@ -144,9 +115,10 @@ class FuglMeyer:
             ###
             if user_in_view == True and exerciseStarted == False:
                 exerciseStarted = True
-                neutral_pose = neutralBodyPose.createNeutralPose(poseData, exerciseData)
+                neutralBodyPose = neutralBodyPoseCreator.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
+                print(neutralBodyPose)
                 print("\n\n\n\nUW POSITIE IN RUST\n\n\n\n")
-                print(json.dumps(neutral_pose, indent=4))
+                print(json.dumps(neutralBodyPose, indent=4))
                 continue
             ###
             # Does user want to quit?
@@ -156,10 +128,17 @@ class FuglMeyer:
             # Score the first exercise part
             ###
             exercisePartData = exerciseData["parts"][exercisePart]
-            _bodyPart = BodyPart(0) # Only used for the serialize function
+            # Get current body pose
+            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
+            print("NEUTRAL:", neutralBodyPose)
+            print("CURRENT:", currentBodyPose)
+
+            # HIER WAS JE GEBLEVEN!!!!!!!!!!!!!!
+
+            exit(1)
             for bodyPart in exercisePartData:
                 # Get bodypart angle
-                currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
+                currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
                 if currentBodyPartAngles is None:
                     print(time(), "Skipping frame, because user is not fully in view anymore (?)")
                     break
@@ -169,21 +148,21 @@ class FuglMeyer:
                 givenAngles = bodyPart["angles"]
                 # print("CURRENT_ANGLE:", currentBodyPartAngle)
                 # print("GIVEN ANGLES: ", givenAngles)
-                poseMetadata = {
-                    "body_part": _bodyPart.serialize(bodyPart["body_part"]),
-                    "plane": plane,
-                    "angles": currentBodyPartAngles,
-                    "score": 0
-                }
-                if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
-                    print(time(), "user scored 2 on bodypart:", _bodyPart.serialize(bodyPart["body_part"]))
-                    score[exercisePart] = 2
-                    poseMetadata.update({"score": 2})
-                else:
-                    if score[exercisePart] == 2:
-                        score[exercisePart] = 1
-                        poseMetadata.update({"score": 1})
-                self.metadataAddPose(metadata, exercisePart, startTime, poseMetadata)
+                # poseMetadata = {
+                #     "body_part": _bodyPart.serialize(bodyPart["body_part"]),
+                #     "plane": plane,
+                #     "angles": currentBodyPartAngles,
+                #     "score": 0
+                # }
+                # if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
+                #     print(time(), "user scored 2 on bodypart:", _bodyPart.serialize(bodyPart["body_part"]))
+                #     score[exercisePart] = 2
+                #     poseMetadata.update({"score": 2})
+                # else:
+                #     if score[exercisePart] == 2:
+                #         score[exercisePart] = 1
+                #         poseMetadata.update({"score": 1})
+                # self.metadataAddPose(metadata, exercisePart, startTime, poseMetadata)
             if score[exercisePart] == 2:
                 exercisePart += 1
                 if exercisePart >= 2:
@@ -196,7 +175,7 @@ class FuglMeyer:
             for exercise_part in exerciseData["parts"]:
                 # check landmark visibility for each body part
                 for bodyPart in exercise_part:
-                    currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseData)
+                    currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
                     angleDiffs = neutralBodyPose.getAngleDiffs(currentBodyPartAngles, bodyPart)
                     print("BODY_PART:", bodyPart, "\nDIFFS:", angleDiffs)
             # TODO: DIT VEREIST OOK DAT WE DE RUSTPOSITIE INLEZEN VOORDAT DE OEFENING WORDT BEGONNEN!!!!
@@ -205,6 +184,68 @@ class FuglMeyer:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# class NeutralPose:
+#     def __init__(self, bodyPoseDetection):
+#         self.neutralPose = []
+#         self.bodyPoseDetection = bodyPoseDetection
+#     def addToNeutralPose(self, angleData):
+#         self.neutralPose.append(angleData)
+#     def createNeutralPose(self, poseLandmarks, exerciseData):
+#         for exercisePart in range(len(exerciseData["parts"])):
+#             for bodyPartData in exerciseData["parts"][exercisePart]:
+#                 bodyPartType = bodyPartData["body_part"]
+#                 bodyPartTypeString = BodyPartType.serialize(bodyPartType)
+#                 bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString)
+#                 if bodyPart is None:
+#                     continue
+#                 self.neutralPose.append({
+#                     "exercise_part": exercisePart,
+#                     "body_part": bodyPartType,
+#                     "heading": bodyPart.getHeading()
+#                 })
+#         return self.neutralPose
+#     def getAngleDiffs(self, currentBodyPose, bodyPart):
+#         # Get neutral angles for body part
+#         neutralPose = None
+#         for item in self.neutralPose:
+#             print(item["body_part"], bodyPart["body_part"])
+#             if item["body_part"] == bodyPart["body_part"]:
+#                 neutralPose = item
+#                 break
+#         print(neutralPose)
+#         if neutralPose is None:
+#             return None
+#             exit(1)
+#         # compare angles
+#         planes = ["xy", "yz", "xz"]
+#         diffs = {}
+#         for plane in planes:
+#             print("CURR:", currentBodyPose["heading"][plane], plane)
+#             print("PREV:", neutralPose["heading"][plane], plane)
+#             diffs[plane] = degrees(radians(currentBodyPartAngles[plane])) - degrees(radians(neutralPose["heading"][plane]))
+#         return diffs
+
+#         # xy_diff = item["xy"] - currentBodyPartAngles["xy"]
+#         # print(xy_diff)
 
 
 
@@ -229,18 +270,18 @@ class FuglMeyer:
     #         ###
     #         # Detect body pose (mediapipe)
     #         ###
-    #         poseData = bodyPoseDetection.getPose(frame)
-    #         frame = bodyPoseDetection.drawPose(frame, poseData)
+    #         poseLandmarks = bodyPoseDetection.getPose(frame)
+    #         frame = bodyPoseDetection.drawPose(frame, poseLandmarks)
     #         cv2.imshow('body frame', cv2.flip(frame, 1))
     #         if cv2.waitKey(1) == ord('q'):
     #             break
     #         ###
     #         # Are all relevant joints in frame?
     #         ###
-    #         leftShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_SHOULDER, poseData)
-    #         rightShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_SHOULDER, poseData)
-    #         leftElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_ELBOW, poseData)
-    #         rightElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseData)
+    #         leftShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_SHOULDER, poseLandmarks)
+    #         rightShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_SHOULDER, poseLandmarks)
+    #         leftElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_ELBOW, poseLandmarks)
+    #         rightElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseLandmarks)
     #         if not self.landmarksAreVisible([leftShoulderLandmark, rightShoulderLandmark, leftElbowLandmark, rightElbowLandmark]):
     #             print("user is not fully in frame for this exercise")
     #             continue
@@ -258,10 +299,10 @@ class FuglMeyer:
     #         ###
     #         # Calculate relevant joint angles
     #         ###
-    #         leftUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_ELBOW, poseData)
-    #         rightUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseData)
-    #         leftLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_WRIST, poseData)
-    #         rightLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_WRIST, poseData)
+    #         leftUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_ELBOW, poseLandmarks)
+    #         rightUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseLandmarks)
+    #         leftLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_WRIST, poseLandmarks)
+    #         rightLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_WRIST, poseLandmarks)
     #         try:
     #             print("ARM ANGLES:\nLeft: ", leftUpperArmAngle["xy"],
     #                 "\nRight:", rightUpperArmAngle["xy"], "\n",

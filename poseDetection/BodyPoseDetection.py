@@ -5,8 +5,9 @@ import cv2
 from .BodyPart import *
 from .BodyJoint import *
 
+# NEUTRALPOSE CLASS GEBRUIKT NOG GEEN GEBRUIK VAN BODYPOSE!!!!!!!!!! DUS KIEZEN: OF BODYPOSE OF NEUTRALPOSE
+
 # TODO: IMPLEMENTEER EEN USER_HAS_MOVED()-ACHTIGE FUNCTIE, BODYPARTS VERGELIJKEN GAAT NU GOED GENOEG!
-# TODO: TEST OF DE YZ HOEK DIFF VOOR ZOWEL LINKS ALS RECHTS HETZELFDE IS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # TODO: FIX DE FUGL MEYER CLASS ZODAT HIJ MET DE NIEUWE POSE DETECTIE KAN OMGAAN!!!!!!!!!!!!!!!!!!!!!
 # TODO: ZORG ERVOOR DAT ER EEN COMPARE() FUNCTIE KOMT IN DE BODYPOSE CLASS! DOEL: ZONDER VEEL MOEITE TWEE BODY PARTS VERGELIJKEN!!!!!! EEN BODYPART CLASS HEEFT AL EEN WERKENDE COMPARE() FUNCTIE!!!!!
 # TODO: FIX DE EXCEL EXPORTER ZODAT HIJ MET EEN NIEUWE BODY POSE OVERWEG KAN! DOEL: DIEPTE TESTEN!!!!
@@ -64,33 +65,11 @@ class BodyPoseDetection:
             "yz": yzAngle,
             "xz": xzAngle
         }
-    def isBodyPartVisible(self, bodyPart, poseData, visibilityThreshold=0.85):
-        if bodyPart == BodyPart.LEFT_SHOULDER:
-            bodyJoint = self.getPoseLandmark(BodyJoint.LEFT_SHOULDER, poseData)
-            return (bodyJoint is not None and bodyJoint.visibility > visibilityThreshold)
-        if bodyPart == BodyPart.LEFT_UPPER_ARM:
-            shoulderBodyJoint = self.getPoseLandmark(BodyJoint.LEFT_SHOULDER, poseData)
-            elbowBodyJoint = self.getPoseLandmark(BodyJoint.LEFT_ELBOW, poseData)
-            return (shoulderBodyJoint is not None and shoulderBodyJoint.visibility > visibilityThreshold) and \
-                   (elbowBodyJoint is not None and elbowBodyJoint.visibility > visibilityThreshold)
-        if bodyPart == BodyPart.LEFT_FOREARM:
-            elbowBodyJoint = self.getPoseLandmark(BodyJoint.LEFT_ELBOW, poseData)
-            wristBodyJoint = self.getPoseLandmark(BodyJoint.LEFT_SHOULDER, poseData)
-            return (elbowBodyJoint is not None and elbowBodyJoint.visibility > visibilityThreshold) and \
-                   (wristBodyJoint is not None and wristBodyJoint.visibility > visibilityThreshold)
-        if bodyPart == BodyPart.RIGHT_SHOULDER:
-            bodyJoint = self.getPoseLandmark(BodyJoint.RIGHT_SHOULDER, poseData)
-            return (bodyJoint is not None and bodyJoint.visibility > visibilityThreshold)
-        if bodyPart == BodyPart.RIGHT_UPPER_ARM:
-            shoulderBodyJoint = self.getPoseLandmark(BodyJoint.RIGHT_SHOULDER, poseData)
-            elbowBodyJoint = self.getPoseLandmark(BodyJoint.RIGHT_ELBOW, poseData)
-            return (shoulderBodyJoint is not None and shoulderBodyJoint.visibility > visibilityThreshold) and \
-                   (elbowBodyJoint is not None and elbowBodyJoint.visibility > visibilityThreshold)
-        if bodyPart == BodyPart.RIGHT_FOREARM:
-            elbowBodyJoint = self.getPoseLandmark(BodyJoint.RIGHT_ELBOW, poseData)
-            wristBodyJoint = self.getPoseLandmark(BodyJoint.RIGHT_SHOULDER, poseData)
-            return (elbowBodyJoint is not None and elbowBodyJoint.visibility > visibilityThreshold) and \
-                   (wristBodyJoint is not None and wristBodyJoint.visibility > visibilityThreshold)
+    def isBodyPartVisible(self, bodyPartType, poseLandmarks, landmarkVisibilityThreshold=0.85):
+        # If a body part can be created from a given set of landmarks, it is considered visible
+        bodyPartTypeString = BodyPartType.serialize(bodyPartType)
+        bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString, landmarkVisibilityThreshold=landmarkVisibilityThreshold)
+        return (bodyPart is not None)
     def getAnglesForBodyJoint(self, bodyJoint, poseData, originBodyJoint=None):
         # if a certain origin is specified, use that origin,
         # otherwise, use a predefined origin
@@ -155,53 +134,52 @@ class BodyPoseDetection:
                 return rightWristAngles
             except:
                 return None
+    def getAnglesForBodyPart(self, bodyPartType, poseLandmarks):
+        bodyPartTypeString = BodyPartType.serialize(bodyPartType)
+        bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString)
+        return bodyPart.getHeading()
 
-    # converter function that takes a body part and returns the right angles using
-    # the getAnglesForBodyJoint function. this function is needed, because exerciseScorer.FuglMeyer only knows
-    # body parts, but mediapipe only provides body joints.
-    def getAnglesForBodyPart(self, bodyPart, poseData):
-        if bodyPart == BodyPart.LEFT_SHOULDER:
-            return self.getAnglesForBodyJoint(BodyJoint.LEFT_SHOULDER, poseData)
-        if bodyPart == BodyPart.RIGHT_SHOULDER:
-            return self.getAnglesForBodyJoint(BodyJoint.RIGHT_SHOULDER, poseData)
-        if bodyPart == BodyPart.LEFT_UPPER_ARM:
-            return self.getAnglesForBodyJoint(BodyJoint.LEFT_ELBOW, poseData)
-        if bodyPart == BodyPart.RIGHT_UPPER_ARM:
-            return self.getAnglesForBodyJoint(BodyJoint.RIGHT_ELBOW, poseData)
-        if bodyPart == BodyPart.LEFT_FOREARM:
-            return self.getAnglesForBodyJoint(BodyJoint.LEFT_WRIST, poseData)
-        if bodyPart == BodyPart.RIGHT_FOREARM:
-            return self.getAnglesForBodyJoint(BodyJoint.RIGHT_WRIST, poseData)
 
-    def getHeightAnglesForBodyPart(self, bodyPart, poseData):
-        if bodyPart == BodyPart.LEFT_FOREARM:
-            return self.getAnglesForBodyJoint(BodyJoint.LEFT_WRIST, poseData, BodyJoint.LEFT_SHOULDER)
-        if bodyPart == BodyPart.RIGHT_FOREARM:
-            return self.getAnglesForBodyJoint(BodyJoint.RIGHT_WRIST, poseData, BodyJoint.RIGHT_SHOULDER)
-        return None # the bodypart is not relevent for this project,
-                    # or should not be checked, like the upper arm.
 
-    def isSittingUp(self, poseData, threshold=10):
-        try:
-            leftShoulderAngles = self.getAnglesForBodyPart(BodyJoint.LEFT_SHOULDER, poseData)
-            if abs(leftShoulderAngles["xy"]) <= threshold:
-                return True
-            return False
-        except:
-            return None
-    def isTPosing(self, poseData, xyThreshold=15, xzThreshold=20):
-        leftElbowAngles = self.getAnglesForBodyPart(BodyJoint.LEFT_ELBOW, poseData)
-        rightElbowAngles = self.getAnglesForBodyPart(BodyJoint.RIGHT_ELBOW, poseData)
-        leftWristAngles = self.getAnglesForBodyPart(BodyJoint.LEFT_WRIST, poseData)
-        rightWristAngles = self.getAnglesForBodyPart(BodyJoint.RIGHT_WRIST, poseData)
-        try:
-            if abs(leftElbowAngles["xy"]) <= xyThreshold and \
-               abs(rightElbowAngles["xy"]) <= xyThreshold and \
-               abs(leftWristAngles["xy"]) <= xyThreshold and \
-               abs(rightWristAngles["xy"]) <= xyThreshold and \
-               abs(leftElbowAngles["xz"]) <= xzThreshold and \
-               abs(rightElbowAngles["xz"]) <= xzThreshold:
-                return True
-            return False
-        except:
-            return None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # def isSittingUp(self, poseData, threshold=10):
+    #     try:
+    #         leftShoulderAngles = self.getAnglesForBodyPart(BodyJoint.LEFT_SHOULDER, poseData)
+    #         if abs(leftShoulderAngles["xy"]) <= threshold:
+    #             return True
+    #         return False
+    #     except:
+    #         return None
+    # def isTPosing(self, poseData, xyThreshold=15, xzThreshold=20):
+    #     leftElbowAngles = self.getAnglesForBodyPart(BodyJoint.LEFT_ELBOW, poseData)
+    #     rightElbowAngles = self.getAnglesForBodyPart(BodyJoint.RIGHT_ELBOW, poseData)
+    #     leftWristAngles = self.getAnglesForBodyPart(BodyJoint.LEFT_WRIST, poseData)
+    #     rightWristAngles = self.getAnglesForBodyPart(BodyJoint.RIGHT_WRIST, poseData)
+    #     try:
+    #         if abs(leftElbowAngles["xy"]) <= xyThreshold and \
+    #            abs(rightElbowAngles["xy"]) <= xyThreshold and \
+    #            abs(leftWristAngles["xy"]) <= xyThreshold and \
+    #            abs(rightWristAngles["xy"]) <= xyThreshold and \
+    #            abs(leftElbowAngles["xz"]) <= xzThreshold and \
+    #            abs(rightElbowAngles["xz"]) <= xzThreshold:
+    #             return True
+    #         return False
+    #     except:
+    #         return None

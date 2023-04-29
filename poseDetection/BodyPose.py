@@ -13,16 +13,17 @@ class BodyPose:
         self.bodyPose = []
     def getBodyPose(self):
         return self.bodyPose
-    def createPose(self, poseLandmarks, relevantBodyPartTypeStrings=[]):
+    def createPose(self, poseLandmarks, relevantBodyPartTypeStrings):
         self.clear()
         for bodyPartTypeString in relevantBodyPartTypeStrings:
-            bodyPart = BodyPart.createFromLandmark(poseLandmarks, bodyPartTypeString)
+            bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString)
             if bodyPart is not None:
                 self.bodyPose.append({
-                    "body_part": bodyPart,
+                    "body_part": bodyPart.getBodyPartType(),
+                    "origin": bodyPart.getOriginBodyJoint().getPosition(),
+                    "heading": bodyPart.getHeading(),
                     "timestamp": round(time()*1000)
                 })
-        print(self.bodyPose)
         return self.bodyPose
 
 

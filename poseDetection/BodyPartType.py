@@ -29,12 +29,12 @@ class BodyPartType(IntEnum):
             return BodyPartType.LEFT_SHOULDER
         if bodyPartTypeString.upper() == "RIGHT_SHOULDER":
             return BodyPartType.RIGHT_SHOULDER
-        if bodyPartTypeString.upper() == "LEFT_ELBOW":
-            return BodyPartType.LEFT_ELBOW
-        if bodyPartTypeString.upper() == "RIGHT_ELBOW":
-            return BodyPartType.RIGHT_ELBOW
-        if bodyPartTypeString.upper() == "LEFT_WRIST":
-            return BodyPartType.LEFT_WRIST
-        if bodyPartTypeString.upper() == "RIGHT_WRIST":
-            return BodyPartType.RIGHT_WRIST
+        if bodyPartTypeString.upper() == "LEFT_UPPER_ARM":
+            return BodyPartType.LEFT_UPPER_ARM
+        if bodyPartTypeString.upper() == "RIGHT_UPPER_ARM":
+            return BodyPartType.RIGHT_UPPER_ARM
+        if bodyPartTypeString.upper() == "LEFT_FOREARM":
+            return BodyPartType.LEFT_FOREARM
+        if bodyPartTypeString.upper() == "RIGHT_FOREARM":
+            return BodyPartType.RIGHT_FOREARM
 

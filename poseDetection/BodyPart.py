@@ -11,7 +11,7 @@ class BodyPart:
         if originBodyJoint is not None and targetBodyJoint is not None:
             self.heading = BodyPart._calculateHeading(originBodyJoint, targetBodyJoint)
     @staticmethod
-    def createFromLandmark(poseLandmarks, bodyPartTypeString, landmarkVisibilityThreshold=0.75):
+    def createFromLandmarks(poseLandmarks, bodyPartTypeString, landmarkVisibilityThreshold=0.75):
         originBodyJointType, targetBodyJointType = BodyPart._findBodyJointTypes(bodyPartTypeString)
         # find both joints in landmarks
         try:
@@ -22,9 +22,10 @@ class BodyPart:
             if originBodyJointLandmark.visibility > landmarkVisibilityThreshold and targetBodyJointLandmark.visibility > landmarkVisibilityThreshold:
                 return BodyPart(bodyPartTypeString, originBodyJoint, targetBodyJoint)
         except:
-            print("CANNOT CREATE BODYPART FROM LANDMARK!")
             return None
     def getBodyPartType(self):
+        return self.bodyPartType
+    def getBodyPartTypeString(self):
         return BodyPartType.serialize(self.bodyPartType)
     def getOriginBodyJoint(self):
         return self.originBodyJoint
