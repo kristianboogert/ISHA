@@ -58,6 +58,15 @@ class BodyPoseMetadata:
     def getMetadata(self):
         return self.metadata
 
+class ExerciseData:
+    @staticmethod
+    def getPlaneForBodyPart(exerciseData, exercisePart, bodyPartType):
+        for item in exerciseData["parts"][exercisePart]:
+            print(item)
+            if item["body_part"] == bodyPartType:
+                return item["angles"]["plane"]
+        return None
+
 class FuglMeyer:
     def __init__(self):
         self.none = None
@@ -73,7 +82,7 @@ class FuglMeyer:
         exercisePart = 0
         neutralBodyPoseCreator = BodyPose()
         currentBodyPoseCreator = BodyPose()
-        neutralBodyPoses = [None, None]
+        neutralBodyPose = [None, None]
         metadata = BodyPoseMetadata(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
         relevantBodyPartTypeStrings = [[], []]
         for exercisePart in range(len(exerciseData["parts"])):
@@ -129,9 +138,9 @@ class FuglMeyer:
             ###
             # Create neutral pose if it doesn't exist
             ###
-            if neutralBodyPoses[exercisePart] is None:
+            if neutralBodyPose[exercisePart] is None:
                 print("CREATING NEUTRAL POSE SNAPSHOT!")
-                neutralBodyPoses[exercisePart] = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[exercisePart])
+                neutralBodyPose[exercisePart] = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[exercisePart])
             ###
             # Create current body pose
             ###
@@ -139,17 +148,30 @@ class FuglMeyer:
             ###
             # See if the user moved (score 1)
             ###
-            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPoses[exercisePart])
-            userHasMoved = False
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[exercisePart])
+            for diff in bodyPoseDiffs:
+                plane = ExerciseData.getPlaneForBodyPart(exerciseData, exercisePart, diff["body_part"])
+                if diff["heading"][plane]>20:
+                    if score[exercisePart] < 1:
+                        score[exercisePart] = 1
+            if score[exercisePart]:
+                print("USER SCORED 1!")
+                exit(1) #TODO: TURN THIS BACK ON!
+            continue # TODO: TURN THIS BACK ON!
+            ###
+            # See if the user moved back to neutral position before moving on
+            ###
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[exercisePart])
+            userInNeutralPosition = True
             for diff in bodyPoseDiffs:
                 if diff["heading"]["xy"]>10:
-                    userHasMoved = True
-            if userHasMoved:
-                print("you did well, AT LEAST IN THIS SOFTWARE VERSION! IN THE NEXT VERSION, YOU HAVE TO MOVE IN THE RIGHT DIRECTION!")
+                    userInNeutralPosition = False
+            if userInNeutralPosition:
+                exercisePart+=1
+            if exercisePart > 2:
+                print("all done!")
                 exit(1)
-            continue
-            
-            
+
 
 
             for bodyPart in exercisePartData:

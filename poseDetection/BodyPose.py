@@ -40,9 +40,9 @@ class BodyPose:
                             "z": round(otherItem["origin"]["z"] - item["origin"]["z"])
                         },
                         "heading": {
-                            "xy": round(otherItem["heading"]["xy"] - item["heading"]["xy"]),
-                            "yz": round(otherItem["heading"]["yz"] - item["heading"]["yz"]),
-                            "xz": round(otherItem["heading"]["xz"] - item["heading"]["xz"])
+                            "xy": BodyPart.getAngleDiff(otherItem["heading"]["xy"], item["heading"]["xy"]),
+                            "yz": BodyPart.getAngleDiff(otherItem["heading"]["yz"], item["heading"]["yz"]),
+                            "xz": BodyPart.getAngleDiff(otherItem["heading"]["xz"], item["heading"]["xz"])
                         }
                     })
         return diffs

@@ -88,7 +88,8 @@ class BodyPart:
             "yz": yzAngle,
             "xz": xzAngle
         }
-    def _getAngleDiff(self, angle1, angle2):
+    @staticmethod
+    def getAngleDiff(angle1, angle2):
         # get difference
         diff = round(angle1-angle2)
         # remove any full rotations from the difference
