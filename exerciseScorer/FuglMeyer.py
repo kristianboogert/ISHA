@@ -66,6 +66,13 @@ class ExerciseData:
             if item["body_part"] == bodyPartType:
                 return item["angles"]["plane"]
         return None
+    def getCorrectAngleOffsets(exerciseData, exercisePart, bodyPartType):
+        for item in exerciseData["parts"][exercisePart]:
+            print(item)
+            plane = item["angles"]["plane"]
+            if item["body_part"] == bodyPartType:
+                return [item["angles"]["score_2_min"], item["angles"]["score_2_max"]]
+        return None
 
 class FuglMeyer:
     def __init__(self):
@@ -156,23 +163,47 @@ class FuglMeyer:
                         score[exercisePart] = 1
             if score[exercisePart]:
                 print("USER SCORED 1!")
-                exit(1) #TODO: TURN THIS BACK ON!
-            continue # TODO: TURN THIS BACK ON!
+            ###
+            # See if the user's body position is close to the correct one (score 2)
+            ###
+            userHasCorrectBodyPose = False
+            for bodyPartData in currentBodyPose:
+                plane = ExerciseData.getPlaneForBodyPart(exerciseData, exercisePart, diff["body_part"])
+                currentBodyPartAngle = bodyPartData["heading"][plane]
+                maxOffsets = ExerciseData.getCorrectAngleOffsets(exerciseData, exercisePart, diff["body_part"])
+                print(maxOffsets)
+                print(currentBodyPartAngle)
+                if maxOffsets[0] > currentBodyPartAngle and currentBodyPartAngle > maxOffsets[1]:
+                    userHasCorrectBodyPose = True
+                    print("you scored 2")
+                # See if the angle is correct
+                # if 
+                # correctHeading = ExerciseData.getAngleForBodyPart(exerciseData, exercisePart, bodyPartData["body_part"])
+                # print(currentHeading)
+                # print(correctHeading)
+            # exit(1)
+            if userHasCorrectBodyPose:
+                print("SCORE 2!!!!!!!!!!!!!!!!!")
+                exit(1)
             ###
             # See if the user moved back to neutral position before moving on
             ###
             bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[exercisePart])
-            userInNeutralPosition = True
-            for diff in bodyPoseDiffs:
-                if diff["heading"]["xy"]>10:
-                    userInNeutralPosition = False
+            userInNeutralPosition = False
+            print("exercise part", exercisePart)
+            print("score:", score[exercisePart])
+            if score[exercisePart] > 0:
+                userInNeutralPosition = True
+                for diff in bodyPoseDiffs:
+                    if diff["heading"]["xy"]>20:
+                        userInNeutralPosition = False
+            print(userInNeutralPosition)
             if userInNeutralPosition:
                 exercisePart+=1
-            if exercisePart > 2:
+            if exercisePart >= 2:
                 print("all done!")
                 exit(1)
-
-
+            continue
 
             for bodyPart in exercisePartData:
                 # Get bodypart angle
@@ -201,12 +232,12 @@ class FuglMeyer:
                 #         score[exercisePart] = 1
                 #         poseMetadata.update({"score": 1})
                 # self.metadataAddPose(metadata, exercisePart, startTime, poseMetadata)
-            if score[exercisePart] == 2:
-                exercisePart += 1
-                if exercisePart >= 2:
-                    break
-                else:
-                    print("Onto the next side we go!")
+            # if score[exercisePart] == 2:
+            #     exercisePart += 1
+            #     if exercisePart > 2:
+            #         break
+            #     else:
+            #         print("Onto the next side we go!")
             ###
             # Relevant joints are close to neutral position?
             ###
@@ -217,8 +248,9 @@ class FuglMeyer:
                     angleDiffs = neutralBodyPose.getAngleDiffs(currentBodyPartAngles, bodyPart)
                     print("BODY_PART:", bodyPart, "\nDIFFS:", angleDiffs)
             # TODO: DIT VEREIST OOK DAT WE DE RUSTPOSITIE INLEZEN VOORDAT DE OEFENING WORDT BEGONNEN!!!!
-        self.metadataFixTimestamps(metadata)
-        return score, json.dumps(metadata, indent=4)
+        metadata.fixTimeStamps()
+        print("METADATA:", metadata.getMetadata())
+        return score, json.dumps(metadata.getMetadata(), indent=4)
 
 
 
