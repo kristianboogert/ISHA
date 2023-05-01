@@ -1,0 +1,1 @@
+https://storage.googleapis.com/mediapipe-assets/pose_landmark_lite.tflite
