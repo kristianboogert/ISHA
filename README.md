@@ -1,18 +1,35 @@
 # ISHA
+
 ISHA Minor InHolland
 
-Create CVA appropriate score using computer vision and pose detection
+Create CVA appropriate score using computer vision and pose detection.
 
-# How to install
-
-Python dependencies
+# Installing dependencies
 
 ```sh
 python3 -m pip install -r requirements.txt
 ```
 
-# How to run
+# Downloading the required .tflite model
+
+This project uses an older version of MediaPipe, so it can be ran on a Raspberry Pi 4. For this reason, it is required to download the model manually. Newer versions of MediaPipe do this automatically.
+
+Execute
 
 ```sh
-python3 test_pose.py
+scripts/download_lite_models.bat
+```
+
+on Windows or
+
+```bash
+scripts/download_lite_models.sh
+```
+
+on Linux.
+
+# Running the project
+
+```sh
+python3 main.py
 ```
