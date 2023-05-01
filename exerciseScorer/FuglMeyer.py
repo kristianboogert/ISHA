@@ -86,7 +86,7 @@ class FuglMeyer:
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]
-        exercisePart = 0
+        currentExercisePart = 0
         neutralBodyPoseCreator = BodyPose()
         currentBodyPoseCreator = BodyPose()
         neutralBodyPose = [None, None]
@@ -114,28 +114,28 @@ class FuglMeyer:
             cv2.putText(frame, "FPS: "+str(FPS), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 2, cv2.LINE_AA)
             cv2.imshow('body frame', frame)
             if cv2.waitKey(1) == ord('q'):
-                exercisePart += 1
-                if exercisePart >= 2:
+                currentExercisePart += 1
+                if currentExercisePart >= 2:
                     break
                 else:
                     print("Onto the next side we go!")
             ###
-            # Are all relevant joints in frame?
+            # Are all relevant body parts in frame?
             ###
-            user_in_view = True
-            for exercise_part in exerciseData["parts"]:
+            userInView = True
+            for exercisePart in exerciseData["parts"]:
                 # check landmark visibility for each body part
-                for bodyPart in exercise_part:
+                for bodyPart in exercisePart:
                     if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
-                        user_in_view = False
+                        userInView = False
                         break
-            if not user_in_view:
+            if not userInView:
                 print("not all bodyparts are in view, pausing score system until user becomes (partially) visible again")
                 continue
             ###
             # Has exercise been started?
             ###
-            if user_in_view == True and exerciseStarted == False:
+            if userInView == True and exerciseStarted == False:
                 exerciseStarted = True
                 continue
             ###
@@ -145,67 +145,63 @@ class FuglMeyer:
             ###
             # Create neutral pose if it doesn't exist
             ###
-            if neutralBodyPose[exercisePart] is None:
+            if neutralBodyPose[currentExercisePart] is None:
                 print("CREATING NEUTRAL POSE SNAPSHOT!")
-                neutralBodyPose[exercisePart] = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[exercisePart])
+                neutralBodyPose[currentExercisePart] = neutralBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[currentExercisePart])
             ###
             # Create current body pose
             ###
-            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[exercisePart])
+            currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[currentExercisePart])
             ###
             # See if the user moved (score 1)
             ###
-            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[exercisePart])
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             for diff in bodyPoseDiffs:
-                plane = ExerciseData.getPlaneForBodyPart(exerciseData, exercisePart, diff["body_part"])
+                plane = ExerciseData.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 if diff["heading"][plane]>20:
-                    if score[exercisePart] < 1:
-                        score[exercisePart] = 1
-            if score[exercisePart]:
+                    if score[currentExercisePart] < 1:
+                        score[currentExercisePart] = 1
+            if score[currentExercisePart]:
                 print("USER SCORED 1!")
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
+            # TODO: KIJK HIER NOG EVEN NAAR, HET LIJKT ER NAMELIJK OP DAT ER MAAR 1 BODY PART GOED HOEFT TE ZIJN
             userHasCorrectBodyPose = False
             for bodyPartData in currentBodyPose:
-                plane = ExerciseData.getPlaneForBodyPart(exerciseData, exercisePart, diff["body_part"])
+                plane = ExerciseData.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 currentBodyPartAngle = bodyPartData["heading"][plane]
-                maxOffsets = ExerciseData.getCorrectAngleOffsets(exerciseData, exercisePart, diff["body_part"])
+                maxOffsets = ExerciseData.getCorrectAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
                 print(maxOffsets)
                 print(currentBodyPartAngle)
                 if maxOffsets[0] > currentBodyPartAngle and currentBodyPartAngle > maxOffsets[1]:
                     userHasCorrectBodyPose = True
-                    print("you scored 2")
-                # See if the angle is correct
-                # if 
-                # correctHeading = ExerciseData.getAngleForBodyPart(exerciseData, exercisePart, bodyPartData["body_part"])
-                # print(currentHeading)
-                # print(correctHeading)
-            # exit(1)
+
             if userHasCorrectBodyPose:
-                print("SCORE 2!!!!!!!!!!!!!!!!!")
-                exit(1)
+                print("USER SCORED 2!")
+                score[currentExercisePart] = 2
             ###
             # See if the user moved back to neutral position before moving on
             ###
-            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[exercisePart])
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             userInNeutralPosition = False
-            print("exercise part", exercisePart)
-            print("score:", score[exercisePart])
-            if score[exercisePart] > 0:
+            print("exercise part", currentExercisePart)
+            print("score:", score[currentExercisePart])
+            if score[currentExercisePart] > 0:
                 userInNeutralPosition = True
                 for diff in bodyPoseDiffs:
                     if diff["heading"]["xy"]>20:
                         userInNeutralPosition = False
             print(userInNeutralPosition)
             if userInNeutralPosition:
-                exercisePart+=1
-            if exercisePart >= 2:
+                currentExercisePart+=1
+            if currentExercisePart >= 2:
                 print("all done!")
-                exit(1)
-            continue
-
-            for bodyPart in exercisePartData:
+                break
+            ###
+            # Create metadata
+            ###
+            for bodyPart in exerciseData["parts"][currentExercisePart]:
                 # Get bodypart angle
                 currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
                 if currentBodyPartAngles is None:
@@ -215,39 +211,21 @@ class FuglMeyer:
                 plane = bodyPart["angles"]["plane"]
                 currentBodyPartAngle = currentBodyPartAngles[plane]
                 givenAngles = bodyPart["angles"]
-                # print("CURRENT_ANGLE:", currentBodyPartAngle)
-                # print("GIVEN ANGLES: ", givenAngles)
-                # poseMetadata = {
-                #     "body_part": _bodyPart.serialize(bodyPart["body_part"]),
-                #     "plane": plane,
-                #     "angles": currentBodyPartAngles,
-                #     "score": 0
-                # }
-                # if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
-                #     print(time(), "user scored 2 on bodypart:", _bodyPart.serialize(bodyPart["body_part"]))
-                #     score[exercisePart] = 2
-                #     poseMetadata.update({"score": 2})
-                # else:
-                #     if score[exercisePart] == 2:
-                #         score[exercisePart] = 1
-                #         poseMetadata.update({"score": 1})
-                # self.metadataAddPose(metadata, exercisePart, startTime, poseMetadata)
-            # if score[exercisePart] == 2:
-            #     exercisePart += 1
-            #     if exercisePart > 2:
-            #         break
-            #     else:
-            #         print("Onto the next side we go!")
-            ###
-            # Relevant joints are close to neutral position?
-            ###
-            for exercise_part in exerciseData["parts"]:
-                # check landmark visibility for each body part
-                for bodyPart in exercise_part:
-                    currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
-                    angleDiffs = neutralBodyPose.getAngleDiffs(currentBodyPartAngles, bodyPart)
-                    print("BODY_PART:", bodyPart, "\nDIFFS:", angleDiffs)
-            # TODO: DIT VEREIST OOK DAT WE DE RUSTPOSITIE INLEZEN VOORDAT DE OEFENING WORDT BEGONNEN!!!!
+                poseMetadata = {
+                    "body_part": BodyPartType.serialize(bodyPart["body_part"]),
+                    "plane": plane,
+                    "angles": currentBodyPartAngles,
+                    "score": 0
+                }
+                if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
+                    print(time(), "user scored 2 on bodypart:", BodyPartType.serialize(bodyPart["body_part"]))
+                    score[currentExercisePart] = 2
+                    poseMetadata.update({"score": 2})
+                else:
+                    if score[currentExercisePart] == 2:
+                        score[currentExercisePart] = 1
+                        poseMetadata.update({"score": 1})
+                metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
         metadata.fixTimeStamps()
         print("METADATA:", metadata.getMetadata())
         return score, json.dumps(metadata.getMetadata(), indent=4)

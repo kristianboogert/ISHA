@@ -1,6 +1,6 @@
 from poseDetection.Camera import Camera
 from poseDetection.BodyPoseDetection import BodyPoseDetection
-# from poseDetection.HandPoseDetection import HandPoseDetection
+# from poseDetection.HandPoseDetection import HandPoseDetection # TODO!
 from poseDetection.BodyPart import *
 from poseDetection.HandPart import *
 from stereoscopic.DepthImage import DepthImage
@@ -54,35 +54,10 @@ def main():
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
-    neutralBodyPose = BodyPose()
-    currentBodyPose = BodyPose()
-    while True:
-        frame = camera.getFrame()
-        neutralBodyPoseLandmarks = bodyPoseDetection.getPose(frame)
-        neutralBodyPose.createPose(neutralBodyPoseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
-        if len(neutralBodyPose.getBodyPose()) >= 2:
-            break
-    # while True:
-        # frame = camera.getFrame()
-        # poseLandmarks = bodyPoseDetection.getPose(frame)
-        # bodyPoseDetection.drawPose(frame, poseLandmarks)
-        # currentBodyPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "RIGHT_UPPER_ARM"])
-        # if(len(currentBodyPose.getBodyPose()) >= 2):
-        #     curr = currentBodyPose.getBodyPose()[0]["body_part"]
-        #     prev = neutralBodyPose.getBodyPose()[0]["body_part"]
-        #     print("FIRST DIFF: ", curr.compare(prev))
-        #     curr = currentBodyPose.getBodyPose()[1]["body_part"]
-        #     prev = neutralBodyPose.getBodyPose()[1]["body_part"]
-        #     print("SECOND DIFF:", curr.compare(prev))
-        # cv2.imshow('body frame', frame)
-        # if cv2.waitKey(1) == ord('q'):
-        #     exit(0)
-    # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
-    # depth_excel_test(camera, bodyPoseDetection)
     fuglMeyer = FuglMeyer()
     score, metadata = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
-    print(score)
     print(metadata)
+    print(score)
 main()
 
 
