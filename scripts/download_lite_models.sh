@@ -1,0 +1,1 @@
+wget https://storage.googleapis.com/mediapipe-assets/pose_landmark_lite.tflite -O ~/.local/lib/python3.10/site-packages/mediapipe/modules/pose_landmark/pose_landmark_lite.tflite

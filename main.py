@@ -1,10 +1,15 @@
 from poseDetection.Camera import Camera
 from poseDetection.BodyPoseDetection import BodyPoseDetection
-from poseDetection.HandPoseDetection import HandPoseDetection
+# from poseDetection.HandPoseDetection import HandPoseDetection # TODO!
 from poseDetection.BodyPart import *
 from poseDetection.HandPart import *
 from stereoscopic.DepthImage import DepthImage
 from dataExporter.ExcelExporter import *
+from poseDetection.BodyJointType import *
+from poseDetection.BodyJoint import BodyJoint
+from poseDetection.BodyPartType import *
+from poseDetection.BodyPart import BodyPart
+from poseDetection.BodyPose import BodyPose
 from exerciseScorer.FuglMeyer import FuglMeyer
 from exerciseCreator.ExerciseCreator import ExerciseCreator, ImpairedSide, PoseDetectionType, BodyPartDescription
 from time import time
@@ -36,25 +41,23 @@ def main():
                 {\
                     "plane": "xy",\
                     "score_1_min_diff": 20,\
-                    "score_2_min": -20,\
-                    "score_2_max": 20\
+                    "score_2_min": -15,\
+                    "score_2_max": 15\
                 }\
             }\
         ]\
     }\
     '
+
     exerciseData = exerciseCreator.createExercise(exerciseDescription, ImpairedSide.RIGHT)
     print("exerciseData:", exerciseData)
-    fuglMeyer = FuglMeyer()
     camera = Camera(cameraId=0)
     camera.start()
-    # handPoseDetection = HandPoseDetection()
     bodyPoseDetection = BodyPoseDetection()
-    # finger_tracker_excel_test(camera, handPoseDetection, Hand.LEFT_HAND, HandPart.INDEX_FINGER_TIP)
-    # depth_excel_test(camera, bodyPoseDetection)
+    fuglMeyer = FuglMeyer()
     score, metadata = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
-    print(score)
     print(metadata)
+    print(score)
 main()
 
 
