@@ -7,10 +7,12 @@ import cv2
 from math import degrees, radians
 from time import time
 from datetime import datetime
+from .BodyPoseMetadata import BodyPoseMetadata
+from .ExerciseDataReader import ExerciseDataReader
 sys.path.append("..")
 #from poseDetection.HandPoseDetection import *
+# from poseDetection.HandPart import *
 from poseDetection.BodyPose import BodyPose
-from poseDetection.HandPart import *
 from poseDetection.BodyPart import *
 
 ### niet-fugl-meyer oefeningen:
@@ -18,61 +20,6 @@ from poseDetection.BodyPart import *
 #hand omdraaien           (oefening 10: alleen de eerste 3)
 #spreiden sluiten vingers (oefening 9: alleen de eerste, voor de leuk ook de tweede)
 ###
-
-class BodyPoseMetadata:
-    def __init__(self, exerciseName, poseTrackerTypeString, impairedSideString):
-        self.metadata = None
-        self.exerciseName = exerciseName
-        self.poseTrackerTypeString = poseTrackerTypeString
-        self.impairedSideString = impairedSideString
-        self.clear()
-    def clear(self):
-        self.metadata = {}
-        self.metadata.update({"name": self.exerciseName})
-        self.metadata.update({"pose_detection_type": self.poseTrackerTypeString})
-        self.metadata.update({"impaired_side": self.impairedSideString})
-        self.metadata.update({"exercise_parts": [[], []]})
-        return self.metadata
-    def addPose(self, bodyPartTypeString, plane, angles, score, currentExercisePart, startTime):
-        currentTime = int(time()*1000)
-        msSinceStart = currentTime - startTime
-        poseLandmarks = {
-            "body_part": bodyPartTypeString,
-            "plane": plane,
-            "angles": angles,
-            "score": score,
-            "ms_since_exercise_start": msSinceStart
-        }
-        self.metadata["exercise_parts"][currentExercisePart].append(poseLandmarks)
-        return self.metadata
-    def fixTimeStamps(self):
-        try:
-            startTime = self.metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
-            for exercisePart in range(len(self.metadata["exercise_parts"])):
-                for pose in range(len(self.metadata["exercise_parts"][exercisePart])):
-                    fixedTime = self.metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
-                    self.metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
-        except:
-            pass
-        return self.metadata
-    def getMetadata(self):
-        return self.metadata
-
-class ExerciseData:
-    @staticmethod
-    def getPlaneForBodyPart(exerciseData, exercisePart, bodyPartType):
-        for item in exerciseData["parts"][exercisePart]:
-            print(item)
-            if item["body_part"] == bodyPartType:
-                return item["angles"]["plane"]
-        return None
-    def getCorrectAngleOffsets(exerciseData, exercisePart, bodyPartType):
-        for item in exerciseData["parts"][exercisePart]:
-            print(item)
-            plane = item["angles"]["plane"]
-            if item["body_part"] == bodyPartType:
-                return [item["angles"]["score_2_min"], item["angles"]["score_2_max"]]
-        return None
 
 class FuglMeyer:
     def __init__(self):
@@ -157,7 +104,7 @@ class FuglMeyer:
             ###
             bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             for diff in bodyPoseDiffs:
-                plane = ExerciseData.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
+                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 if diff["heading"][plane]>20:
                     if score[currentExercisePart] < 1:
                         score[currentExercisePart] = 1
@@ -169,9 +116,9 @@ class FuglMeyer:
             # TODO: KIJK HIER NOG EVEN NAAR, HET LIJKT ER NAMELIJK OP DAT ER MAAR 1 BODY PART GOED HOEFT TE ZIJN
             userHasCorrectBodyPose = False
             for bodyPartData in currentBodyPose:
-                plane = ExerciseData.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
+                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 currentBodyPartAngle = bodyPartData["heading"][plane]
-                maxOffsets = ExerciseData.getCorrectAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
+                maxOffsets = ExerciseDataReader.getCorrectAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
                 print(maxOffsets)
                 print(currentBodyPartAngle)
                 if maxOffsets[0] > currentBodyPartAngle and currentBodyPartAngle > maxOffsets[1]:
