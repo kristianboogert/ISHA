@@ -54,7 +54,6 @@ class FuglMeyer:
             ###
             frame_start = time()*1000
             poseLandmarks = bodyPoseDetection.getPose(frame)
-            frame = bodyPoseDetection.drawPose(frame, poseLandmarks)
             frame_end = time()*1000
             FPS = int(1000/(frame_end-frame_start))
             frame = cv2.flip(frame, 1)

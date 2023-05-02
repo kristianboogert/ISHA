@@ -1,20 +1,15 @@
 import mediapipe
-# from mediapipe.tasks.python.components.containers.landmark import Landmark
 import math
 import cv2
 
 from .HandType import *
 from .HandJointType import *
 
-# TODO: FINISH THIS CLASS
 # TODO: Functions only work if both hands are visible!
 class HandPoseDetection:
-    def __init__(self, displayPose=False, visibilityThreshold=0.9):
-        self.displayPose = displayPose
-        self.visibilityThreshold = visibilityThreshold
+    def __init__(self):
         self.mpHands = mediapipe.solutions.hands
         self.hands = self.mpHands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
-        self.draw = mediapipe.solutions.drawing_utils
     def getPose(self, cameraColorFrame):
         cameraColorFrame = cv2.cvtColor(cameraColorFrame, cv2.COLOR_BGR2RGB)
         cameraColorFrame.flags.writeable = False

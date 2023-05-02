@@ -22,20 +22,20 @@ import cv2
 import stitching
 
 def main():
-    camera = Camera(cameraId=0)
-    camera.start()
-    # hand pose demo!
-    handPoseDetection = HandPoseDetection()
-    while True:
-        frame = camera.getFrame()
-        handPoseData = handPoseDetection.getPose(frame)
-        handPartLeftIndexBase = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.INDEX_FINGER_BASE)
-        handPartLeftIndexTip = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.INDEX_FINGER_TIP)
-        try:
-            print(handPartLeftIndexBase.getHeading())
-            print(handPartLeftIndexTip.getHeading())
-        except:
-            continue
+    # camera = Camera(cameraId=0)
+    # camera.start()
+    # # hand pose demo!
+    # handPoseDetection = HandPoseDetection()
+    # while True:
+    #     frame = camera.getFrame()
+    #     handPoseData = handPoseDetection.getPose(frame)
+    #     handPartLeftIndexBase = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.INDEX_FINGER_BASE)
+    #     handPartLeftIndexTip = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.INDEX_FINGER_TIP)
+    #     try:
+    #         print(handPartLeftIndexBase.getHeading())
+    #         print(handPartLeftIndexTip.getHeading())
+    #     except:
+    #         continue
 
 
 
