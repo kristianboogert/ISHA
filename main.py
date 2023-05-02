@@ -29,13 +29,11 @@ def main():
     while True:
         frame = camera.getFrame()
         handPoseData = handPoseDetection.getPose(frame)
-        handPartLeft = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.PINKY_BASE)
-        handPartRight = HandPart.createFromLandmarks(handPoseData, HandType.RIGHT_HAND, HandPartType.PINKY_BASE)
+        handPartLeftIndexBase = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.INDEX_FINGER_BASE)
+        handPartLeftIndexTip = HandPart.createFromLandmarks(handPoseData, HandType.LEFT_HAND, HandPartType.INDEX_FINGER_TIP)
         try:
-            print("LEFT ", handPartLeft.getHandPartType())
-            print("LEFT ", handPartLeft.getHeading())
-            print("RIGHT ", handPartRight.getHandPartType())
-            print("RIGHT ", handPartRight.getHeading())
+            print(handPartLeftIndexBase.getHeading())
+            print(handPartLeftIndexTip.getHeading())
         except:
             continue
 
