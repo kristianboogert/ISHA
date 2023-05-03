@@ -7,10 +7,12 @@ import cv2
 from math import degrees, radians
 from time import time
 from datetime import datetime
+from .BodyPoseMetadata import BodyPoseMetadata
+from .ExerciseDataReader import ExerciseDataReader
 sys.path.append("..")
 #from poseDetection.HandPoseDetection import *
+# from poseDetection.HandPart import *
 from poseDetection.BodyPose import BodyPose
-from poseDetection.HandPart import *
 from poseDetection.BodyPart import *
 
 ### niet-fugl-meyer oefeningen:
@@ -19,70 +21,15 @@ from poseDetection.BodyPart import *
 #spreiden sluiten vingers (oefening 9: alleen de eerste, voor de leuk ook de tweede)
 ###
 
-class BodyPoseMetadata:
-    def __init__(self, exerciseName, poseTrackerTypeString, impairedSideString):
-        self.metadata = None
-        self.exerciseName = exerciseName
-        self.poseTrackerTypeString = poseTrackerTypeString
-        self.impairedSideString = impairedSideString
-        self.clear()
-    def clear(self):
-        self.metadata = {}
-        self.metadata.update({"name": self.exerciseName})
-        self.metadata.update({"pose_detection_type": self.poseTrackerTypeString})
-        self.metadata.update({"impaired_side": self.impairedSideString})
-        self.metadata.update({"exercise_parts": [[], []]})
-        return self.metadata
-    def addPose(self, bodyPartTypeString, plane, angles, score, currentExercisePart, startTime):
-        currentTime = int(time()*1000)
-        msSinceStart = currentTime - startTime
-        poseLandmarks = {
-            "body_part": bodyPartTypeString,
-            "plane": plane,
-            "angles": angles,
-            "score": score,
-            "ms_since_exercise_start": msSinceStart
-        }
-        self.metadata["exercise_parts"][currentExercisePart].append(poseLandmarks)
-        return self.metadata
-    def fixTimeStamps(self):
-        try:
-            startTime = self.metadata["exercise_parts"][0][0]["ms_since_exercise_start"] # first exercisePart, first exercise
-            for exercisePart in range(len(self.metadata["exercise_parts"])):
-                for pose in range(len(self.metadata["exercise_parts"][exercisePart])):
-                    fixedTime = self.metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] - startTime
-                    self.metadata["exercise_parts"][exercisePart][pose]["ms_since_exercise_start"] = fixedTime
-        except:
-            pass
-        return self.metadata
-    def getMetadata(self):
-        return self.metadata
-
-class ExerciseData:
-    @staticmethod
-    def getPlaneForBodyPart(exerciseData, exercisePart, bodyPartType):
-        for item in exerciseData["parts"][exercisePart]:
-            print(item)
-            if item["body_part"] == bodyPartType:
-                return item["angles"]["plane"]
-        return None
-    def getCorrectAngleOffsets(exerciseData, exercisePart, bodyPartType):
-        for item in exerciseData["parts"][exercisePart]:
-            print(item)
-            plane = item["angles"]["plane"]
-            if item["body_part"] == bodyPartType:
-                return [item["angles"]["score_2_min"], item["angles"]["score_2_max"]]
-        return None
-
 class FuglMeyer:
-    def __init__(self):
-        self.none = None
-    def landmarksAreVisible(self, landmarks, visibilityThreshold=0.85):
-        for landmark in landmarks:
-            if landmark is None or landmark.visibility < visibilityThreshold:
-                return False
+    def isUserInView(exerciseData, bodyPoseDetection, poseLandmarks):
+        for exercisePart in exerciseData["parts"]:
+            # check landmark visibility for each body part
+            for bodyPart in exercisePart:
+                if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
+                    return False
         return True
-    def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
+    def scoreExercise(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]
@@ -107,7 +54,6 @@ class FuglMeyer:
             ###
             frame_start = time()*1000
             poseLandmarks = bodyPoseDetection.getPose(frame)
-            frame = bodyPoseDetection.drawPose(frame, poseLandmarks)
             frame_end = time()*1000
             FPS = int(1000/(frame_end-frame_start))
             frame = cv2.flip(frame, 1)
@@ -122,26 +68,20 @@ class FuglMeyer:
             ###
             # Are all relevant body parts in frame?
             ###
-            userInView = True
-            for exercisePart in exerciseData["parts"]:
-                # check landmark visibility for each body part
-                for bodyPart in exercisePart:
-                    if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
-                        userInView = False
-                        break
+            userInView = FuglMeyer.isUserInView(exerciseData, bodyPoseDetection, poseLandmarks)
             if not userInView:
                 print("not all bodyparts are in view, pausing score system until user becomes (partially) visible again")
                 continue
             ###
             # Has exercise been started?
             ###
-            if userInView == True and exerciseStarted == False:
+            if userInView and exerciseStarted == False:
                 exerciseStarted = True
                 continue
             ###
             # Does user want to quit?
             ###
-            # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION!
+            # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION! WE NEED SOME SORT OF API/DBUS SYSTEM FOR THIS!
             ###
             # Create neutral pose if it doesn't exist
             ###
@@ -157,7 +97,7 @@ class FuglMeyer:
             ###
             bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             for diff in bodyPoseDiffs:
-                plane = ExerciseData.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
+                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 if diff["heading"][plane]>20:
                     if score[currentExercisePart] < 1:
                         score[currentExercisePart] = 1
@@ -169,13 +109,16 @@ class FuglMeyer:
             # TODO: KIJK HIER NOG EVEN NAAR, HET LIJKT ER NAMELIJK OP DAT ER MAAR 1 BODY PART GOED HOEFT TE ZIJN
             userHasCorrectBodyPose = False
             for bodyPartData in currentBodyPose:
-                plane = ExerciseData.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
+                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 currentBodyPartAngle = bodyPartData["heading"][plane]
-                maxOffsets = ExerciseData.getCorrectAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
+                maxOffsets = ExerciseDataReader.getCorrectAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
                 print(maxOffsets)
                 print(currentBodyPartAngle)
                 if maxOffsets[0] > currentBodyPartAngle and currentBodyPartAngle > maxOffsets[1]:
                     userHasCorrectBodyPose = True
+                else:
+                    userHasCorrectBodyPose = False
+                    break
 
             if userHasCorrectBodyPose:
                 print("USER SCORED 2!")
@@ -199,7 +142,7 @@ class FuglMeyer:
                 print("all done!")
                 break
             ###
-            # Create metadata
+            # Add body pose data to metadata
             ###
             for bodyPart in exerciseData["parts"][currentExercisePart]:
                 # Get bodypart angle
@@ -226,8 +169,6 @@ class FuglMeyer:
                         score[currentExercisePart] = 1
                         poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
-        metadata.fixTimeStamps()
-        print("METADATA:", metadata.getMetadata())
         return score, json.dumps(metadata.getMetadata(), indent=4)
 
 
