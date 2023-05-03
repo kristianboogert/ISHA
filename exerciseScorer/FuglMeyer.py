@@ -169,7 +169,6 @@ class FuglMeyer:
                         score[currentExercisePart] = 1
                         poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
-        print("METADATA:", metadata.getMetadata()) 
         return score, json.dumps(metadata.getMetadata(), indent=4)
 
 
