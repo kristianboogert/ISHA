@@ -2,9 +2,6 @@ from math import degrees, radians, acos, dist
 from time import time
 from .BodyPart import BodyPart
 
-#class Pose bestaat uit meerdere BodyParts
-#class BodyPart kan niet zonder BodyJoint
-
 class BodyPose:
     def __init__(self):
         self.bodyPose = []
@@ -46,8 +43,6 @@ class BodyPose:
                         }
                     })
         return diffs
-        # print(bodyPose)
-        # print(otherBodyPose)
 
 
 

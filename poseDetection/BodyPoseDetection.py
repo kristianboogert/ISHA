@@ -21,17 +21,19 @@ class BodyPoseDetection:
         cameraFrame.flags.writeable = True
         cameraFrame = cv2.cvtColor(cameraFrame, cv2.COLOR_RGB2BGR)
         return self.poseData
-    def _getPoseLandmark(self, limb, poseData):
+    def _getPoseLandmark(self, bodyJointType, bodyPoseData):
         try:
-            return poseData.pose_landmarks.landmark[limb]
+            return bodyPoseData.pose_landmarks.landmark[bodyJointType]
         except:
             return None
-    def isBodyPartVisible(self, bodyPartType, poseLandmarks, landmarkVisibilityThreshold=0.85):
+    @staticmethod
+    def isBodyPartVisible(bodyPartType, bodyPoseData, landmarkVisibilityThreshold=0.85):
         # If a body part can be created from a given set of landmarks, it is considered visible
         bodyPartTypeString = BodyPartType.serialize(bodyPartType)
-        bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString, landmarkVisibilityThreshold=landmarkVisibilityThreshold)
+        bodyPart = BodyPart.createFromLandmarks(bodyPoseData, bodyPartTypeString, landmarkVisibilityThreshold=landmarkVisibilityThreshold)
         return (bodyPart is not None)
-    def getAnglesForBodyPart(self, bodyPartType, poseLandmarks):
+    @staticmethod
+    def getAnglesForBodyPart(bodyPartType, bodyPoseData):
         bodyPartTypeString = BodyPartType.serialize(bodyPartType)
-        bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString)
+        bodyPart = BodyPart.createFromLandmarks(bodyPoseData, bodyPartTypeString)
         return bodyPart.getHeading()

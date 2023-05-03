@@ -37,4 +37,5 @@ class BodyPoseMetadata:
             pass
         return self.metadata
     def getMetadata(self):
+        self.fixTimeStamps()
         return self.metadata

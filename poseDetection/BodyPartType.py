@@ -37,4 +37,3 @@ class BodyPartType(IntEnum):
             return BodyPartType.LEFT_FOREARM
         if bodyPartTypeString.upper() == "RIGHT_FOREARM":
             return BodyPartType.RIGHT_FOREARM
-

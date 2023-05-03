@@ -22,14 +22,7 @@ from poseDetection.BodyPart import *
 ###
 
 class FuglMeyer:
-    def __init__(self):
-        self.none = None
-    def landmarksAreVisible(self, landmarks, visibilityThreshold=0.85):
-        for landmark in landmarks:
-            if landmark is None or landmark.visibility < visibilityThreshold:
-                return False
-        return True
-    def scoreExercisePart(self, camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
+    def scoreExercise(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]

@@ -15,7 +15,10 @@ from poseDetection.BodyPartType import *
 from poseDetection.BodyPart import BodyPart
 from poseDetection.BodyPose import BodyPose
 from exerciseScorer.FuglMeyer import FuglMeyer
-from exerciseCreator.ExerciseCreator import ExerciseCreator, ImpairedSide, PoseDetectionType, BodyPartDescription
+from exerciseCreator.ImpairedSideType import ImpairedSideType
+from exerciseCreator.PoseDetectionType import PoseDetectionType
+from exerciseCreator.BodyPartDescriptionType import BodyPartDescriptionType
+from exerciseCreator.ExerciseCreator import ExerciseCreator
 from time import time
 from time import sleep
 import cv2
@@ -72,13 +75,13 @@ def main():
     }\
     '
 
-    exerciseData = exerciseCreator.createExercise(exerciseDescription, ImpairedSide.RIGHT)
+    exerciseData = ExerciseCreator.createExercise(exerciseDescription, ImpairedSideType.RIGHT)
     print("exerciseData:", exerciseData)
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
-    fuglMeyer = FuglMeyer()
-    score, metadata = fuglMeyer.scoreExercisePart(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85)
+    # fuglMeyer = FuglMeyer()
+    score, metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, exerciseData)
     print(metadata)
     print(score)
 main()
