@@ -5,7 +5,7 @@ from .BodyPartDescriptionType import BodyPartDescriptionType
 from .ImpairedSideType import ImpairedSideType
 
 class ExerciseCreator:
-    def createExercise(exerciseDescription, impairedSideType):
+    def createExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)
         # Deserialize pose type entry in exerciseDescription
         # Deserialize body parts in exerciseDescription

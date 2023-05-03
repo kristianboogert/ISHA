@@ -22,6 +22,13 @@ from poseDetection.BodyPart import *
 ###
 
 class FuglMeyer:
+    def isUserInView(exerciseData, bodyPoseDetection, poseLandmarks):
+        for exercisePart in exerciseData["parts"]:
+            # check landmark visibility for each body part
+            for bodyPart in exercisePart:
+                if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
+                    return False
+        return True
     def scoreExercise(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
@@ -61,26 +68,20 @@ class FuglMeyer:
             ###
             # Are all relevant body parts in frame?
             ###
-            userInView = True
-            for exercisePart in exerciseData["parts"]:
-                # check landmark visibility for each body part
-                for bodyPart in exercisePart:
-                    if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
-                        userInView = False
-                        break
+            userInView = FuglMeyer.isUserInView(exerciseData, bodyPoseDetection, poseLandmarks)
             if not userInView:
                 print("not all bodyparts are in view, pausing score system until user becomes (partially) visible again")
                 continue
             ###
             # Has exercise been started?
             ###
-            if userInView == True and exerciseStarted == False:
+            if userInView and exerciseStarted == False:
                 exerciseStarted = True
                 continue
             ###
             # Does user want to quit?
             ###
-            # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION!
+            # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION! WE NEED SOME SORT OF API/DBUS SYSTEM FOR THIS!
             ###
             # Create neutral pose if it doesn't exist
             ###
@@ -115,6 +116,9 @@ class FuglMeyer:
                 print(currentBodyPartAngle)
                 if maxOffsets[0] > currentBodyPartAngle and currentBodyPartAngle > maxOffsets[1]:
                     userHasCorrectBodyPose = True
+                else:
+                    userHasCorrectBodyPose = False
+                    break
 
             if userHasCorrectBodyPose:
                 print("USER SCORED 2!")
@@ -138,7 +142,7 @@ class FuglMeyer:
                 print("all done!")
                 break
             ###
-            # Create metadata
+            # Add body pose data to metadata
             ###
             for bodyPart in exerciseData["parts"][currentExercisePart]:
                 # Get bodypart angle
@@ -165,8 +169,7 @@ class FuglMeyer:
                         score[currentExercisePart] = 1
                         poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
-        metadata.fixTimeStamps()
-        print("METADATA:", metadata.getMetadata())
+        print("METADATA:", metadata.getMetadata()) 
         return score, json.dumps(metadata.getMetadata(), indent=4)
 
 

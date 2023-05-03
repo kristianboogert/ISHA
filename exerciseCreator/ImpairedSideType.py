@@ -5,7 +5,7 @@ class ImpairedSideType(IntEnum):
     RIGHT = 1
     @staticmethod
     def serialize(impairedSideType):
-        if impairedSideType == ImpairedSideTypeType.LEFT:
+        if impairedSideType == ImpairedSideType.LEFT:
             return "LEFT"
-        if impairedSideType == ImpairedSideTypeType.RIGHT:
+        if impairedSideType == ImpairedSideType.RIGHT:
             return "RIGHT"

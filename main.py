@@ -1,19 +1,17 @@
 from poseDetection.Camera import Camera
+# from dataExporter.ExcelExporter import * # TODO: deze is op het moment stuk
 from poseDetection.BodyPoseDetection import BodyPoseDetection
-from poseDetection.HandPoseDetection import HandPoseDetection
-from poseDetection.BodyPart import *
-from poseDetection.HandType import *
-from poseDetection.HandPartType import *
-from poseDetection.HandJoint import HandJoint
-from poseDetection.HandPart import HandPart
-from poseDetection.HandJointType import *
-from stereoscopic.DepthImage import DepthImage
-from dataExporter.ExcelExporter import *
 from poseDetection.BodyJointType import *
 from poseDetection.BodyJoint import BodyJoint
 from poseDetection.BodyPartType import *
 from poseDetection.BodyPart import BodyPart
 from poseDetection.BodyPose import BodyPose
+from poseDetection.HandPoseDetection import HandPoseDetection
+from poseDetection.HandType import *
+from poseDetection.HandPartType import *
+from poseDetection.HandJoint import HandJoint
+from poseDetection.HandPart import HandPart
+from poseDetection.HandJointType import *
 from exerciseScorer.FuglMeyer import FuglMeyer
 from exerciseCreator.ImpairedSideType import ImpairedSideType
 from exerciseCreator.PoseDetectionType import PoseDetectionType
@@ -44,7 +42,6 @@ def main():
 
 
     # BODY POSE DEMO!
-    exerciseCreator = ExerciseCreator()
     exerciseDescription = '\
     {\
         "name": "Raise arm to side",\
@@ -75,12 +72,11 @@ def main():
     }\
     '
 
-    exerciseData = ExerciseCreator.createExercise(exerciseDescription, ImpairedSideType.RIGHT)
+    exerciseData = ExerciseCreator.createExerciseData(exerciseDescription, ImpairedSideType.RIGHT)
     print("exerciseData:", exerciseData)
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
-    # fuglMeyer = FuglMeyer()
     score, metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, exerciseData)
     print(metadata)
     print(score)
