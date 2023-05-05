@@ -37,7 +37,7 @@ class FuglMeyer:
         neutralBodyPoseCreator = BodyPose()
         currentBodyPoseCreator = BodyPose()
         neutralBodyPose = [None, None]
-        metadata = BodyPoseMetadata(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
+        # metadata = BodyPoseMetadata(exerciseData["name"], exerciseData["pose_detection_type"], exerciseData["impaired_side"])
         relevantBodyPartTypeStrings = [[], []]
         for exercisePart in range(len(exerciseData["parts"])):
             for bodyPartData in exerciseData["parts"][exercisePart]:
@@ -144,32 +144,32 @@ class FuglMeyer:
             ###
             # Add body pose data to metadata
             ###
-            for bodyPart in exerciseData["parts"][currentExercisePart]:
-                # Get bodypart angle
-                currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
-                if currentBodyPartAngles is None:
-                    print(time(), "Skipping frame, because user is not fully in view anymore (?)")
-                    break
-                print("TESTING:", currentBodyPartAngles)
-                plane = bodyPart["angles"]["plane"]
-                currentBodyPartAngle = currentBodyPartAngles[plane]
-                givenAngles = bodyPart["angles"]
-                poseMetadata = {
-                    "body_part": BodyPartType.serialize(bodyPart["body_part"]),
-                    "plane": plane,
-                    "angles": currentBodyPartAngles,
-                    "score": 0
-                }
-                if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
-                    print(time(), "user scored 2 on bodypart:", BodyPartType.serialize(bodyPart["body_part"]))
-                    score[currentExercisePart] = 2
-                    poseMetadata.update({"score": 2})
-                else:
-                    if score[currentExercisePart] == 2:
-                        score[currentExercisePart] = 1
-                        poseMetadata.update({"score": 1})
-                metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
-        return score, json.dumps(metadata.getMetadata(), indent=4)
+            # for bodyPart in exerciseData["parts"][currentExercisePart]:
+            #     # Get bodypart angle
+            #     currentBodyPartAngles = bodyPoseDetection.getAnglesForBodyPart(bodyPart["body_part"], poseLandmarks)
+            #     if currentBodyPartAngles is None:
+            #         print(time(), "Skipping frame, because user is not fully in view anymore (?)")
+            #         break
+            #     print("TESTING:", currentBodyPartAngles)
+            #     plane = bodyPart["angles"]["plane"]
+            #     currentBodyPartAngle = currentBodyPartAngles[plane]
+            #     givenAngles = bodyPart["angles"]
+            #     poseMetadata = {
+            #         "body_part": BodyPartType.serialize(bodyPart["body_part"]),
+            #         "plane": plane,
+            #         "angles": currentBodyPartAngles,
+            #         "score": 0
+            #     }
+            #     if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
+            #         print(time(), "user scored 2 on bodypart:", BodyPartType.serialize(bodyPart["body_part"]))
+            #         score[currentExercisePart] = 2
+            #         poseMetadata.update({"score": 2})
+            #     else:
+            #         if score[currentExercisePart] == 2:
+            #             score[currentExercisePart] = 1
+            #             poseMetadata.update({"score": 1})
+            #     metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
+        return score, None#json.dumps(metadata.getMetadata(), indent=4)
 
 
 
