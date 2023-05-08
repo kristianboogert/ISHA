@@ -4,10 +4,9 @@ from .PoseDetectionType import PoseDetectionType
 from .BodyPartDescriptionType import BodyPartDescriptionType
 from .ImpairedSideType import ImpairedSideType
 
-class ExerciseCreator:
+class ExerciseDataCreator:
     def createBodyExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)
-        # Deserialize pose type entry in exerciseDescription
         # Deserialize body part in exerciseDescription
         for body_part in data_in["body_parts"]:
             body_part["body_part"] = BodyPartDescriptionType.deserialize(body_part["body_part"])
@@ -15,6 +14,7 @@ class ExerciseCreator:
         data_out = {}
         # Add exercise name to out
         data_out.update({"name": data_in["name"]})
+        data_out.update({"pose_detection_type": data_in["pose_detection_type"]})
         data_out.update({"parts": [[], []]})
         if impairedSideType == ImpairedSideType.LEFT:
             print("Impaired side is left, making sure the user does right body side first")
@@ -51,5 +51,5 @@ class ExerciseCreator:
     def createExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)
         if data_in["pose_detection_type"].upper() == "BODY_POSE":
-            return ExerciseCreator.createBodyExerciseData(exerciseDescription, impairedSideType)
+            return ExerciseDataCreator.createBodyExerciseData(exerciseDescription, impairedSideType)
         return None
