@@ -39,7 +39,11 @@ class FuglMeyer:
         exit(1)
     def scoreHandRotationExercise(camera, handPoseDetection, exerciseData):
         # Create a neutral hand pose? The first thing the camera sees, it should consider a neutral hand pose
+        while True:
+            handPoseData = handPoseDetection.getPose(camera.getFrame())
+            print(handPoseData)
         neutralHandPoseCreator = HandPose()
+        neutralHandPoseCreator.createPose()
         currentHandPoseCreator = HandPose()
         print("eh")
     def scoreBodyExercise(camera, bodyPoseDetection, exerciseData):

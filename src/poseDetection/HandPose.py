@@ -12,62 +12,63 @@ class HandPose:
         self.handPose = []
     def getHandPose(self):
         return self.handPose
-    def createPose(self, poseLandmarks, handTypeString, relevantHandPartTypeStrings):
-        self.clear()
-        index = None
-        # mediapipe swaps left and right for some reason
-        labelToFind = None
-        if handTypeString == "LEFT_HAND":
-            labelToFind = "Right"
-        if handTypeString == "RIGHT_HAND":
-            labelToFind = "Left"
+    def _isHandInView(self, poseLandmarks, handTypeString):
+        print("HAND_TYPE:", handTypeString)
+        # track both visibilities, because the landmarks index might be swapped
+        leftHandInView = False
+        rightHandInView = False
+        foundAtIndex = 0
+        # Hand pose detection can work without mirrored input frames, but hand pose cannot.
+        # therefor, if a user wants to see if the hand is in view, we ask for the opposite hand.
+        # another solution would be to mirror the input frame, but this takes more cpu%.
+        print(poseLandmarks.multi_handedness)
         if poseLandmarks.multi_handedness is not None:
             for hand in poseLandmarks.multi_handedness:
                 label = hand.classification[0].label
-                if labelToFind == label:
-                    print("mediapipe says:", label)
-                    print("we seem to have found the opposite hand")
-
-        #         if label == labelToFind:
-        #             print(label)
-        #             print(handTypeString)
-        #             index = hand.classification[0].index
-        #             print(index)
-        #             break
-        print(poseLandmarks[index])
-        return self.handPose
-        for handPartTypeString in relevantHandPartTypeStrings:
-            handPart = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize(handPartTypeString))
-            if handPart is not None:
-                self.handPose.append({
-                    "hand": handTypeString,
-                    "hand_part": handPart.getHandPartType(),
-                    "origin": handPart.getOriginHandJoint().getPosition(),
-                    "heading": handPart.getHeading(),
-                    "timestamp": round(time()*1000)
-                })
-        # store hand rotation as well
-        try:
-            indexFinger = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize("INDEX_FINGER"))
-            ringFinger = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize("RING_FINGER"))
-            indexFingerOriginHandJoint = indexFinger.getOriginHandJoint().getPosition()
-            ringFingerOriginHandJoint = ringFinger.getOriginHandJoint().getPosition()
-            if handTypeString.upper() == "LEFT_HAND":
-                delta_y = ringFingerOriginHandJoint["y"]-indexFingerOriginHandJoint["y"]
-                delta_x = ringFingerOriginHandJoint["x"]-indexFingerOriginHandJoint["x"]
-                xyAngle = degrees(atan2(delta_y, delta_x))
-                self.handPose.append({
-                    "hand_rotation_xy": xyAngle
-                })
-            if handTypeString.upper() == "RIGHT_HAND":
-                delta_y = indexFingerOriginHandJoint["y"]-ringFingerOriginHandJoint["y"]
-                delta_x = indexFingerOriginHandJoint["x"]-ringFingerOriginHandJoint["x"]
-                xyAngle = degrees(atan2(delta_y, delta_x))
-                self.handPose.append({
-                    "hand_rotation_xy": -xyAngle
-                })
-        except:
-            pass
+                index = hand.classification[0].index
+                if label == "Left" and handTypeString == "RIGHT_HAND": # this is no mistake
+                        return True, foundAtIndex
+                if label == "Right" and handTypeString == "LEFT_HAND": # this is also no mistake
+                        return True, foundAtIndex
+                foundAtIndex+=1
+        return False, None
+    def createPose(self, poseLandmarks, handTypeString, relevantHandPartTypeStrings):
+        self.clear()
+        isHandVisible, handLandmarksIndex = self._isHandInView(poseLandmarks, handTypeString)
+        print("LANDMARK_INDEX:", handLandmarksIndex)
+        if isHandVisible == True:
+            for handPartTypeString in relevantHandPartTypeStrings:
+                handPart = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize(handPartTypeString), handLandmarksIndex)
+                if handPart is not None:
+                    self.handPose.append({
+                        "hand": handTypeString,
+                        "hand_part": handPart.getHandPartType(),
+                        "origin": handPart.getOriginHandJoint().getPosition(),
+                        "heading": handPart.getHeading(),
+                        "timestamp": round(time()*1000)
+                    })
+            # store hand rotation as well
+            try:
+                indexFinger = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize("INDEX_FINGER"), handLandmarksIndex)
+                ringFinger = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize("RING_FINGER"), handLandmarksIndex)
+                indexFingerOriginHandJoint = indexFinger.getOriginHandJoint().getPosition()
+                ringFingerOriginHandJoint = ringFinger.getOriginHandJoint().getPosition()
+                if handTypeString.upper() == "LEFT_HAND":
+                    delta_y = ringFingerOriginHandJoint["y"]-indexFingerOriginHandJoint["y"]
+                    delta_x = ringFingerOriginHandJoint["x"]-indexFingerOriginHandJoint["x"]
+                    xyAngle = degrees(atan2(delta_y, delta_x))
+                    self.handPose.append({
+                        "hand_rotation_xy": xyAngle
+                    })
+                if handTypeString.upper() == "RIGHT_HAND":
+                    delta_y = indexFingerOriginHandJoint["y"]-ringFingerOriginHandJoint["y"]
+                    delta_x = indexFingerOriginHandJoint["x"]-ringFingerOriginHandJoint["x"]
+                    xyAngle = degrees(atan2(delta_y, delta_x))
+                    self.handPose.append({
+                        "hand_rotation_xy": -xyAngle
+                    })
+            except:
+                pass
         return self.handPose
     def getHandRotation(self, handPartType):
         return handPartType.getHeading()
