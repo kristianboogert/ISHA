@@ -21,6 +21,7 @@ class HandPose:
         # Hand pose detection can work without mirrored input frames, but hand pose cannot.
         # therefor, if a user wants to see if the hand is in view, we ask for the opposite hand.
         # another solution would be to mirror the input frame, but this takes more cpu%.
+        # also, if there are two hands in view, their index is swapped for whatever reason.
         print(poseLandmarks.multi_handedness)
         if poseLandmarks.multi_handedness is not None:
             for hand in poseLandmarks.multi_handedness:
