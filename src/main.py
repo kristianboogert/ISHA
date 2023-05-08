@@ -11,6 +11,7 @@ from poseDetection.HandType import *
 from poseDetection.HandPartType import *
 from poseDetection.HandJoint import HandJoint
 from poseDetection.HandPart import HandPart
+from poseDetection.HandPose import HandPose
 from poseDetection.HandJointType import *
 from exerciseScorer.FuglMeyer import FuglMeyer
 from exerciseDataCreator.ImpairedSideType import ImpairedSideType
@@ -23,19 +24,35 @@ import cv2
 import stitching
 
 def main():
+    camera = Camera(cameraId=0)
+    camera.start()
+    handPoseDetection = HandPoseDetection()
+    handPose = HandPose()
+    while True:
+        poseLandmarks = handPoseDetection.getPose(camera.getFrame())
+        handPose.createPose(poseLandmarks, "LEFT_HAND", "INDEX_FINGER")
+
+
+
+
     # Read JSON containing an exerciseDescription
-    exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"
+    exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
+    # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
+
     exerciseDescription = open(exerciseDescriptionFilepath).read()
+    print(exerciseDescription)
     # Convert the exerciseDescription to exerciseData, so the pose detection can just follow instructions,
     # without having any real world knowlegde
     exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.RIGHT)
     # Initialize camera. If camera.start() is not called, it will not give frames. Same goes for camera.stop()
     camera = Camera(cameraId=0)
     camera.start()
-    # Initialize a body pose detection
+    # Initialize pose detections
     bodyPoseDetection = BodyPoseDetection()
+    handPoseDetection = HandPoseDetection()
     # Try to get a score by looking at a user's movements
-    score, pose_metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, exerciseData)
+    print(exerciseData)
+    score, pose_metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData)
     print(pose_metadata)
     print(score)
 main()

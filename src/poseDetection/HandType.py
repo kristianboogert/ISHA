@@ -10,3 +10,10 @@ class HandType(IntEnum):
             return HandType.LEFT_HAND
         if handTypeString.upper() == "RIGHT_HAND":
             return HandType.RIGHT_HAND
+    
+    @staticmethod
+    def serialize(handType):
+        if handType == HandType.LEFT_HAND:
+            return "LEFT_HAND"
+        if handType == HandType.RIGHT_HAND:
+            return "RIGHT_HAND"

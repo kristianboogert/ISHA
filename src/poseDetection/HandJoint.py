@@ -5,6 +5,7 @@ class HandJoint:
         self.position = position
     @staticmethod
     def createFromLandmarks(handType, handJointType, handPoseData):
+        print(handType)
         try:
             landmark = handPoseData.multi_hand_landmarks[handType].landmark[handJointType]
             x, y, z = landmark.x, landmark.y, landmark.z

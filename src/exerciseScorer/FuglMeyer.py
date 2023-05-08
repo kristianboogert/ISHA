@@ -29,7 +29,20 @@ class FuglMeyer:
                 if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
                     return False
         return True
-    def scoreExercise(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
+    def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
+        _exerciseData = json.loads(exerciseData)
+        if _exerciseData["pose_detection_type"] == "body_pose":
+            return FuglMeyer.scoreBodyExercise(camera, bodyPoseDetection, exerciseData)
+        if _exerciseData["pose_detection_type"] == "hand_rotation":
+            return FuglMeyer.scoreHandRotationExercise(camera, handPoseDetection, exerciseData)
+        print("Invalid pose detection type was given, exiting.")
+        exit(1)
+    def scoreHandRotationExercise(camera, handPoseDetection, exerciseData):
+        # Create a neutral hand pose? The first thing the camera sees, it should consider a neutral hand pose
+        neutralHandPoseCreator = HandPose()
+        currentHandPoseCreator = HandPose()
+        print("eh")
+    def scoreBodyExercise(camera, bodyPoseDetection, exerciseData):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]
@@ -106,7 +119,6 @@ class FuglMeyer:
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
-            # TODO: KIJK HIER NOG EVEN NAAR, HET LIJKT ER NAMELIJK OP DAT ER MAAR 1 BODY PART GOED HOEFT TE ZIJN
             userHasCorrectBodyPose = False
             for bodyPartData in currentBodyPose:
                 plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
