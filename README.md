@@ -31,7 +31,7 @@ on Linux.
 # Running the project
 
 ```sh
-python3 main.py
+python3 src/main.py
 ```
 
 # TODO
