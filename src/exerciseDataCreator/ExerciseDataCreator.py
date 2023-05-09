@@ -1,8 +1,11 @@
 import json
+import sys
 
 from .PoseDetectionType import PoseDetectionType
 from .BodyPartDescriptionType import BodyPartDescriptionType
 from .ImpairedSideType import ImpairedSideType
+sys.path.append("..")
+from poseDetection.HandType import HandType
 
 class ExerciseDataCreator:
     def createBodyExerciseData(exerciseDescription, impairedSideType):
@@ -51,11 +54,26 @@ class ExerciseDataCreator:
         data_out = {}
         data_out.update({"name": data_in["name"]})
         data_out.update({"pose_detection_type": data_in["pose_detection_type"]})
-        data_out.update({"parts": [[], []]})
+        data_out.update({"parts": []})
         if impairedSideType == ImpairedSideType.LEFT:
-            return ""
+            data_out["parts"].append({
+                "hand": HandType.RIGHT_HAND,
+                "angles": data_in["angles"]
+            })
+            data_out["parts"].append({
+                "hand": HandType.LEFT_HAND,
+                "angles": data_in["angles"]
+            })
         if impairedSideType == ImpairedSideType.RIGHT:
-            return ""
+            data_out["parts"].append({
+                "hand": HandType.LEFT_HAND,
+                "angles": data_in["angles"]
+            })
+            data_out["parts"].append({
+                "hand": HandType.RIGHT_HAND,
+                "angles": data_in["angles"]
+            })
+        return json.dumps(data_out, indent=4)
 
     def createExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)

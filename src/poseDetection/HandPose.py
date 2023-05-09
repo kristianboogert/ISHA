@@ -13,7 +13,6 @@ class HandPose:
     def getHandPose(self):
         return self.handPose
     def _isHandInView(self, poseLandmarks, handTypeString):
-        print("HAND_TYPE:", handTypeString)
         # track both visibilities, because the landmarks index might be swapped
         leftHandInView = False
         rightHandInView = False
@@ -22,7 +21,6 @@ class HandPose:
         # therefor, if a user wants to see if the hand is in view, we ask for the opposite hand.
         # another solution would be to mirror the input frame, but this takes more cpu%.
         # also, if there are two hands in view, their index is swapped for whatever reason.
-        print(poseLandmarks.multi_handedness)
         if poseLandmarks.multi_handedness is not None:
             for hand in poseLandmarks.multi_handedness:
                 label = hand.classification[0].label
@@ -36,7 +34,6 @@ class HandPose:
     def createPose(self, poseLandmarks, handTypeString, relevantHandPartTypeStrings):
         self.clear()
         isHandVisible, handLandmarksIndex = self._isHandInView(poseLandmarks, handTypeString)
-        print("LANDMARK_INDEX:", handLandmarksIndex)
         if isHandVisible == True:
             for handPartTypeString in relevantHandPartTypeStrings:
                 handPart = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize(handPartTypeString), handLandmarksIndex)

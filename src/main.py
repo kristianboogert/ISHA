@@ -24,24 +24,25 @@ import cv2
 import stitching
 
 def main():
-    camera = Camera(cameraId=0)
-    camera.start()
-    handPoseDetection = HandPoseDetection()
-    handPoseL = HandPose()
-    handPoseR = HandPose()
-    while True:
-        poseLandmarks = handPoseDetection.getPose(camera.getFrame())
-        handPoseL.createPose(poseLandmarks, "LEFT_HAND", "INDEX_FINGER")
-        print("L", handPoseL.getHandPose())
-        handPoseR.createPose(poseLandmarks, "RIGHT_HAND", "INDEX_FINGER")
-        print("R", handPoseR.getHandPose())
+    # HAND TEST
+    # camera = Camera(cameraId=0)
+    # camera.start()
+    # handPoseDetection = HandPoseDetection()
+    # handPoseL = HandPose()
+    # handPoseR = HandPose()
+    # while True:
+    #     poseLandmarks = handPoseDetection.getPose(camera.getFrame())
+    #     handPoseL.createPose(poseLandmarks, "LEFT_HAND", [])
+    #     print("L", handPoseL.getHandPose())
+    #     handPoseR.createPose(poseLandmarks, "RIGHT_HAND", [])
+    #     print("R", handPoseR.getHandPose())
 
 
 
 
     # Read JSON containing an exerciseDescription
-    exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
-    # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
+    # exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
+    exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
 
     exerciseDescription = open(exerciseDescriptionFilepath).read()
     print(exerciseDescription)

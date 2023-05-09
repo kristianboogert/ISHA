@@ -14,6 +14,8 @@ sys.path.append("..")
 # from poseDetection.HandPart import *
 from poseDetection.BodyPose import BodyPose
 from poseDetection.BodyPart import *
+from poseDetection.HandPose import HandPose
+from poseDetection.HandPart import *
 
 ### niet-fugl-meyer oefeningen:
 #schuiven arm over tafel  (oefening 22)
@@ -39,13 +41,46 @@ class FuglMeyer:
         exit(1)
     def scoreHandRotationExercise(camera, handPoseDetection, exerciseData):
         # Create a neutral hand pose? The first thing the camera sees, it should consider a neutral hand pose
-        while True:
-            handPoseData = handPoseDetection.getPose(camera.getFrame())
-            print(handPoseData)
-        neutralHandPoseCreator = HandPose()
-        neutralHandPoseCreator.createPose()
-        currentHandPoseCreator = HandPose()
-        print("eh")
+        exerciseData = json.loads(exerciseData)
+        score = [0, 0]
+        for exercisePart in range(len(exerciseData["parts"])):
+            neutralHandPose = None
+            currentHandPose = None
+            # Get neutral hand pose first, for score 1
+            neutralHandPoseCreator = HandPose()
+            currentHandPoseCreator = HandPose()
+            while True:
+                handPoseData = handPoseDetection.getPose(camera.getFrame())
+                neutralHandPoseCreator.createPose(handPoseData, HandType.serialize(exerciseData["parts"][exercisePart]["hand"]), []) # only hand rotation is needed, so no hand parts are given
+                neutralHandPose = neutralHandPoseCreator.getHandPose()
+                if len(neutralHandPose):
+                    print("Neutral pose has been saved!\nDATA:", neutralHandPose)
+                    break
+            while True:
+                handPoseData = handPoseDetection.getPose(camera.getFrame())
+                currentHandPoseCreator.createPose(handPoseData, HandType.serialize(exerciseData["parts"][exercisePart]["hand"]), [])
+                currentHandPose = currentHandPoseCreator.getHandPose()
+                # see if the user moved their hand at all (score 1)
+                print(currentHandPose)
+                if len(neutralHandPose) and len(currentHandPose):
+                    neutralHandPoseRotationAngle = neutralHandPose[0]["hand_rotation_xy"]
+                    currentHandPoseRotationAngle = currentHandPose[0]["hand_rotation_xy"]
+                    if currentHandPoseRotationAngle - neutralHandPoseRotationAngle >= exerciseData["parts"][exercisePart]["angles"]["score_1_min_diff"]:
+                        if score[exercisePart] < 1:
+                            score[exercisePart] = 1
+                        print("SCORE 1!!!!!!!!!!!11!1")
+                # see if the user moved their hand enough (score 2)
+                if len(currentHandPose) and currentHandPose[0]["hand_rotation_xy"] > 160:
+                    score[exercisePart] = 2
+                    print("SCORE 2!")
+                # see if the hand positition is close to neutral
+                if len(neutralHandPose) and len(currentHandPose):
+                    neutralHandPoseRotationAngle = neutralHandPose[0]["hand_rotation_xy"]
+                    currentHandPoseRotationAngle = currentHandPose[0]["hand_rotation_xy"]
+                    if currentHandPoseRotationAngle - neutralHandPoseRotationAngle < exerciseData["parts"][exercisePart]["angles"]["score_1_min_diff"] and score[exercisePart] >= 1:
+                        break
+                        
+        return score, None
     def scoreBodyExercise(camera, bodyPoseDetection, exerciseData):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
