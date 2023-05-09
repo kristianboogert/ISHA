@@ -33,3 +33,12 @@ on Linux.
 ```sh
 python3 main.py
 ```
+
+# TODO
+
+- update exerciseCreator so a tracker type is now per body part
+- update fugl-meyer class to handle hand tracking
+- update exerciseCreator so repeating an exercise is possible
+- update fugl-meyer so repeating an exercise is possible
+- update exerciseCreator to look at hand rotation
+- update fuglMeyer to look at hand rotation

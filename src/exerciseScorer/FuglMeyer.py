@@ -14,6 +14,8 @@ sys.path.append("..")
 # from poseDetection.HandPart import *
 from poseDetection.BodyPose import BodyPose
 from poseDetection.BodyPart import *
+from poseDetection.HandPose import HandPose
+from poseDetection.HandPart import *
 
 ### niet-fugl-meyer oefeningen:
 #schuiven arm over tafel  (oefening 22)
@@ -29,7 +31,57 @@ class FuglMeyer:
                 if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
                     return False
         return True
-    def scoreExercise(camera, bodyPoseDetection, exerciseData, visibilityThreshold=0.85):
+    def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
+        _exerciseData = json.loads(exerciseData)
+        if _exerciseData["pose_detection_type"] == "body_pose":
+            return FuglMeyer.scoreBodyExercise(camera, bodyPoseDetection, exerciseData)
+        if _exerciseData["pose_detection_type"] == "hand_rotation":
+            return FuglMeyer.scoreHandRotationExercise(camera, handPoseDetection, exerciseData)
+        print("Invalid pose detection type was given, exiting.")
+        exit(1)
+    def scoreHandRotationExercise(camera, handPoseDetection, exerciseData):
+        # Create a neutral hand pose? The first thing the camera sees, it should consider a neutral hand pose
+        exerciseData = json.loads(exerciseData)
+        score = [0, 0]
+        for exercisePart in range(len(exerciseData["parts"])):
+            neutralHandPose = None
+            currentHandPose = None
+            # Get neutral hand pose first, for score 1
+            neutralHandPoseCreator = HandPose()
+            currentHandPoseCreator = HandPose()
+            while True:
+                handPoseData = handPoseDetection.getPose(camera.getFrame())
+                neutralHandPoseCreator.createPose(handPoseData, HandType.serialize(exerciseData["parts"][exercisePart]["hand"]), []) # only hand rotation is needed, so no hand parts are given
+                neutralHandPose = neutralHandPoseCreator.getHandPose()
+                if len(neutralHandPose):
+                    print("Neutral pose has been saved!\nDATA:", neutralHandPose)
+                    break
+            while True:
+                handPoseData = handPoseDetection.getPose(camera.getFrame())
+                currentHandPoseCreator.createPose(handPoseData, HandType.serialize(exerciseData["parts"][exercisePart]["hand"]), [])
+                currentHandPose = currentHandPoseCreator.getHandPose()
+                # see if the user moved their hand at all (score 1)
+                print(currentHandPose)
+                if len(neutralHandPose) and len(currentHandPose):
+                    neutralHandPoseRotationAngle = neutralHandPose[0]["hand_rotation_xy"]
+                    currentHandPoseRotationAngle = currentHandPose[0]["hand_rotation_xy"]
+                    if currentHandPoseRotationAngle - neutralHandPoseRotationAngle >= exerciseData["parts"][exercisePart]["angles"]["score_1_min_diff"]:
+                        if score[exercisePart] < 1:
+                            score[exercisePart] = 1
+                        print("SCORE 1!!!!!!!!!!!11!1")
+                # see if the user moved their hand enough (score 2)
+                if len(currentHandPose) and currentHandPose[0]["hand_rotation_xy"] > 160:
+                    score[exercisePart] = 2
+                    print("SCORE 2!")
+                # see if the hand positition is close to neutral
+                if len(neutralHandPose) and len(currentHandPose):
+                    neutralHandPoseRotationAngle = neutralHandPose[0]["hand_rotation_xy"]
+                    currentHandPoseRotationAngle = currentHandPose[0]["hand_rotation_xy"]
+                    if currentHandPoseRotationAngle - neutralHandPoseRotationAngle < exerciseData["parts"][exercisePart]["angles"]["score_1_min_diff"] and score[exercisePart] >= 1:
+                        break
+                        
+        return score, None
+    def scoreBodyExercise(camera, bodyPoseDetection, exerciseData):
         exerciseStarted = False
         exerciseData = json.loads(exerciseData)
         score = [0, 0] # [first part, second part]
@@ -106,7 +158,6 @@ class FuglMeyer:
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
-            # TODO: KIJK HIER NOG EVEN NAAR, HET LIJKT ER NAMELIJK OP DAT ER MAAR 1 BODY PART GOED HOEFT TE ZIJN
             userHasCorrectBodyPose = False
             for bodyPartData in currentBodyPose:
                 plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
@@ -170,151 +221,3 @@ class FuglMeyer:
                         poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
         return score, json.dumps(metadata.getMetadata(), indent=4)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class NeutralPose:
-#     def __init__(self, bodyPoseDetection):
-#         self.neutralPose = []
-#         self.bodyPoseDetection = bodyPoseDetection
-#     def addToNeutralPose(self, angleData):
-#         self.neutralPose.append(angleData)
-#     def createNeutralPose(self, poseLandmarks, exerciseData):
-#         for exercisePart in range(len(exerciseData["parts"])):
-#             for bodyPartData in exerciseData["parts"][exercisePart]:
-#                 bodyPartType = bodyPartData["body_part"]
-#                 bodyPartTypeString = BodyPartType.serialize(bodyPartType)
-#                 bodyPart = BodyPart.createFromLandmarks(poseLandmarks, bodyPartTypeString)
-#                 if bodyPart is None:
-#                     continue
-#                 self.neutralPose.append({
-#                     "exercise_part": exercisePart,
-#                     "body_part": bodyPartType,
-#                     "heading": bodyPart.getHeading()
-#                 })
-#         return self.neutralPose
-#     def getAngleDiffs(self, currentBodyPose, bodyPart):
-#         # Get neutral angles for body part
-#         neutralPose = None
-#         for item in self.neutralPose:
-#             print(item["body_part"], bodyPart["body_part"])
-#             if item["body_part"] == bodyPart["body_part"]:
-#                 neutralPose = item
-#                 break
-#         print(neutralPose)
-#         if neutralPose is None:
-#             return None
-#             exit(1)
-#         # compare angles
-#         planes = ["xy", "yz", "xz"]
-#         diffs = {}
-#         for plane in planes:
-#             print("CURR:", currentBodyPose["heading"][plane], plane)
-#             print("PREV:", neutralPose["heading"][plane], plane)
-#             diffs[plane] = degrees(radians(currentBodyPartAngles[plane])) - degrees(radians(neutralPose["heading"][plane]))
-#         return diffs
-
-#         # xy_diff = item["xy"] - currentBodyPartAngles["xy"]
-#         # print(xy_diff)
-
-
-
-
-    # def exerciseRaiseArmToSideTest(self, camera, bodyPoseDetection, nonImpairedElbowBodyPart, visibilityThreshold=0.85):
-    #     if not camera.is_running():
-    #         camera.start()
-    #     armAngles = {
-    #         "neutral_min": -90,
-    #         "neutral_max": -80,
-    #         "score_1_min": -60,
-    #         "score_2_min": -10,
-    #     }
-    #     exerciseStarted = False
-    #     score = 0
-    #     # Handle exercise
-    #     while True:
-    #         ###
-    #         # Get camera frame
-    #         ###
-    #         frame = camera.getFrame()
-    #         ###
-    #         # Detect body pose (mediapipe)
-    #         ###
-    #         poseLandmarks = bodyPoseDetection.getPose(frame)
-    #         frame = bodyPoseDetection.drawPose(frame, poseLandmarks)
-    #         cv2.imshow('body frame', cv2.flip(frame, 1))
-    #         if cv2.waitKey(1) == ord('q'):
-    #             break
-    #         ###
-    #         # Are all relevant joints in frame?
-    #         ###
-    #         leftShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_SHOULDER, poseLandmarks)
-    #         rightShoulderLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_SHOULDER, poseLandmarks)
-    #         leftElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.LEFT_ELBOW, poseLandmarks)
-    #         rightElbowLandmark = bodyPoseDetection.getPoseLandmark(BodyPart.RIGHT_ELBOW, poseLandmarks)
-    #         if not self.landmarksAreVisible([leftShoulderLandmark, rightShoulderLandmark, leftElbowLandmark, rightElbowLandmark]):
-    #             print("user is not fully in frame for this exercise")
-    #             continue
-    #         ###
-    #         # Has exercise been started?
-    #         ###
-    #         if not exerciseStarted:
-    #             exerciseStarted = True
-    #             continue
-    #         ###
-    #         # Has user pressed "quit"?
-    #         ###
-    #         # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION! MAYBE SOME DBUS MAGIC SO OTHER PROCESSES CAN TALK TO US?
-    #
-    #         ###
-    #         # Calculate relevant joint angles
-    #         ###
-    #         leftUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_ELBOW, poseLandmarks)
-    #         rightUpperArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_ELBOW, poseLandmarks)
-    #         leftLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.LEFT_WRIST, poseLandmarks)
-    #         rightLowerArmAngle = bodyPoseDetection.getAnglesForBodyPart(BodyPart.RIGHT_WRIST, poseLandmarks)
-    #         try:
-    #             print("ARM ANGLES:\nLeft: ", leftUpperArmAngle["xy"],
-    #                 "\nRight:", rightUpperArmAngle["xy"], "\n",
-    #                 "WRIST ANGLES:\nLeft: ", leftLowerArmAngle["xy"],
-    #                 "\nRight:", rightLowerArmAngle["xy"], "\n")
-    #         except:
-    #             pass
-    #         ###
-    #         # Relevant joints have reached threshold?
-    #         ###
-    #         if leftUpperArmAngle["xy"] > armAngles["score_1_min"] and score != 2:
-    #             print("\n\n\n\nSCORE IS 1 NOW!\n\n\n\n")
-    #             score = 1
-    #         if leftUpperArmAngle["xy"] > armAngles["score_2_min"]:
-    #             print("\n\n\n\nSCORE IS 2 NOW!\n\n\n\n")
-    #             score = 2
-    #             break
-    #         ###
-    #         # Relevant joints are close to neutral position?
-    #         ###
-    #         if score >= 1 and leftUpperArmAngle["xy"] < armAngles["neutral_max"]:
-    #             break
-    #     return score
-    #
-    #
-    #

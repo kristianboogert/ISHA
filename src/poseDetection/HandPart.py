@@ -12,11 +12,11 @@ class HandPart:
         self.targetHandJoint = targetHandJoint
         self.heading = HandPart._calculateHeading(originHandJoint, targetHandJoint)
     @staticmethod
-    def createFromLandmarks(handPoseData, handType, handPartType):
+    def createFromLandmarks(handPoseData, handType, handPartType, handLandmarksIndex):
         try:
             originHandJointType, targetHandJointType = HandPart._findHandJointTypes(handPartType)
-            originHandJoint = HandJoint.createFromLandmarks(handType, originHandJointType, handPoseData)
-            targetHandJoint = HandJoint.createFromLandmarks(handType, targetHandJointType, handPoseData)
+            originHandJoint = HandJoint.createFromLandmarks(handType, originHandJointType, handPoseData, handLandmarksIndex)
+            targetHandJoint = HandJoint.createFromLandmarks(handType, targetHandJointType, handPoseData, handLandmarksIndex)
             return HandPart(originHandJoint, targetHandJoint, handPartType)
         except:
             return None

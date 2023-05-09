@@ -4,9 +4,9 @@ class HandJoint:
         self.handJointType = handJointType
         self.position = position
     @staticmethod
-    def createFromLandmarks(handType, handJointType, handPoseData):
+    def createFromLandmarks(handType, handJointType, handPoseData, handLandmarksIndex):
         try:
-            landmark = handPoseData.multi_hand_landmarks[handType].landmark[handJointType]
+            landmark = handPoseData.multi_hand_landmarks[handLandmarksIndex].landmark[handJointType]
             x, y, z = landmark.x, landmark.y, landmark.z
             return HandJoint(handType, handJointType, {"x": x, "y": y, "z": z})
         except:

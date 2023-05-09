@@ -6,11 +6,11 @@ class BodyPartDescriptionType(IntEnum):
     FOREARM = 4,      # LEFT/RIGHT_WRIST in poseDetection.BodyPart
     @staticmethod
     def serialize(bodyPartDescriptionType):
-        if bodyPartDescriptionType.upper() == BodyPartDescriptionType.SHOULDER:
+        if bodyPartDescriptionType == BodyPartDescriptionType.SHOULDER:
             return "SHOULDER"
-        if bodyPartDescriptionType.upper() == BodyPartDescriptionType.UPPER_ARM:
+        if bodyPartDescriptionType == BodyPartDescriptionType.UPPER_ARM:
             return "UPPER_ARM"
-        if bodyPartDescriptionType.upper() == BodyPartDescriptionType.FOREARM:
+        if bodyPartDescriptionType == BodyPartDescriptionType.FOREARM:
             return "FOREARM"
     @staticmethod
     def deserialize(bodyPartDescriptionTypeString):
