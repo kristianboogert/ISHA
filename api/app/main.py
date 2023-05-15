@@ -21,7 +21,7 @@ app = FastAPI()
     # connection = None 
 while True:
     try:
-        connection = mysql.connector.connect(host = 'localhost', database = 'testdatabase', user = 'root', password = '')
+        connection = mysql.connector.connect()
         cursor = connection.cursor()
         # connection = mysql.connector.connect(
         #     host=host_name,
