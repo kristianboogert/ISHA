@@ -1,0 +1,113 @@
+openapi: "3.0.0"
+info: 
+  title: "REST API ISHA"
+  version: "1.0.0"
+  description: "Test API for ISHA"
+
+servers:
+  - url: "/api"
+
+paths:
+  /exercise:
+    get:
+      tags: ["Exercise"]
+      operationId: "exercise.read_all"
+      summary: "Read the list of exercises"
+      responses:
+        "200":
+          description: Ok
+        "400": 
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+    # post:
+    #   operationId: "exercise.post"
+    #   tags:
+    #     - "Exercise"
+    #   summary: "Create exercise"
+    #   responses:
+    #     "200":
+    #       description: "Ok"
+    #     "400": 
+    #       description: "Bad Request"
+    #     "500":
+    #       description: "Internal Server Error"
+  /score:
+    get:
+      operationId: "score.read_all"
+      tags: [ "Score" ]
+      summary: "Read the list of scores"
+      responses:
+        "200":
+          description: "Ok"
+        "400": 
+          description: "Bad Request"
+        "500":
+          description: "Internal Server Error"
+    # post:
+    #   operationId: "score.post"
+    #   tags:
+    #     - "Score"
+    #   summary: "Create score"
+    #   responses:
+    #     "200":
+    #       description: "Ok"
+    #     "400": 
+    #       description: "Bad Request"
+    #     "500":
+    #       description: "Internal Server Error"
+
+components:
+  schemas:
+    user:
+      type: "object"
+      required:
+        - id
+        - name
+      properties:
+        id: 
+          type: "integer"
+        name: 
+          type: "string"
+    score:
+      type: "object"
+      required:
+        - id
+        - exercise_id
+        - user_id
+        - value
+      properties:
+        id: 
+          type: "integer"
+        exercise_id:
+          type: "integer"
+        user_id:
+          type: "integer"
+        value: 
+          type: "integer"
+    exercise:
+      type: "object"
+      required:
+        - id
+        - name
+        - type
+        - description
+      properties:
+        id: 
+          type: "integer"
+        name: 
+          type: "string"
+        type: 
+          type: "string"
+        description: 
+          type: "string"
+    metadata:
+      type: "object"
+      required:
+        - id
+        - score_id
+        - body_part_name
+        - body_part_angle_xy
+        - body_part_angle_yz
+        - body_part_angle_xz
+        - created_at
