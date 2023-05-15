@@ -1,0 +1,10 @@
+{
+    "name": "Rotate hand 180 degrees",
+    "pose_detection_type": "hand_rotation",
+    "angles":
+    {
+        "score_1_min_diff": 20,
+        "score_2_min": 160,
+        "score_2_max": 200
+    }
+}

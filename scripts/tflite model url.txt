@@ -1,0 +1,8 @@
+To get a list of available models, open
+https://storage.googleapis.com/mediapipe-assets/
+in any XML reader.
+
+To manually download the lite version of pose_detection_landmark, visit the following url in any browser.
+https://storage.googleapis.com/mediapipe-assets/pose_landmark_lite.tflite
+
+Make sure to store the model(s) in the correct working directory

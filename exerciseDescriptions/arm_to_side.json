@@ -1,0 +1,27 @@
+{
+    "name": "Raise arm to side",
+    "pose_detection_type": "body_pose",
+    "body_parts":
+    [
+        {
+            "body_part": "upper_arm",
+            "angles":
+            {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": -15,
+                "score_2_max": 15
+            }
+        },
+        {
+            "body_part": "forearm",
+            "angles":
+            {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": -15,
+                "score_2_max": 15
+            }
+        }
+    ]
+}
