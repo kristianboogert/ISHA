@@ -16,5 +16,9 @@ class PoseDetection:
         results = self.pose.process(cv2.cvtColor(color_frame, cv2.COLOR_BGR2RGB))
         self.draw.draw_landmarks(color_frame, results.pose_landmarks, self.mp_pose.POSE_CONNECTIONS)
         
+<<<<<<< HEAD:poseDetection.py
+        return results, color_frame
+=======
         return results, color_frame
     
+>>>>>>> b65200c1d19b6f7570d00dca913eb88bdc44ac64:__legacy/2/poseDetection.py
