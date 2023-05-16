@@ -34,6 +34,9 @@ on Linux.
 python3 main.py
 ```
 
+# To run local machine
+uvicorn api.app.main:app --reload
+
 # TODO
 
 - update exerciseCreator so a tracker type is now per body part

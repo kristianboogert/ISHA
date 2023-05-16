@@ -12,13 +12,26 @@ class UserCreate(UserBase):
 class UserUpdate(UserBase):
     pass
 
-class exercise(BaseModel):
+class ExerciseBase(BaseModel):
     id:         int
     user_id:    int
     score_id:   int
 
-class score(BaseModel):
+class ExerciseCreate(ExerciseBase):
+    pass
+
+class ExerciseUpdate(ExerciseBase):
+    pass
+
+class ScoreBase(BaseModel):
     id:         int
     exercise_id:int 
     user_id:    int
     value:      str   
+
+class ScoreCreate(ScoreBase):
+    pass
+
+class ScoreUpdate(ScoreBase):
+    pass
+

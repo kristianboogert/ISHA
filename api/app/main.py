@@ -12,7 +12,7 @@ from .database import engine, get_db
 from .routers import post
 
 
-# models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 # uvicorn api.app.main:app --reload
 app = FastAPI()

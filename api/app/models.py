@@ -6,21 +6,21 @@ from sqlalchemy.sql.expression import text
 class User(Base):
     __tablename__ = "user"
     id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String, nullable=False)
+    name = Column(String(100), nullable=False)
 
 class Exercise(Base):
     __tablename__ = "exercise"
     id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String, nullable=False)
-    type = Column(String, nullable=False)
-    description = Column(String, nullable=False)
+    name = Column(String(100), nullable=False)
+    type = Column(String(100), nullable=False)
+    description = Column(String(200), nullable=False)
 
 class Score(Base):
     __tablename__ = "score"
     id = Column(Integer, primary_key=True, nullable=False)
     exercise_id = Column(Integer, ForeignKey("exercise.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    value = Column(String, nullable=False)
+    value = Column(String(100), nullable=False)
 
 class Metadata(Base):
     __tablename__ = "metadata"
