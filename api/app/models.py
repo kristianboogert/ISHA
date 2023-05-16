@@ -25,7 +25,7 @@ class Score(Base):
 class Metadata(Base):
     __tablename__ = "metadata"
     id = Column(Integer, primary_key=True, nullable=False)
-    bodypart_name = Column(String, nullable=False)
+    bodypart_name = Column(String(100), nullable=False)
     bodypart_angle_xy = Column(Integer, nullable=False)
     bodypart_angle_yz = Column(Integer, nullable=False)
     bodypart_angle_xz = Column(Integer, nullable=False)

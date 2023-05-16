@@ -17,5 +17,3 @@ def create_db_connection(host_name, user_name, user_password, db_name):
         print(f"Error: '{err}'")
 
     return connection
-
-# mysql_connection = create_db_connection("127.0.0.1", "root", "", "testdatabase")
