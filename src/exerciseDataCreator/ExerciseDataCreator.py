@@ -49,7 +49,7 @@ class ExerciseDataCreator:
         # Return JSON data (from data_out dict)
         return json.dumps(data_out, indent=4)
 
-    def createHandRotationExercise(exerciseDescription, impairedSideType):
+    def createHandRotationExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)
         data_out = {}
         data_out.update({"name": data_in["name"]})
@@ -74,11 +74,23 @@ class ExerciseDataCreator:
                 "angles": data_in["angles"]
             })
         return json.dumps(data_out, indent=4)
+    def createHandExerciseData(exerciseDescription, impairedSideType):
+        data_in = json.loads(exerciseDescription)
+        data_out = {}
+        data_out.update({"name": data_in["name"]})
+        data_out.update({"pose_detection_type": data_in["pose_detection_type"]})
+        data_out.update({"parts": []})
+        if impairedSideType == ImpairedSideType.LEFT:
+            return True
+        if impairedSideType == ImpairedSideType.RIGHT:
+            return False
 
     def createExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)
         if data_in["pose_detection_type"].upper() == "BODY_POSE":
             return ExerciseDataCreator.createBodyExerciseData(exerciseDescription, impairedSideType)
         if data_in["pose_detection_type"].upper() == "HAND_ROTATION":
-            return ExerciseDataCreator.createHandRotationExercise(exerciseDescription, impairedSideType)
+            return ExerciseDataCreator.createHandRotationExerciseData(exerciseDescription, impairedSideType)
+        if data_in["pose_detection_type"].upper() == "HAND_POSE":
+            return ExerciseDataCreator.createHandExerciseData(exerciseDescription, impairedSideType)
         return None

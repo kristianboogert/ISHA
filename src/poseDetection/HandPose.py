@@ -12,25 +12,6 @@ class HandPose:
         self.handPose = []
     def getHandPose(self):
         return self.handPose
-    def _isHandInView(self, poseLandmarks, handTypeString):
-        # track both visibilities, because the landmarks index might be swapped
-        leftHandInView = False
-        rightHandInView = False
-        foundAtIndex = 0
-        # Hand pose detection can work without mirrored input frames, but hand pose cannot.
-        # therefor, if a user wants to see if the hand is in view, we ask for the opposite hand.
-        # another solution would be to mirror the input frame, but this takes more cpu%.
-        # also, if there are two hands in view, their index is swapped for whatever reason.
-        if poseLandmarks.multi_handedness is not None:
-            for hand in poseLandmarks.multi_handedness:
-                label = hand.classification[0].label
-                index = hand.classification[0].index
-                if label == "Left" and handTypeString == "RIGHT_HAND": # this is no mistake
-                        return True, foundAtIndex
-                if label == "Right" and handTypeString == "LEFT_HAND": # this is also no mistake
-                        return True, foundAtIndex
-                foundAtIndex+=1
-        return False, None
     def createPose(self, poseLandmarks, handTypeString, relevantHandPartTypeStrings):
         self.clear()
         isHandVisible, handLandmarksIndex = self._isHandInView(poseLandmarks, handTypeString)
@@ -91,3 +72,22 @@ class HandPose:
                         }
                     })
         return diffs
+    def _isHandInView(self, poseLandmarks, handTypeString):
+        # track both visibilities, because the landmarks index might be swapped
+        leftHandInView = False
+        rightHandInView = False
+        foundAtIndex = 0
+        # Hand pose detection can work without mirrored input frames, but hand pose cannot.
+        # therefor, if a user wants to see if the hand is in view, we ask for the opposite hand.
+        # another solution would be to mirror the input frame, but this takes more cpu%.
+        # also, if there are two hands in view, their index is swapped for whatever reason.
+        if poseLandmarks.multi_handedness is not None:
+            for hand in poseLandmarks.multi_handedness:
+                label = hand.classification[0].label
+                index = hand.classification[0].index
+                if label == "Left" and handTypeString == "RIGHT_HAND": # this is no mistake
+                        return True, foundAtIndex
+                if label == "Right" and handTypeString == "LEFT_HAND": # this is also no mistake
+                        return True, foundAtIndex
+                foundAtIndex+=1
+        return False, None
