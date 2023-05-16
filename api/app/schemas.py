@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class UserBase(BaseModel):
-    id:             int
+    # id:             int
     name:           str
 
 class UserCreate(UserBase):
@@ -16,7 +16,7 @@ class UserDelete(UserBase):
     pass
 
 class ExerciseBase(BaseModel):
-    id:             int
+    # id:             int
     name:           str
     type:           str
     description:    str
@@ -31,10 +31,10 @@ class ExerciseDelete(ExerciseBase):
     pass
 
 class ScoreBase(BaseModel):
-    id:             int
+    # id:             int
     exercise_id:    int 
     user_id:        int
-    value:          str   
+    value:          int   
 
 class ScoreCreate(ScoreBase):
     pass
@@ -46,7 +46,7 @@ class ScoreDelete(ScoreBase):
     pass
 
 class MetadataBase(BaseModel):
-    id:                 int
+    # id:                 int
     bodypart_name:      str
     bodypart_angle_xy:  str
     bodypart_angle_yz:  str
