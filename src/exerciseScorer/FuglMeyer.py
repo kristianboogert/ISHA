@@ -270,6 +270,25 @@ class FuglMeyer:
             ###
             # Is the required hand in frame?
             ###
-            currentHandPose = currentHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), [])
             handInView, _ = currentHandPoseCreator.isHandInView(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]))
-            print(handInView)
+            if not handInView:
+                print("Hand is not in view")
+                continue
+            ###
+            # Has exercise been started?
+            ###
+            if handInView and exerciseStarted == False:
+                exerciseStarted = True
+                continue
+            ###
+            # Does user want to quit?
+            ###
+            # TODO: FIND OUT HOW TO DO THIS IN PRODUCTION! WE NEED SOME SORT OF API/DBUS SYSTEM FOR THIS!
+            ###
+            # Create neutral pose if it doesn't exist
+            ###
+            if neutralHandPose[currentExercisePart] is None:
+                print("CREATING NEUTRAL POSE SNAPSHOT!")
+                neutralHandPose[currentExercisePart] = neutralHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), relevantHandPartTypeStrings[currentExercisePart])
+            else:
+                print("SNAPSHOT WAS MADE")
