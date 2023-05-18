@@ -14,7 +14,7 @@ class HandPose:
         return self.handPose
     def createPose(self, poseLandmarks, handTypeString, relevantHandPartTypeStrings):
         self.clear()
-        isHandVisible, handLandmarksIndex = self._isHandInView(poseLandmarks, handTypeString)
+        isHandVisible, handLandmarksIndex = self.isHandInView(poseLandmarks, handTypeString)
         if isHandVisible == True:
             for handPartTypeString in relevantHandPartTypeStrings:
                 handPart = HandPart.createFromLandmarks(poseLandmarks, HandType.deserialize(handTypeString), HandPartType.deserialize(handPartTypeString), handLandmarksIndex)
@@ -72,7 +72,7 @@ class HandPose:
                         }
                     })
         return diffs
-    def _isHandInView(self, poseLandmarks, handTypeString):
+    def isHandInView(self, poseLandmarks, handTypeString):
         # track both visibilities, because the landmarks index might be swapped
         leftHandInView = False
         rightHandInView = False
@@ -85,9 +85,9 @@ class HandPose:
             for hand in poseLandmarks.multi_handedness:
                 label = hand.classification[0].label
                 index = hand.classification[0].index
-                if label == "Left" and handTypeString == "RIGHT_HAND": # this is no mistake
-                        return True, foundAtIndex
+                if label == "Left" and handTypeString == "RIGHT_HAND": # This is no mistake
+                        return True, foundAtIndex                      # MediaPipe just needs to learn the difference between left and right.
                 if label == "Right" and handTypeString == "LEFT_HAND": # this is also no mistake
-                        return True, foundAtIndex
+                        return True, foundAtIndex                      # and the input frame will NOT be flipped because of this!
                 foundAtIndex+=1
         return False, None

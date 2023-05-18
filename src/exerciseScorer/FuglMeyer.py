@@ -231,6 +231,45 @@ class FuglMeyer:
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
         return score, json.dumps(metadata.getMetadata(), indent=4)
     def scoreHandExercise(camera, handPoseDetection, exerciseData):
+        exerciseStarted = False
+        exerciseData = json.loads(exerciseData)
+        score = [0, 0] # [first part, second part]
+        currentExercisePart = 0
+        neutralHandPoseCreator = HandPose()
+        currentHandPoseCreator = HandPose()
+        neutralHandPose = [None, None]
+        relevantHandPartTypeStrings = [[], []]
+        for exercisePart in range(len(exerciseData["parts"])):
+            for handPartData in exerciseData["parts"][exercisePart]:
+                handPartTypeString = HandPartType.serialize(handPartData["hand_part"])
+                relevantHandPartTypeStrings[exercisePart].append(handPartTypeString)
+        startTime = int(time()*1000) # in ms
         print("hand exercise")
         print(exerciseData)
-        return None, None
+        while True:
+            ###
+            # Get camera frame
+            ###
+            frame = camera.getFrame()
+            ###
+            # Detect hand pose (mediapipe)
+            ###
+            frame_start = time()*1000
+            poseLandmarks = handPoseDetection.getPose(frame)
+            frame_end = time()*1000
+            FPS = int(1000/(frame_end-frame_start))
+            frame = cv2.flip(frame, 1)
+            cv2.putText(frame, "FPS: "+str(FPS), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,0,0), 2, cv2.LINE_AA)
+            cv2.imshow('hand frame', frame)
+            if cv2.waitKey(1) == ord('q'):
+                currentExercisePart += 1
+                if currentExercisePart >= 2:
+                    break
+                else:
+                    print("Onto the next side we go!")
+            ###
+            # Is the required hand in frame?
+            ###
+            currentHandPose = currentHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), [])
+            handInView, _ = currentHandPoseCreator.isHandInView(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]))
+            print(handInView)
