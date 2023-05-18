@@ -24,11 +24,18 @@ from poseDetection.HandPart import *
 ###
 
 class FuglMeyer:
-    def isUserInView(exerciseData, bodyPoseDetection, poseLandmarks):
+    def areBodyPartsInView(exerciseData, bodyPoseDetection, poseLandmarks):
         for exercisePart in exerciseData["parts"]:
             # check landmark visibility for each body part
             for bodyPart in exercisePart:
                 if not bodyPoseDetection.isBodyPartVisible(bodyPart["body_part"], poseLandmarks):
+                    return False
+        return True
+    def areHandPartsInView(exerciseData, bodyPoseDetection, poseLandmarks):
+        for exercisePart in exerciseData["parts"]:
+            # check landmark visibility for each hand part
+            for handPart in exercisePart:
+                if not handPoseDetection.isBodyPartVisible(handPart["hand_part"], poseLandmarks):
                     return False
         return True
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
@@ -37,6 +44,8 @@ class FuglMeyer:
             return FuglMeyer.scoreBodyExercise(camera, bodyPoseDetection, exerciseData)
         if _exerciseData["pose_detection_type"] == "hand_rotation":
             return FuglMeyer.scoreHandRotationExercise(camera, handPoseDetection, exerciseData)
+        if _exerciseData["pose_detection_type"] == "hand_pose":
+            return FuglMeyer.scoreHandExercise(camera, handPoseDetection, exerciseData)
         print("Invalid pose detection type was given, exiting.")
         exit(1)
     def scoreHandRotationExercise(camera, handPoseDetection, exerciseData):
@@ -120,7 +129,7 @@ class FuglMeyer:
             ###
             # Are all relevant body parts in frame?
             ###
-            userInView = FuglMeyer.isUserInView(exerciseData, bodyPoseDetection, poseLandmarks)
+            userInView = FuglMeyer.areBodyPartsInView(exerciseData, bodyPoseDetection, poseLandmarks)
             if not userInView:
                 print("not all bodyparts are in view, pausing score system until user becomes (partially) visible again")
                 continue
@@ -221,3 +230,7 @@ class FuglMeyer:
                         poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
         return score, json.dumps(metadata.getMetadata(), indent=4)
+    def scoreHandExercise(camera, handPoseDetection, exerciseData):
+        print("hand exercise")
+        print(exerciseData)
+        return None, None

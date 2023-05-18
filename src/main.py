@@ -49,7 +49,7 @@ def main():
     print(exerciseDescription)
     # Convert the exerciseDescription to exerciseData, so the pose detection can just follow instructions,
     # without having any real world knowlegde
-    exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.RIGHT)
+    exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.LEFT)
     # Initialize camera. If camera.start() is not called, it will not give frames. Same goes for camera.stop()
     camera = Camera(cameraId=0)
     camera.start()

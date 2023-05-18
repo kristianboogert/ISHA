@@ -4,7 +4,7 @@
     "hand_parts":
     [
         {
-            "body_part": "index_finger_base",
+            "hand_part": "index_finger_base",
             "angles":
             {
                 "plane": "xy",
@@ -14,7 +14,7 @@
             }
         },
         {
-            "body_part": "index_finger_tip",
+            "hand_part": "index_finger_tip",
             "angles":
             {
                 "plane": "xy",
@@ -24,7 +24,7 @@
             }
         },
         {
-            "body_part": "middle_finger_base",
+            "hand_part": "middle_finger_base",
             "angles":
             {
                 "plane": "xy",
@@ -34,7 +34,7 @@
             }
         },
         {
-            "body_part": "middle_finger_tip",
+            "hand_part": "middle_finger_tip",
             "angles":
             {
                 "plane": "xy",
@@ -44,7 +44,7 @@
             }
         },
         {
-            "body_part": "ring_finger_base",
+            "hand_part": "ring_finger_base",
             "angles":
             {
                 "plane": "xy",
@@ -54,7 +54,7 @@
             }
         },
         {
-            "body_part": "ring_finger_tip",
+            "hand_part": "ring_finger_tip",
             "angles":
             {
                 "plane": "xy",

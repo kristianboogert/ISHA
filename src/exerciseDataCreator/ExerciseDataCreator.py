@@ -6,6 +6,7 @@ from .BodyPartDescriptionType import BodyPartDescriptionType
 from .ImpairedSideType import ImpairedSideType
 sys.path.append("..")
 from poseDetection.HandType import HandType
+from poseDetection.HandPartType import HandPartType
 
 class ExerciseDataCreator:
     def createBodyExerciseData(exerciseDescription, impairedSideType):
@@ -38,7 +39,7 @@ class ExerciseDataCreator:
             data_out.update({"impaired_side": impairedSideString})
             for body_part in range(len(data_in["body_parts"])):
                 data_out["parts"][0].append({
-                    "body_part": int(data_in["body_parts"][body_part]["body_part"])+0,
+                    "body_part": int(data_in["body_parts"][body_part]["body_part"]),
                     "angles": data_in["body_parts"][body_part]["angles"]
                 })
             for body_part in range(len(data_in["body_parts"])):
@@ -79,11 +80,36 @@ class ExerciseDataCreator:
         data_out = {}
         data_out.update({"name": data_in["name"]})
         data_out.update({"pose_detection_type": data_in["pose_detection_type"]})
-        data_out.update({"parts": []})
+        data_out.update({"parts": [[], []]})
         if impairedSideType == ImpairedSideType.LEFT:
-            return True
+            print("Impaired side is left, making sure the user moves right hand first")
+            for hand_part in range(len(data_in["hand_parts"])):
+                data_out["parts"][0].append({
+                    "hand": HandType.RIGHT_HAND,
+                    "hand_part": HandPartType.deserialize(data_in["hand_parts"][hand_part]["hand_part"]),
+                    "angles": data_in["hand_parts"][hand_part]["angles"]
+                })
+            for hand_part in range(len(data_in["hand_parts"])):
+                data_out["parts"][1].append({
+                    "hand": HandType.LEFT_HAND,
+                    "hand_part": HandPartType.deserialize(data_in["hand_parts"][hand_part]["hand_part"]),
+                    "angles": data_in["hand_parts"][hand_part]["angles"]
+                })
         if impairedSideType == ImpairedSideType.RIGHT:
-            return False
+            print("Impaired side is left, making sure the user moves left hand first")
+            for hand_part in range(len(data_in["hand_parts"])):
+                data_out["parts"][0].append({
+                    "hand": HandType.LEFT_HAND,
+                    "hand_part": HandPartType.deserialize(data_in["hand_parts"][hand_part]["hand_part"]),
+                    "angles": data_in["hand_parts"][hand_part]["angles"]
+                })
+            for hand_part in range(len(data_in["hand_parts"])):
+                data_out["parts"][1].append({
+                    "hand": HandType.RIGHT_HAND,
+                    "hand_part": HandPartType.deserialize(data_in["hand_parts"][hand_part]["hand_part"]),
+                    "angles": data_in["hand_parts"][hand_part]["angles"]
+                })
+        return json.dumps(data_out, indent=4)
 
     def createExerciseData(exerciseDescription, impairedSideType):
         data_in = json.loads(exerciseDescription)
