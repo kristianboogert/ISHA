@@ -7,6 +7,13 @@ class ExerciseDataReader:
                 return item["angles"]["plane"]
         return None
     @staticmethod
+    def getPlaneForHandPart(exerciseData, exercisePart, handPartType):
+        for item in exerciseData["parts"][exercisePart]:
+            print(item)
+            if item["hand_part"] == handPartType:
+                return item["angles"]["plane"]
+        return None
+    @staticmethod
     def getCorrectAngleOffsets(exerciseData, exercisePart, bodyPartType):
         for item in exerciseData["parts"][exercisePart]:
             print(item)

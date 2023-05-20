@@ -292,3 +292,18 @@ class FuglMeyer:
                 neutralHandPose[currentExercisePart] = neutralHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), relevantHandPartTypeStrings[currentExercisePart])
             else:
                 print("SNAPSHOT WAS MADE")
+            ###
+            # Create a current handpose snapshot
+            ###
+            currentHandPose = currentHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), relevantHandPartTypeStrings[currentExercisePart])
+            ###
+            # See if the user moved (score 1)
+            ###
+            handPoseDiffs = HandPose.getDiffs(currentHandPose, neutralHandPose[currentExercisePart])
+            for diff in handPoseDiffs:
+                plane = ExerciseDataReader.getPlaneForHandPart(exerciseData, currentExercisePart, diff["hand_part"])
+                if diff["heading"][plane]>20:
+                    if score[currentExercisePart] < 1:
+                        score[currentExercisePart] = 1
+            if score[currentExercisePart]:
+                print("USER SCORED 1!")
