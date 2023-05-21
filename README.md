@@ -28,14 +28,11 @@ scripts/download_lite_models.sh
 
 on Linux.
 
-# Running the project
+# Running the score system
 
 ```sh
 python3 src/main.py
 ```
 
-# TODO
-
-- update exerciseCreator and fugl-meyer class to handle hand tracking
-- update exerciseCreator so repeating an exercise is possible
-- update fugl-meyer so repeating an exercise is possible
+# To run local machine
+uvicorn api.app.main:app --reload
