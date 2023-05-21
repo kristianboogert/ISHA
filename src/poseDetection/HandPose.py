@@ -57,20 +57,23 @@ class HandPose:
         for item in handPose:
             # find the same item in otherHandPose
             for otherItem in otherHandPose:
-                if item["hand_part"] == otherItem["hand_part"]:
-                    diffs.append({
-                        "hand_part": item["hand_part"],
-                        "origin": {
-                            "x": round(otherItem["origin"]["x"] - item["origin"]["x"]),
-                            "y": round(otherItem["origin"]["y"] - item["origin"]["y"]),
-                            "z": round(otherItem["origin"]["z"] - item["origin"]["z"])
-                        },
-                        "heading": {
-                            "xy": HandPart.getAngleDiff(otherItem["heading"]["xy"], item["heading"]["xy"]),
-                            "yz": HandPart.getAngleDiff(otherItem["heading"]["yz"], item["heading"]["yz"]),
-                            "xz": HandPart.getAngleDiff(otherItem["heading"]["xz"], item["heading"]["xz"])
-                        }
-                    })
+                print(item)
+                print(otherItem)
+                if "hand_part" in item and "hand_part" in otherItem:
+                    if item["hand_part"] == otherItem["hand_part"]:
+                        diffs.append({
+                            "hand_part": item["hand_part"],
+                            "origin": {
+                                "x": round(otherItem["origin"]["x"] - item["origin"]["x"]),
+                                "y": round(otherItem["origin"]["y"] - item["origin"]["y"]),
+                                "z": round(otherItem["origin"]["z"] - item["origin"]["z"])
+                            },
+                            "heading": {
+                                "xy": HandPart.getAngleDiff(otherItem["heading"]["xy"], item["heading"]["xy"]),
+                                "yz": HandPart.getAngleDiff(otherItem["heading"]["yz"], item["heading"]["yz"]),
+                                "xz": HandPart.getAngleDiff(otherItem["heading"]["xz"], item["heading"]["xz"])
+                            }
+                        })
         return diffs
     def isHandInView(self, poseLandmarks, handTypeString):
         # track both visibilities, because the landmarks index might be swapped

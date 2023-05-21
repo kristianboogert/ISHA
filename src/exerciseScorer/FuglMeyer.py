@@ -171,10 +171,10 @@ class FuglMeyer:
             for bodyPartData in currentBodyPose:
                 plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
                 currentBodyPartAngle = bodyPartData["heading"][plane]
-                maxOffsets = ExerciseDataReader.getCorrectAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
-                print(maxOffsets)
+                maxScoreAngles = ExerciseDataReader.getCorrectBodyPartAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
+                print(maxScoreAngles)
                 print(currentBodyPartAngle)
-                if maxOffsets[0] > currentBodyPartAngle and currentBodyPartAngle > maxOffsets[1]:
+                if maxScoreAngles[0] > currentBodyPartAngle and currentBodyPartAngle > maxScoreAngles[1]:
                     userHasCorrectBodyPose = True
                 else:
                     userHasCorrectBodyPose = False
@@ -292,3 +292,57 @@ class FuglMeyer:
                 neutralHandPose[currentExercisePart] = neutralHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), relevantHandPartTypeStrings[currentExercisePart])
             else:
                 print("SNAPSHOT WAS MADE")
+            ###
+            # Create a current handpose snapshot
+            ###
+            currentHandPose = currentHandPoseCreator.createPose(poseLandmarks, HandType.serialize(exerciseData["parts"][currentExercisePart][0]["hand"]), relevantHandPartTypeStrings[currentExercisePart])
+            ###
+            # See if the user moved (score 1)
+            ###
+            handPoseDiffs = HandPose.getDiffs(currentHandPose, neutralHandPose[currentExercisePart])
+            for diff in handPoseDiffs:
+                plane = ExerciseDataReader.getPlaneForHandPart(exerciseData, currentExercisePart, diff["hand_part"])
+                if diff["heading"][plane]>20:
+                    if score[currentExercisePart] < 1:
+                        score[currentExercisePart] = 1
+            if score[currentExercisePart]:
+                print("USER SCORED 1!")
+            ###
+            # See if the user's hand position is close to the correct one (score 2)
+            # TODO: FIX THIS!
+            ###
+            userHasCorrectHandPose = False
+            for handPartData in currentHandPose:
+                try:
+                    plane = ExerciseDataReader.getPlaneForHandPart(exerciseData, currentExercisePart, diff["hand_part"])
+                    currentHandPartAngle = handPartData["heading"][plane]
+                    maxScoreAngles = ExerciseDataReader.getCorrectHandPartAngleOffsets(exerciseData, currentExercisePart, diff["hand_part"])
+                    print("FUCK:", currentHandPartAngle, maxScoreAngles)
+                    if maxScoreAngles[0] < currentHandPartAngle and currentHandPartAngle < maxScoreAngles[1]:
+                        userHasCorrectHandPose = True
+                    else:
+                        userHasCorrectHandPose = False
+                        break
+                except:
+                    continue
+            if userHasCorrectHandPose:
+                print("USER SCORED 2!")
+                score[currentExercisePart] = 2
+            ###
+            # See if the user moved back to neutral position before moving on
+            ###
+            handPoseDiffs = HandPose.getDiffs(currentHandPose, neutralHandPose[currentExercisePart])
+            userInNeutralPosition = False
+            print("exercise part", currentExercisePart)
+            print("score:", score[currentExercisePart])
+            if score[currentExercisePart] > 0:
+                userInNeutralPosition = True
+                for diff in handPoseDiffs:
+                    if diff["heading"]["xy"]>20:
+                        userInNeutralPosition = False
+            if userInNeutralPosition:
+                currentExercisePart+=1
+            if currentExercisePart >= 2:
+                print("all done!")
+                break
+        return score, None
