@@ -41,8 +41,8 @@ def main():
 
 
     # Read JSON containing an exerciseDescription
-    # exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
-    exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
+    exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
+    # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
 
     exerciseDescription = open(exerciseDescriptionFilepath).read()
     print(exerciseDescription)
