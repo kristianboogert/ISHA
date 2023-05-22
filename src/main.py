@@ -42,13 +42,14 @@ def main():
 
     # Read JSON containing an exerciseDescription
     exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
-    # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
+    # # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
+    exerciseDescriptionFilepath = "./exerciseDescriptions/fist.json"           # hand exercise demo
 
     exerciseDescription = open(exerciseDescriptionFilepath).read()
     print(exerciseDescription)
     # Convert the exerciseDescription to exerciseData, so the pose detection can just follow instructions,
     # without having any real world knowlegde
-    exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.RIGHT)
+    exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.LEFT)
     # Initialize camera. If camera.start() is not called, it will not give frames. Same goes for camera.stop()
     camera = Camera(cameraId=0)
     camera.start()

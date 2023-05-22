@@ -1,0 +1,17 @@
+{
+    "name": "Making a fist",
+    "pose_detection_type": "hand_pose",
+    "hand_parts":
+    [
+        {
+            "hand_part": "middle_finger_tip",
+            "angles":
+            {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": 90,
+                "score_2_max": 120
+            }
+        }
+    ]
+}

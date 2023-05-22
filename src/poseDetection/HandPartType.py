@@ -34,3 +34,26 @@ class HandPartType(IntEnum):
             return HandPartType.INDEX_FINGER_TIP
         if handPartTypeString.upper() == "THUMB_TIP":
             return HandPartType.THUMB_TIP
+    
+    @staticmethod
+    def serialize(handPartType):
+        if handPartType == HandPartType.PINKY_BASE:
+            return "PINKY_BASE"
+        if handPartType == HandPartType.PINKY_TIP:
+            return "PINKY_TIP"
+        if handPartType == HandPartType.RING_FINGER_BASE:
+            return "RING_FINGER_BASE"
+        if handPartType == HandPartType.RING_FINGER_TIP:
+            return "RING_FINGER_TIP"
+        if handPartType == HandPartType.MIDDLE_FINGER_BASE:
+            return "MIDDLE_FINGER_BASE"
+        if handPartType == HandPartType.MIDDLE_FINGER_TIP:
+            return "MIDDLE_FINGER_TIP"
+        if handPartType == HandPartType.INDEX_FINGER_BASE:
+            return "INDEX_FINGER_BASE"
+        if handPartType == HandPartType.INDEX_FINGER_TIP:
+            return "INDEX_FINGER_TIP"
+        if handPartType == HandPartType.THUMB_BASE:
+            return "THUMB_BASE"
+        if handPartType == HandPartType.THUMB_TIP:
+            return "THUMB_TIP"

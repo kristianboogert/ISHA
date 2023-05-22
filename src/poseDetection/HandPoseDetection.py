@@ -9,7 +9,7 @@ from .HandJointType import *
 class HandPoseDetection:
     def __init__(self):
         self.mpHands = mediapipe.solutions.hands
-        self.hands = self.mpHands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
+        self.hands = self.mpHands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.6, min_tracking_confidence=0.6, model_complexity=0)
     def getPose(self, cameraColorFrame):
         cameraColorFrame = cv2.cvtColor(cameraColorFrame, cv2.COLOR_BGR2RGB)
         cameraColorFrame.flags.writeable = False
