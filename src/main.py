@@ -79,7 +79,7 @@ def main():
                 "score_id", 0 # TODO: maak in de toekomst eerst score aan!
             }
             # make the post request
-            response = requests.post(url, json = json)
+            response = requests.post(url, json = dict_thing)
             if response is not None:
                 print(response.text)
             else:
