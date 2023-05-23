@@ -1,5 +1,6 @@
+numpy
+opencv-python
 xlsxwriter
-stitching
 pandas
 mediapipe==0.8.9.1
 protobuf==3.20.3
