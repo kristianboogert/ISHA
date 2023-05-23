@@ -59,14 +59,14 @@ def main():
     # handPoseDetection = HandPoseDetection()
 
 
-    handPoseL = HandPose()
-    handPoseR = HandPose()
-    while True:
-        poseLandmarks = handPoseDetection.getPose(camera.getFrame())
-        handPoseL.createPose(poseLandmarks, "LEFT_HAND", [])
-        print("L", handPoseL.getHandPose())
-        handPoseR.createPose(poseLandmarks, "RIGHT_HAND", [])
-        print("R", handPoseR.getHandPose())
+    # handPoseL = HandPose()
+    # handPoseR = HandPose()
+    # while True:
+    #     poseLandmarks = handPoseDetection.getPose(camera.getFrame())
+    #     handPoseL.createPose(poseLandmarks, "LEFT_HAND", [])
+    #     print("L", handPoseL.getHandPose())
+    #     handPoseR.createPose(poseLandmarks, "RIGHT_HAND", [])
+    #     print("R", handPoseR.getHandPose())
 
 
 
@@ -106,8 +106,6 @@ def main():
 
     url = 'http://127.0.0.1:8000/metadata'
 
-    url = '127.0.0.1:8000/metadata'
-
     for exercisePart in pose_metadata["exercise_parts"]:
         for bodyPart in exercisePart:
             dict_thing = {
@@ -115,11 +113,7 @@ def main():
                 "bodypart_angle_xy": bodyPart["angles"]["xy"],
                 "bodypart_angle_yz": bodyPart["angles"]["yz"],
                 "bodypart_angle_xz": bodyPart["angles"]["xz"],
-
                 "score_id": 0 # TODO: maak in de toekomst eerst score aan!
-
-                "score_id", 0 # TODO: maak in de toekomst eerst score aan!
-
             }
             # make the post request
             response = requests.post(url, json = dict_thing)
