@@ -22,7 +22,8 @@ from exerciseDataCreator.ExerciseDataCreator import ExerciseDataCreator
 from time import time
 from time import sleep
 import cv2
-import stitching
+# import stitching # niet meer nodig
+import requests
 
 def main():
     # # HAND TEST
@@ -56,6 +57,37 @@ def main():
     # # Initialize pose detections
     # bodyPoseDetection = BodyPoseDetection()
     # handPoseDetection = HandPoseDetection()
+
+
+    handPoseL = HandPose()
+    handPoseR = HandPose()
+    while True:
+        poseLandmarks = handPoseDetection.getPose(camera.getFrame())
+        handPoseL.createPose(poseLandmarks, "LEFT_HAND", [])
+        print("L", handPoseL.getHandPose())
+        handPoseR.createPose(poseLandmarks, "RIGHT_HAND", [])
+        print("R", handPoseR.getHandPose())
+
+
+
+
+    # Read JSON containing an exerciseDescription
+    # exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo
+    # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
+    exerciseDescriptionFilepath = "./exerciseDescriptions/fist.json"           # hand exercise demo
+
+    exerciseDescription = open(exerciseDescriptionFilepath).read()
+    print(exerciseDescription)
+    # Convert the exerciseDescription to exerciseData, so the pose detection can just follow instructions,
+    # without having any real world knowlegde
+    exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.LEFT)
+    # Initialize camera. If camera.start() is not called, it will not give frames. Same goes for camera.stop()
+    camera = Camera(cameraId=0)
+    camera.start()
+    # Initialize pose detections
+    bodyPoseDetection = BodyPoseDetection()
+    handPoseDetection = HandPoseDetection()
+
     # # Try to get a score by looking at a user's movements
     # print(exerciseData)
     # score, pose_metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData)
@@ -63,12 +95,19 @@ def main():
     # print(score)
 
 
+
+
+
     pose_metadata_txt = open("real_exercise_data.json").read()
     print(pose_metadata_txt)
     pose_metadata = json.loads(pose_metadata_txt)
     print(pose_metadata)
     # url moet nog verbeterd, maar zou moeten werken
+
     url = 'http://127.0.0.1:8000/metadata'
+
+    url = '127.0.0.1:8000/metadata'
+
     for exercisePart in pose_metadata["exercise_parts"]:
         for bodyPart in exercisePart:
             dict_thing = {
@@ -76,7 +115,11 @@ def main():
                 "bodypart_angle_xy": bodyPart["angles"]["xy"],
                 "bodypart_angle_yz": bodyPart["angles"]["yz"],
                 "bodypart_angle_xz": bodyPart["angles"]["xz"],
+
                 "score_id": 0 # TODO: maak in de toekomst eerst score aan!
+
+                "score_id", 0 # TODO: maak in de toekomst eerst score aan!
+
             }
             # make the post request
             response = requests.post(url, json = dict_thing)
