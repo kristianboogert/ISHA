@@ -21,7 +21,8 @@ from exerciseDataCreator.ExerciseDataCreator import ExerciseDataCreator
 from time import time
 from time import sleep
 import cv2
-import stitching
+# import stitching # niet meer nodig
+import requests
 
 def main():
     # HAND TEST
@@ -61,4 +62,9 @@ def main():
     score, pose_metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData)
     print(pose_metadata)
     print(score)
+
+    # url moet nog verbeterd, maar zou moeten werken
+    url = '127.0.0.1:8000/metadata'
+    response = requests.post(url, json = pose_metadata)
+    print(response.text)
 main()
