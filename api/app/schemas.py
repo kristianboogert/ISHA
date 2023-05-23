@@ -51,7 +51,7 @@ class MetadataBase(BaseModel):
     bodypart_angle_xy:  str
     bodypart_angle_yz:  str
     bodypart_angle_xz:  str
-    created_at:         datetime
+    # created_at:         datetime
     score_id:           int
 
 class MetadataCreate(MetadataBase):
