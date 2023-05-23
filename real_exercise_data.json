@@ -1,0 +1,1661 @@
+{
+    "name": "Raise arm to side",
+    "pose_detection_type": "BODY_POSE",
+    "impaired_side": "RIGHT",
+    "exercise_parts": [
+        [
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -61.30718120954591,
+                    "yz": 124.66977755330721,
+                    "xz": 3.31931547562705
+                },
+                "score": 0,
+                "ms_since_exercise_start": 0
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -194.3279955687292,
+                    "yz": 300.18637842781357,
+                    "xz": 138.8829324660232
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -61.013023551101,
+                    "yz": 133.88142072635563,
+                    "xz": 5.795240512120203
+                },
+                "score": 0,
+                "ms_since_exercise_start": 59
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -194.10557588457038,
+                    "yz": 320.4236589702068,
+                    "xz": 137.67626040213497
+                },
+                "score": 0,
+                "ms_since_exercise_start": 60
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -61.53588908483635,
+                    "yz": 122.93587280554534,
+                    "xz": 7.052275545053851
+                },
+                "score": 0,
+                "ms_since_exercise_start": 121
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -196.5494168828149,
+                    "yz": 301.2841875176808,
+                    "xz": 139.9517987682636
+                },
+                "score": 0,
+                "ms_since_exercise_start": 122
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -61.72004662357602,
+                    "yz": 154.71416675206197,
+                    "xz": 1.970456992973715
+                },
+                "score": 0,
+                "ms_since_exercise_start": 179
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -197.52569133405373,
+                    "yz": 365.9877469668446,
+                    "xz": 131.06329047534402
+                },
+                "score": 0,
+                "ms_since_exercise_start": 180
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -62.66095941065159,
+                    "yz": 141.22704993889528,
+                    "xz": 8.418167175866637
+                },
+                "score": 0,
+                "ms_since_exercise_start": 237
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -200.93366543370644,
+                    "yz": 339.55122611417994,
+                    "xz": 137.69628695155876
+                },
+                "score": 0,
+                "ms_since_exercise_start": 238
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -63.678106701322704,
+                    "yz": 124.06919388201703,
+                    "xz": 9.21529494183679
+                },
+                "score": 0,
+                "ms_since_exercise_start": 306
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -203.12726110996206,
+                    "yz": 306.748360723451,
+                    "xz": 139.35716376906242
+                },
+                "score": 0,
+                "ms_since_exercise_start": 307
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.4595172603304,
+                    "yz": 122.27259854099104,
+                    "xz": 9.04686740371727
+                },
+                "score": 0,
+                "ms_since_exercise_start": 368
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -205.92420833815046,
+                    "yz": 303.60682896704054,
+                    "xz": 139.78152265005303
+                },
+                "score": 0,
+                "ms_since_exercise_start": 369
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.84803888323225,
+                    "yz": 113.92010834654462,
+                    "xz": 16.13287062437814
+                },
+                "score": 0,
+                "ms_since_exercise_start": 423
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -206.03090341096126,
+                    "yz": 284.2887680907877,
+                    "xz": 148.63356435147878
+                },
+                "score": 0,
+                "ms_since_exercise_start": 425
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.39125352702536,
+                    "yz": 122.56615068432419,
+                    "xz": 14.433599308471262
+                },
+                "score": 0,
+                "ms_since_exercise_start": 480
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -206.9252989183212,
+                    "yz": 302.33934492277467,
+                    "xz": 143.72223133681788
+                },
+                "score": 0,
+                "ms_since_exercise_start": 481
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.72483958283196,
+                    "yz": 120.12011102084787,
+                    "xz": 20.22587440733612
+                },
+                "score": 0,
+                "ms_since_exercise_start": 538
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -210.55821492888555,
+                    "yz": 297.6005091465083,
+                    "xz": 147.44851630121437
+                },
+                "score": 0,
+                "ms_since_exercise_start": 539
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.44904923773458,
+                    "yz": 111.82934476832743,
+                    "xz": 18.46848110821692
+                },
+                "score": 0,
+                "ms_since_exercise_start": 599
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -209.7384822160707,
+                    "yz": 281.46458968088973,
+                    "xz": 148.04829306208262
+                },
+                "score": 0,
+                "ms_since_exercise_start": 601
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.07819257205627,
+                    "yz": 123.65104242655734,
+                    "xz": 15.489896360019332
+                },
+                "score": 0,
+                "ms_since_exercise_start": 655
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -208.46586678235153,
+                    "yz": 305.2499501682387,
+                    "xz": 143.77751643071156
+                },
+                "score": 0,
+                "ms_since_exercise_start": 656
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.11875899099493,
+                    "yz": 167.2644300103825,
+                    "xz": 16.010430134522508
+                },
+                "score": 0,
+                "ms_since_exercise_start": 722
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -206.88177356807168,
+                    "yz": 391.4459489582375,
+                    "xz": 141.36621183545049
+                },
+                "score": 0,
+                "ms_since_exercise_start": 723
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.2613093176655,
+                    "yz": 156.074075978777,
+                    "xz": 9.230424745505305
+                },
+                "score": 0,
+                "ms_since_exercise_start": 784
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -204.9162293596832,
+                    "yz": 371.91946141255676,
+                    "xz": 134.82848341297787
+                },
+                "score": 0,
+                "ms_since_exercise_start": 786
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -62.73899484311544,
+                    "yz": 132.4095587752681,
+                    "xz": 14.06375090459768
+                },
+                "score": 0,
+                "ms_since_exercise_start": 839
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -200.2164309862602,
+                    "yz": 320.35044986111814,
+                    "xz": 141.97972473476892
+                },
+                "score": 0,
+                "ms_since_exercise_start": 840
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -60.30427463108924,
+                    "yz": 140.2363594019696,
+                    "xz": 12.840084600789737
+                },
+                "score": 0,
+                "ms_since_exercise_start": 908
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -195.70147464615277,
+                    "yz": 336.56234014145775,
+                    "xz": 138.86765412375027
+                },
+                "score": 0,
+                "ms_since_exercise_start": 909
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -57.05205008735719,
+                    "yz": 132.56246192251518,
+                    "xz": 18.734206450291992
+                },
+                "score": 0,
+                "ms_since_exercise_start": 962
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -194.91714268834906,
+                    "yz": 321.085536931314,
+                    "xz": 146.2253848883008
+                },
+                "score": 0,
+                "ms_since_exercise_start": 963
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -53.51787685497144,
+                    "yz": 167.16539847066005,
+                    "xz": 15.40111340171168
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1019
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -195.01383253093562,
+                    "yz": 395.23417487364463,
+                    "xz": 135.19892760398588
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1020
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -47.27138910980972,
+                    "yz": -111.39879226221653,
+                    "xz": 7.615474127391337
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1078
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -188.71554155579912,
+                    "yz": -159.18080726495623,
+                    "xz": 111.30654605625213
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1079
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -34.28038729381058,
+                    "yz": -89.58509691306294,
+                    "xz": 2.7128905783443926
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1140
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -45.58938239092021,
+                    "yz": -113.25068143267023,
+                    "xz": 70.41155051968735
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1141
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -25.27743153175733,
+                    "yz": -122.43178067298533,
+                    "xz": -34.745956227772766
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1201
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -30.14923175472319,
+                    "yz": -145.51032461844312,
+                    "xz": 11.869477638065675
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1202
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -17.09711095196842,
+                    "yz": -144.32711262225436,
+                    "xz": -41.78770282971946
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1255
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -22.741684154791383,
+                    "yz": -175.3151022134133,
+                    "xz": -1.1611430097115552
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1256
+            },
+            {
+                "body_part": "LEFT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -5.233395398421864,
+                    "yz": -182.20031987872687,
+                    "xz": -71.43951051934829
+                },
+                "score": 2,
+                "ms_since_exercise_start": 1324
+            },
+            {
+                "body_part": "LEFT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -4.887254322142292,
+                    "yz": -225.45058876473655,
+                    "xz": -68.83965617983596
+                },
+                "score": 2,
+                "ms_since_exercise_start": 1326
+            }
+        ],
+        [
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.74966978124748,
+                    "yz": 37.07879869173071,
+                    "xz": 45.30369295585524
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1385
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -74.31511921447029,
+                    "yz": -48.58762379795405,
+                    "xz": 46.26779832717942
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1387
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.61185733858638,
+                    "yz": 34.25221246083015,
+                    "xz": 47.40897733755408
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1440
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -73.93097779774865,
+                    "yz": -48.891236076897115,
+                    "xz": 41.33868177588104
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1441
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.63413384018493,
+                    "yz": 40.88508271365407,
+                    "xz": 42.388910137427416
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1498
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -73.18189803180104,
+                    "yz": -51.55125721602657,
+                    "xz": 48.061171925412864
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1499
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.86732367707918,
+                    "yz": 47.74889289039136,
+                    "xz": 32.49461951077805
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1552
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -72.09698944128431,
+                    "yz": -52.169341808740896,
+                    "xz": 74.82299498038736
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1554
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.23399399532322,
+                    "yz": 39.16703208556747,
+                    "xz": 43.41629845205996
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1617
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -71.3382761488095,
+                    "yz": -48.29816160383746,
+                    "xz": 62.59256360006739
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1618
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.37216392890903,
+                    "yz": 32.31380378503495,
+                    "xz": 50.44160234183393
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1679
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -70.21817615948463,
+                    "yz": -46.782769825773684,
+                    "xz": 56.75409689367571
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1681
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.82824260202625,
+                    "yz": 25.37954600854667,
+                    "xz": 56.323566190436495
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1734
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -68.85128710367201,
+                    "yz": -49.07584524916595,
+                    "xz": 50.61118579841242
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1735
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.8607641646293,
+                    "yz": 12.724906098237227,
+                    "xz": 63.33071007159393
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1802
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.46978282817926,
+                    "yz": -51.814585888909036,
+                    "xz": 50.068357005168195
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1803
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.97777401845431,
+                    "yz": 12.800101240366757,
+                    "xz": 63.520550233726446
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1863
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.26968024855822,
+                    "yz": -52.78702027252395,
+                    "xz": 49.46068489939756
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1865
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.26140589253006,
+                    "yz": 14.231030423597957,
+                    "xz": 64.12489416426591
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1918
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -68.67929411841959,
+                    "yz": -51.81787695302103,
+                    "xz": 48.37741864673119
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1919
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.39341340830867,
+                    "yz": 17.771401644572194,
+                    "xz": 62.058826217391555
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1979
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -68.40148956036526,
+                    "yz": -53.36026966226534,
+                    "xz": 47.60987638175173
+                },
+                "score": 0,
+                "ms_since_exercise_start": 1981
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.32165413402757,
+                    "yz": 14.920378440873918,
+                    "xz": 63.60539285165593
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2048
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -68.90055223375742,
+                    "yz": -52.008028853533176,
+                    "xz": 46.33807754841567
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2049
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.59431901692098,
+                    "yz": 15.465687869960078,
+                    "xz": 62.46878686869464
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2110
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.04696558273996,
+                    "yz": -52.4665214122673,
+                    "xz": 46.364934613471675
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2111
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.76673843780681,
+                    "yz": 16.340023124655744,
+                    "xz": 62.00866852205395
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2171
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.14253549509151,
+                    "yz": -49.13308307249906,
+                    "xz": 45.18335677224286
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2172
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.71085901500173,
+                    "yz": 26.697095754427437,
+                    "xz": 56.50518561641435
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2233
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.2814310548012,
+                    "yz": -52.71760495166593,
+                    "xz": 44.32942590709051
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2235
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.53092302557127,
+                    "yz": 23.369034019063577,
+                    "xz": 54.09049622286184
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2288
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.96920798595184,
+                    "yz": -54.66381370941254,
+                    "xz": 56.40729690256426
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2289
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.20948167735045,
+                    "yz": 22.381436760335106,
+                    "xz": 55.73804834450267
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2350
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -72.46361086196467,
+                    "yz": -50.95004205422296,
+                    "xz": 51.99809956455307
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2351
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.33800462242452,
+                    "yz": 23.025100476017883,
+                    "xz": 55.38846001691856
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2417
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -72.27615523647442,
+                    "yz": -49.52625311395336,
+                    "xz": 49.88209513889689
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2419
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -65.56735869837917,
+                    "yz": 15.095396600516494,
+                    "xz": 58.86749200451127
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2473
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -74.17595106631317,
+                    "yz": -39.89141752917929,
+                    "xz": 42.3401248305632
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2474
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -66.04414157420021,
+                    "yz": 5.331293302040962,
+                    "xz": 62.461281966698884
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2530
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -73.87402019512045,
+                    "yz": -46.060701340863076,
+                    "xz": 49.694409338370065
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2530
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.56977234696244,
+                    "yz": 20.79038004335993,
+                    "xz": 52.051262677730676
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2585
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -72.4072223793014,
+                    "yz": -48.10867034893974,
+                    "xz": 54.92926992857002
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2586
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -64.92598811254011,
+                    "yz": 17.808138668275916,
+                    "xz": 52.80762077126316
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2648
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -71.46161075078169,
+                    "yz": -51.79241756342083,
+                    "xz": 51.707528905055355
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2649
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -67.96530855279288,
+                    "yz": -9.164111293340937,
+                    "xz": 50.89536163438295
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2710
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -61.14567725860262,
+                    "yz": -53.19645095961454,
+                    "xz": 63.42695918957265
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2712
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -69.3413902517578,
+                    "yz": 2.4117877300448924,
+                    "xz": 24.40726738651991
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2767
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -55.03426244740315,
+                    "yz": -52.942121200076684,
+                    "xz": 93.39723407358395
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2768
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -71.05935702397821,
+                    "yz": 286.5538008446002,
+                    "xz": 62.30924504166308
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2821
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -48.316332406224724,
+                    "yz": -50.57735531706514,
+                    "xz": 55.95306020888258
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2823
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -70.47464399539281,
+                    "yz": 283.97609456875904,
+                    "xz": 65.19520746482398
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2878
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -47.31005536322972,
+                    "yz": -46.13120372571731,
+                    "xz": 52.642503936208996
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2879
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -70.5197452892593,
+                    "yz": 331.25225601752334,
+                    "xz": 60.05101465497097
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2941
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -43.78942685979574,
+                    "yz": -41.93540491638586,
+                    "xz": 44.58521923327017
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2942
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -72.4624220780011,
+                    "yz": 324.05267103306164,
+                    "xz": 60.39466389790127
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2998
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -41.315349584827075,
+                    "yz": -42.04193352124702,
+                    "xz": 41.955801756121296
+                },
+                "score": 0,
+                "ms_since_exercise_start": 2999
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -72.53196069129372,
+                    "yz": -1.112412805785965,
+                    "xz": 58.225025991098825
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3055
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -40.035550940195385,
+                    "yz": -40.42621130598704,
+                    "xz": 42.75629658482614
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3056
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -73.04370182881901,
+                    "yz": 314.31072799762285,
+                    "xz": 55.67887254417756
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3110
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -39.24560212507966,
+                    "yz": -42.394245281021284,
+                    "xz": 45.84537999105022
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3111
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -73.27230443048492,
+                    "yz": 195.0161073293881,
+                    "xz": 47.659146473080455
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3171
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -40.603216057432476,
+                    "yz": -40.17116502721412,
+                    "xz": 57.44173451378918
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3172
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -73.62445330950354,
+                    "yz": 240.4356349979427,
+                    "xz": 45.53467232624613
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3232
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -43.02783104395009,
+                    "yz": -42.36901459069581,
+                    "xz": 68.03544940488041
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3233
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -76.10841255617474,
+                    "yz": 233.557128445054,
+                    "xz": 38.65767121740205
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3286
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -43.22175988457776,
+                    "yz": -48.50469687968082,
+                    "xz": 75.14089856334822
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3287
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -75.1906804573316,
+                    "yz": 234.82356704831335,
+                    "xz": 36.421218634666424
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3357
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -44.550552006283446,
+                    "yz": -43.927561945769966,
+                    "xz": 81.31496989293183
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3358
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -76.95168922235015,
+                    "yz": 239.24891018967406,
+                    "xz": 25.42189613121994
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3411
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -48.88733771748095,
+                    "yz": -48.10104807372876,
+                    "xz": 98.3677640868418
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3413
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -77.609337280656,
+                    "yz": 240.57866295125714,
+                    "xz": 22.867492476995956
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3469
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -47.30046610661334,
+                    "yz": -48.59429667150248,
+                    "xz": 100.33894312709168
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3470
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -77.45535407949144,
+                    "yz": 234.94039372778275,
+                    "xz": 18.66871980351164
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3524
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -48.88493135410526,
+                    "yz": -46.00918308471691,
+                    "xz": 106.34544971701773
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3525
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -77.33861561548338,
+                    "yz": 216.86474228013623,
+                    "xz": 16.31946122728432
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3587
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -50.17846040168781,
+                    "yz": -40.705662670248216,
+                    "xz": 111.04178376802876
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3589
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -78.72488112510946,
+                    "yz": 143.1135151914541,
+                    "xz": 12.987388241891656
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3649
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -48.51569317135844,
+                    "yz": -32.819102911460014,
+                    "xz": 114.74186597202973
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3651
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -79.95789537135454,
+                    "yz": 137.17097041854157,
+                    "xz": 2.225503379703317
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3704
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -53.344376320069294,
+                    "yz": -30.430016127672054,
+                    "xz": 136.49896287307166
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3705
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -81.40780471160585,
+                    "yz": 181.95907574113627,
+                    "xz": 3.3174674694627893
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3772
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -56.71191866704636,
+                    "yz": -31.994050633219324,
+                    "xz": 142.48132031645486
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3773
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -82.32123435541781,
+                    "yz": -212.96642833123173,
+                    "xz": -32.67947168959989
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3834
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -44.928861537564856,
+                    "yz": 311.7163563963684,
+                    "xz": 154.1304992061038
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3836
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -80.63582812555656,
+                    "yz": -217.28249640962417,
+                    "xz": -39.3019660259587
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3889
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -45.49759160096799,
+                    "yz": 311.15578466699463,
+                    "xz": 162.83689462459807
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3890
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -81.89153947412242,
+                    "yz": -206.24275891113876,
+                    "xz": -52.413294652316196
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3945
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -46.42948544181125,
+                    "yz": 315.1529823185696,
+                    "xz": 186.416468395214
+                },
+                "score": 0,
+                "ms_since_exercise_start": 3946
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -81.63816884030386,
+                    "yz": -219.90189913776354,
+                    "xz": -51.716657355569644
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4004
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -42.86850618476254,
+                    "yz": 319.605934120213,
+                    "xz": 183.36390139164976
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4005
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -81.04701673394322,
+                    "yz": -191.592074771702,
+                    "xz": -45.97566203823905
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4058
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -44.50010081467759,
+                    "yz": 314.83204049621685,
+                    "xz": 177.7210742017124
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4060
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -79.52294274482487,
+                    "yz": -199.43819900907775,
+                    "xz": -43.87830019100061
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4114
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -43.62543632171286,
+                    "yz": 317.0076721049741,
+                    "xz": 176.3641674702606
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4114
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -79.14281668723837,
+                    "yz": -172.76335656193902,
+                    "xz": -31.044045352521167
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4168
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -41.90740173917445,
+                    "yz": 316.4159933057687,
+                    "xz": 158.45920283813237
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4170
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -79.62150124428247,
+                    "yz": -151.14302971006003,
+                    "xz": -35.864672700381576
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4226
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -41.657777608027835,
+                    "yz": 310.3408746084069,
+                    "xz": 159.97179145539624
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4227
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -79.3570947656402,
+                    "yz": -169.0816177961009,
+                    "xz": -8.170449241373612
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4293
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -43.07636779805473,
+                    "yz": 307.28953239825717,
+                    "xz": 124.59557163180465
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4294
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -79.7122229822318,
+                    "yz": -253.81054697962418,
+                    "xz": -40.83397924963017
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4360
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -42.0527900971343,
+                    "yz": 307.91079720830305,
+                    "xz": 163.57533885016807
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4362
+            },
+            {
+                "body_part": "RIGHT_UPPER_ARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -80.61292397739201,
+                    "yz": -274.1895521858203,
+                    "xz": -49.692756757342885
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4419
+            },
+            {
+                "body_part": "RIGHT_FOREARM",
+                "plane": "xy",
+                "angles": {
+                    "xy": -45.19089198447112,
+                    "yz": 313.44975179968844,
+                    "xz": 179.6323237008666
+                },
+                "score": 0,
+                "ms_since_exercise_start": 4420
+            }
+        ]
+    ]
+}
