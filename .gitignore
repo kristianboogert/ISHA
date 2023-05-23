@@ -1,5 +1,9 @@
 __pycache__
 excel_files/*
+<<<<<<< HEAD
+*.xlsx
+=======
 *.xlsx
 tests/
 tests/*
+>>>>>>> 6734939aa51554917eacc36dd1f5d70320e5d1b9
