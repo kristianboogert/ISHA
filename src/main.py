@@ -111,10 +111,10 @@ def main():
         metadata[0].append(xy_heading)
         metadata[1].append(xz_heading)
         metadata[2].append(yz_heading)
-        metadata[3].append(time())
+        metadata[3].append(int(time()))
         if cv2.waitKey(1) == ord('q'):
             break
-    
+
     # debug/demo function
     export_to_line_chart("demo1.xlsx", metadata)
 
