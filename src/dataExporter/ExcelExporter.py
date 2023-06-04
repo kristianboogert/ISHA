@@ -2,13 +2,14 @@ import pandas as pd
 import xlsxwriter
 
 # export bodypart angles to an excel sheet
+@staticmethod
 def export_to_line_chart(filename, data, exercise_name=None, sheet_name="Sheet1"):
     workbook = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
     bold = workbook.add_format({'bold': 1})
     headings = ['xy', 'xz', 'yz', 'elapsed milliseconds since exercise start']
     if len(data) != 4:
-        print("Data is not in the correct format. Please provide [xy], [yz] and [xz] angles as well as time")
+        print("Data is not in the correct format. Please provide [xy], [yz] and [xz] angles as well as [time]")
     # fix time in data
     start_ms = data[3][0]
     for pos in range(len(data[3])):
