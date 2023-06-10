@@ -105,8 +105,12 @@ def main():
             xz_heading = "??"
             yz_heading = "??"
         cv2.putText(frame2, "xy_heading: "+str(xy_heading), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
-        cv2.putText(frame2, "xz_heading: "+str(xz_heading), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
-        cv2.putText(frame2, "yz_heading: "+str(yz_heading), (0,150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
+#        cv2.putText(frame2, "xz_heading: "+str(xz_heading), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
+#        cv2.putText(frame2, "yz_heading: "+str(yz_heading), (0,150), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
+        if xy_heading != "??" and abs(int(xy_heading)) <= 20:
+            cv2.putText(frame2, "volledig behaald: ja", (0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
+        else:
+            cv2.putText(frame2, "volledig behaald: nee", (0,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1, cv2.LINE_AA)
         cv2.imshow('frame', frame2)
         metadata[0].append(xy_heading)
         metadata[1].append(xz_heading)

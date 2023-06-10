@@ -2,7 +2,6 @@ import pandas as pd
 import xlsxwriter
 
 # export bodypart angles to an excel sheet
-@staticmethod
 def export_to_line_chart(filename, data, exercise_name=None, sheet_name="Sheet1"):
     workbook = xlsxwriter.Workbook(filename)
     worksheet = workbook.add_worksheet()
