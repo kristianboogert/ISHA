@@ -80,17 +80,17 @@ class HandPose:
         leftHandInView = False
         rightHandInView = False
         foundAtIndex = 0
-        # Hand pose detection can work without mirrored input frames, but hand pose cannot.
+        # Body pose detection can work without mirrored input frames, but hand pose cannot.
         # therefor, if a user wants to see if the hand is in view, we ask for the opposite hand.
-        # another solution would be to mirror the input frame, but this takes more cpu%.
-        # also, if there are two hands in view, their index is swapped for whatever reason.
+        # Another solution would be to mirror the input frame, but this takes more cpu%.
+        # Also, if there are two hands in view, their index is swapped (for whatever reason).
         if poseLandmarks.multi_handedness is not None:
             for hand in poseLandmarks.multi_handedness:
                 label = hand.classification[0].label
                 index = hand.classification[0].index
                 if label == "Left" and handTypeString == "RIGHT_HAND": # This is no mistake
-                        return True, foundAtIndex                      # MediaPipe just needs to learn the difference between left and right.
+                    return True, foundAtIndex                          # MediaPipe just needs to learn the difference between left and right.
                 if label == "Right" and handTypeString == "LEFT_HAND": # this is also no mistake
-                        return True, foundAtIndex                      # and the input frame will NOT be flipped because of this!
+                    return True, foundAtIndex                          # and the input frame will NOT be flipped because of this!
                 foundAtIndex+=1
         return False, None
