@@ -36,4 +36,7 @@ class BodyPoseDetection:
     def getAnglesForBodyPart(bodyPartType, bodyPoseData):
         bodyPartTypeString = BodyPartType.serialize(bodyPartType)
         bodyPart = BodyPart.createFromLandmarks(bodyPoseData, bodyPartTypeString)
-        return bodyPart.getHeading()
+        if bodyPart is not None:
+            return bodyPart.getHeading()
+        else:
+            return None

@@ -6,11 +6,10 @@ import numpy as np
 DEFAULT_CAMERA_RESOLUTION=(640,480)
 
 class Camera:
-    def __init__(self, cameraId=None, resolution=DEFAULT_CAMERA_RESOLUTION, use_realsense=False, realsense_framerate=30, realsense_frame_queue_size=5):
+    def __init__(self, cameraId=None, resolution=DEFAULT_CAMERA_RESOLUTION):
         self.resolution = resolution
         self.cameraId = cameraId
         self.videoCapture = None
-        self.running = False
     # Start collecting frames
     def start(self):
         self.videoCapture = cv2.VideoCapture(self.cameraId)

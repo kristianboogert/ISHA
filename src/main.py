@@ -1,4 +1,3 @@
-import requests
 from poseDetection.Camera import Camera
 from dataExporter.ExcelExporter import *
 from poseDetection.BodyPoseDetection import BodyPoseDetection
@@ -25,7 +24,35 @@ import cv2
 # import stitching # niet meer nodig
 import requests
 
+def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
+    poseData = bodyPoseDetection.getPose(frame)
+    angles = bodyPoseDetection.getAnglesForBodyPart(bodyPartType, poseData)
+    if angles is None:
+        return 0, "??"
+    xyAngle = angles["xy"]
+    score = 0
+    if xyAngle > -90+20:
+        score = 1
+    if abs(xyAngle) < 20:
+        score = 2
+    return score, xyAngle
+
 def main():
+    camera = Camera(cameraId=0)
+    camera.start()
+    bodyPoseDetection = BodyPoseDetection()
+    bodyPartTypes = [BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
+    while True:
+        frame = camera.getFrame()
+        for index, bodyPartType in enumerate(bodyPartTypes):
+            score, angle = getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection)
+            print(score)
+            cv2.putText(frame, "Body part:"+BodyPartType.serialize(bodyPartType)+". Score: "+str(score)+"; Hoek: "+str(angle), (0,50*(index+1)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) == ord('q'):
+            exit(0)
+
+
     # # HAND TEST
     # # camera = Camera(cameraId=0)
     # # camera.start()
@@ -122,14 +149,3 @@ def main():
             else:
                 print("alles ging fout")
 main()
-
-
-
-
-
-
-
-
-
-
-
