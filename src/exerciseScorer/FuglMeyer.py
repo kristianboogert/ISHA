@@ -134,6 +134,18 @@ class FuglMeyer:
                 print("not all bodyparts are in view, pausing score system until user becomes (partially) visible again")
                 continue
             ###
+            # Is the user sitting correctly?
+            ###
+            # Detect if shoulders are straight
+            shouldersStraight = False
+            leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
+            if leftShoulderAngles is not None:
+                if abs(leftShoulderAngles["xy"]) < 5:
+                    shouldersStraight = True
+            if not shouldersStraight:
+                print("Shoulders are not straight, pausing exercise until shoulders are straight")
+                continue
+            ###
             # Has exercise been started?
             ###
             if userInView and exerciseStarted == False:
