@@ -12,7 +12,7 @@ python3 -m pip install -r requirements.txt
 
 # Downloading the required .tflite model
 
-This project uses an older version of MediaPipe, so it can be ran on a Raspberry Pi 4. For this reason, it is required to download the model manually. Newer versions of MediaPipe do this automatically.
+This project uses an older version of MediaPipe, so it can run on a Raspberry Pi 4. For this reason, it is required to download the model manually. Newer versions of MediaPipe do this automatically.
 
 Execute
 
