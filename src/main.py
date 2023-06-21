@@ -23,6 +23,8 @@ from time import sleep
 import cv2
 import requests
 
+# This function generates a score. It is for demo purposes only.
+# Please use the code from the `exerciseScorer` folder for testing/production purposes.
 def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
     frame = cv2.flip(frame, 1)
     poseData = bodyPoseDetection.getPose(frame)
