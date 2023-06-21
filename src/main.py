@@ -21,10 +21,10 @@ from exerciseDataCreator.ExerciseDataCreator import ExerciseDataCreator
 from time import time
 from time import sleep
 import cv2
-# import stitching # niet meer nodig
 import requests
 
 def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
+    frame = cv2.flip(frame, 1)
     poseData = bodyPoseDetection.getPose(frame)
     angles = bodyPoseDetection.getAnglesForBodyPart(bodyPartType, poseData)
     if angles is None:
@@ -37,14 +37,29 @@ def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
         score = 2
     return score, xyAngle
 
+# This function checks if a user is sitting up straight,
+# and is not leaning to the left or right.
 def areShouldersStraight(bodyPoseDetection, frame):
     # Detect if shoulders are straight
+    frame = cv2.flip(frame, 1)
     poseLandmarks = bodyPoseDetection.getPose(frame)
     leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
     if leftShoulderAngles is not None:
-        if abs(leftShoulderAngles["xy"]) < 5:
-            return True
-    return False
+        if abs(leftShoulderAngles["xy"]) < 10:
+            return "ja"
+    return "nee"
+
+def userIsFacingTheCamera(bodyPoseDetection, frame):
+    # Detect if shoulders are straight
+    frame = cv2.flip(frame, 1)
+    poseLandmarks = bodyPoseDetection.getPose(frame)
+    leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
+    if leftShoulderAngles is not None:
+        if abs(leftShoulderAngles["xz"]) < 25:
+            # The shoulders are correct, but the user could be rotated 180 degrees. So, check if the nose is in view.
+            if bodyPoseDetection._getPoseLandmark(BodyJointType.NOSE, poseLandmarks) is not None:
+                return "ja"
+    return "nee"
 
 def main():
     # kleine interactieve demo
@@ -52,14 +67,18 @@ def main():
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
-    bodyPartTypes = [BodyPartType.LEFT_SHOULDER, BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
+    bodyPartTypes = [BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
+
     while True:
         frame = camera.getFrame()
+        frame = cv2.flip(frame, 1)
         shouldersStraight = areShouldersStraight(bodyPoseDetection, frame)
         cv2.putText(frame, "Schouders recht: "+str(shouldersStraight), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
+        facingCamera = userIsFacingTheCamera(bodyPoseDetection, frame)
+        cv2.putText(frame, "Gebruiker naar camera gericht: "+str(facingCamera), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
         for index, bodyPartType in enumerate(bodyPartTypes):
             score, angle = getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection)
-            cv2.putText(frame, "Body part: "+BodyPartType.serialize(bodyPartType)+"; Score: "+str(score)+"; Hoek: "+str(angle), (0,50*(index+2)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
+            cv2.putText(frame, "Body part: "+BodyPartType.serialize(bodyPartType)+"; Score: "+str(score)+"; Hoek: "+str(angle), (0,50*(index+3)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) == ord('q'):
             exit(0)
