@@ -63,7 +63,6 @@ def userIsFacingTheCamera(bodyPoseDetection, frame):
 
 def main():
     # kleine interactieve demo
-    print("Deze demo houdt geen rekening met een eventuele rust-houding")
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
