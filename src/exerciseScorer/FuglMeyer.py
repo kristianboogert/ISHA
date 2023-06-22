@@ -49,7 +49,6 @@ class FuglMeyer:
     # Wrapper function to see if the user is facing the camera (and thus is ready).
     def isUserReady(bodyPoseDetection, frame):
         return FuglMeyer.areShouldersStraight(bodyPoseDetection, frame) and FuglMeyer.userIsFacingTheCamera(bodyPoseDetection, frame)
-
     def areBodyPartsInView(exerciseData, bodyPoseDetection, poseLandmarks):
         for exercisePart in exerciseData["parts"]:
             # check landmark visibility for each body part
