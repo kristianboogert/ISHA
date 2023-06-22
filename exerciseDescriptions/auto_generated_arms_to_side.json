@@ -1,0 +1,24 @@
+{
+    "name": "test",
+    "pose_detection_type": "body_pose",
+    "body_parts": [
+        {
+            "body_part": "UPPER_ARM",
+            "angles": {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": -19.758645684325348,
+                "score_2_max": 20.241354315674652
+            }
+        },
+        {
+            "body_part": "FOREARM",
+            "angles": {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": -26.906838855372015,
+                "score_2_max": 13.093161144627986
+            }
+        }
+    ]
+}

@@ -54,10 +54,48 @@ def getCorrectHeadingForBodyPart(correctBodyPose, bodyPartDescriptionString):
 # dan minimaal (dus met undershoot)
 # score 1 blijft hetzelfde
 
-out = {}
-out.update({"name": "test"})
-out.update({"pose_detection_type": "body_pose"})
-out.update({"body_parts": []})
+def bodyPartExists(out, bodyPartDescriptionString):
+    for item in out["body_parts"]:
+        if item["body_part"] == bodyPartDescriptionString:
+            return True
+    return False
+
+def convertPoseToDescription(correctBodyPose):
+    out = {}
+    out.update({"name": "test"})
+    out.update({"pose_detection_type": "body_pose"})
+    out.update({"body_parts": []})
+
+    print(json.dumps(correctBodyPose.getBodyPose(), indent=4))
+    for item in correctBodyPose.getBodyPose():
+        print(item)
+        # convert body part type to a description
+        bodyPartDescriptionString = convertBodyPartToDescription(BodyPartType.serialize(item["body_part"]))
+        print(bodyPartDescriptionString)
+        # make sure there are no duplicates
+        if bodyPartExists(out, bodyPartDescriptionString):
+            continue
+        # get headings
+        correctHeading = getCorrectHeadingForBodyPart(correctBodyPose.getBodyPose(), bodyPartDescriptionString)
+        # Build a body_part entry
+        for plane in ["xy", "yz", "xz"]:
+            # create a body part entry per plane
+            body_part_entry = {
+                "body_part": bodyPartDescriptionString,
+                "angles": {
+                    "plane": plane,
+                    "score_1_min_diff": 20,
+                    "score_2_min": correctHeading[plane]-20,
+                    "score_2_max": correctHeading[plane]+20
+                }
+            }
+            # add body part entry to out
+            out["body_parts"].append(body_part_entry)
+    return out
+        
+
+
+
 
 def main():
     camera = Camera(cameraId=0)
@@ -90,30 +128,7 @@ def main():
                 timer.setIntervalMs(500)
                 timer.start()
             elif timer.hasElapsed():
-                print(json.dumps(currentPose.getBodyPose(), indent=4))
-                for item in currentPose.getBodyPose():
-                    # convert body part type to a description
-                    bodyPartDescriptionString = convertBodyPartToDescription(BodyPartType.serialize(item["body_part"]))
-                    print(bodyPartDescriptionString)
-                    # get headings
-                    correctHeading = getCorrectHeadingForBodyPart(currentPose.getBodyPose(), bodyPartDescriptionString)
-                    print(correctHeading)
-                    # append to out
-                    data = {
-                        "body_part": bodyPartDescriptionString,
-                        "angles": None
-                    }
-                    for plane in ["xy", "yz", "xz"]:
-                        print(plane)
-                        data["angles"] = {
-                            "plane": plane,
-                            "score_1_min_diff": 20,
-                            "score_2_min": correctHeading[plane]-20,
-                            "score_2_max": correctHeading[plane]+20
-                        }
-                        out["body_parts"].append(data)
-                        print("KANKER", data)
-                print(json.dumps(out, indent=4))
+                print(json.dumps(convertPoseToDescription(currentPose), indent=4))
                 exit(1)
             else:
                 print("Please hold this pose!")
