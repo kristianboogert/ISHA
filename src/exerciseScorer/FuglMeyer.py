@@ -63,7 +63,7 @@ class FuglMeyer:
                 if not handPoseDetection.isBodyPartVisible(handPart["hand_part"], poseLandmarks):
                     return False
         return True
-    def bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart):
+    def bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=7):
         total = 0
         correct = 0
         for bodyPart in exerciseData["parts"][currentExercisePart]:
@@ -72,14 +72,18 @@ class FuglMeyer:
                 for plane in ["xy", "yz", "xz"]:
                     correctAngles = ExerciseDataReader.getCorrectBodyPartAngleOffsets(exerciseData, currentExercisePart, bodyPart["body_part"], plane)
                     currentAngle = bodyPartData["heading"][plane]
+                    print("BODY_PART:", BodyPartType.serialize(bodyPart["body_part"]))
+                    print("PLANE:", plane)
                     print("CORRECT:", correctAngles)
                     print("CURRENT:", currentAngle)
                     total+=1
                     if not (currentAngle < correctAngles[0] or currentAngle > correctAngles[1]):
+                        print("SEEN AS CORRECT!")
                         correct+=1
         print("TOTAL:", total)
         print("CORRECT:", correct)
-        return (correct/total*9+1) >= 7
+        print("\n\n\n\n")
+        return (correct/total*9+1) >= desiredScore
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
         # make sure the user is ready first
         frame = camera.getFrame()
@@ -213,17 +217,15 @@ class FuglMeyer:
             ###
             # See if the user moved (score 1)
             ###
-            # for diff in bodyPoseDiffs:
-            #     plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
-            #     if diff["heading"][plane]>20:
-            #         if score[currentExercisePart] < 1:
-            #             score[currentExercisePart] = 1
-            # if score[currentExercisePart]:
-            #     print("USER SCORED 1!")
+            # # hier was je gebleven, HET DUURT TE LANG VOORDAT EEN SCORE GOED WORDT BEVONDEN!
+            # # OOK LIJKT DE XZ-HOEK NIET ALTIJD JUIST TE WORDEN BEREKEND!
+            if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=5):
+                print("USER SCORED 1!")
+                score[currentExercisePart] = 1
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
-            if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart):
+            if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=7): # desired score should not exceed 7, MediaPipe is not perfect
                 print("USER SCORED 2!")
                 score[currentExercisePart] = 2
             ###

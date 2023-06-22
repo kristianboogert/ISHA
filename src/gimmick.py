@@ -44,9 +44,7 @@ def convertBodyPartToDescription(bodyPartTypeString):
 
 def getCorrectHeadingForBodyPart(correctBodyPose, bodyPartDescriptionString):
     for item in correctBodyPose:
-        print(item)
         if convertBodyPartToDescription(BodyPartType.serialize(item["body_part"])) == bodyPartDescriptionString:
-            print("yes")
             return item["heading"]
     return None
 
@@ -66,12 +64,10 @@ def convertPoseToDescription(correctBodyPose):
     out.update({"pose_detection_type": "body_pose"})
     out.update({"body_parts": []})
 
-    print(json.dumps(correctBodyPose.getBodyPose(), indent=4))
     for item in correctBodyPose.getBodyPose():
         print(item)
         # convert body part type to a description
         bodyPartDescriptionString = convertBodyPartToDescription(BodyPartType.serialize(item["body_part"]))
-        print(bodyPartDescriptionString)
         # make sure there are no duplicates
         if bodyPartExists(out, bodyPartDescriptionString):
             continue
@@ -91,6 +87,7 @@ def convertPoseToDescription(correctBodyPose):
             }
             # add body part entry to out
             out["body_parts"].append(body_part_entry)
+    print("OUT:", json.dumps(out, indent=4))
     return out
         
 
@@ -129,6 +126,9 @@ def main():
                 timer.start()
             elif timer.hasElapsed():
                 print(json.dumps(convertPoseToDescription(currentPose), indent=4))
+                f = open("exerciseDescriptions/hoofd2.json", "w")
+                f.write(json.dumps(convertPoseToDescription(currentPose), indent=4))
+                f.close()
                 exit(1)
             else:
                 print("Please hold this pose!")

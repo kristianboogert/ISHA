@@ -116,7 +116,7 @@ def main():
     bodyPoseDetection = BodyPoseDetection()
 
     # # Read JSON containing an exerciseDescription
-    exerciseDescriptionFilepath = "./exerciseDescriptions/auto_generated_arms_to_side.json"    # body pose exercise demo
+    exerciseDescriptionFilepath = "./exerciseDescriptions/hoofd2.json"    # body pose exercise demo
     # # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
     # exerciseDescriptionFilepath = "./exerciseDescriptions/fist.json"           # hand exercise demo
 

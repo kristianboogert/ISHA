@@ -82,6 +82,7 @@ class BodyPart:
         if "LEFT" in originBodyJoint.getBodyJointType().upper():
             xyAngle*=-1
             yzAngle+=180
+            xzAngle*=-1
         # return angles
         return {
             "xy": xyAngle,
