@@ -70,10 +70,9 @@ class BodyPose:
     #     return diffs
     @staticmethod
     def isPoseSimilar(bodyPoseDiffs):
+        if len(bodyPoseDiffs) == 0:
+            return False
         for diff in bodyPoseDiffs:
-            print(diff["heading"]["xy"])
-            print(diff["heading"]["yz"])
-            print(diff["heading"]["xz"])
             if diff["heading"]["xy"] > 20 or diff["heading"]["yz"] > 20 or diff["heading"]["xz"] > 20:
                 return False
         return True

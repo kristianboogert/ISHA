@@ -40,30 +40,6 @@ def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
         score = 2
     return score, xyAngle
 
-# This function checks if a user is sitting up straight,
-# and is not leaning to the left or right.
-def areShouldersStraight(bodyPoseDetection, frame):
-    # Detect if shoulders are straight
-    frame = cv2.flip(frame, 1)
-    poseLandmarks = bodyPoseDetection.getPose(frame)
-    leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
-    if leftShoulderAngles is not None:
-        if abs(leftShoulderAngles["xy"]) < 10:
-            return "ja"
-    return "nee"
-
-def userIsFacingTheCamera(bodyPoseDetection, frame):
-    # Detect if shoulders are straight
-    frame = cv2.flip(frame, 1)
-    poseLandmarks = bodyPoseDetection.getPose(frame)
-    leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
-    if leftShoulderAngles is not None:
-        if abs(leftShoulderAngles["xz"]) < 25:
-            # The shoulders are correct, but the user could be rotated 180 degrees. So, check if the nose is in view.
-            if bodyPoseDetection._getPoseLandmark(BodyJointType.NOSE, poseLandmarks) is not None:
-                return "ja"
-    return "nee"
-
 def main():
     # kleine interactieve demo
     camera = Camera(cameraId=0)
@@ -80,22 +56,30 @@ def main():
     print(startPose)
 
     timer = Timer()
-    timer.setIntervalMs(1000)
-    timer.start()
     print(timer.hasElapsed())
+
+    fuglMeyer = FuglMeyer()
 
     while True:
         frame = camera.getFrame()
+        cv2.imshow('frame', frame)
+        if cv2.waitKey(1) == ord('q'):
+            exit(0)
+        if not FuglMeyer.isUserReady(bodyPoseDetection, frame):
+            print(str(time())+": Please face the camera")
+            continue
         poseLandmarks = bodyPoseDetection.getPose(frame)
-        currentPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
+        currentPose.createPose(poseLandmarks, ["LEFT_SHOULDER", "RIGHT_SHOULDER", "LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
         diffs = BodyPose.getDiffs(startPose.getBodyPose(), currentPose.getBodyPose())
         if BodyPose.isPoseSimilar(diffs):
             if not timer.isRunning():
-                timer.setIntervalMs(1000)
+                timer.setIntervalMs(3000)
                 timer.start()
             elif timer.hasElapsed():
                 print(currentPose.getBodyPose())
                 exit(1)
+            else:
+                print("Please hold this pose!")
         else:
             currentPose.setBodyPose(startPose.getBodyPose())
             timer.stop()

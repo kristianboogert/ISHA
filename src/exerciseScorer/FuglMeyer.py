@@ -24,6 +24,32 @@ from poseDetection.HandPart import *
 ###
 
 class FuglMeyer:
+    # This function checks if a user is sitting up straight,
+    # and is not leaning to the left or right.
+    def areShouldersStraight(bodyPoseDetection, frame):
+        # Detect if shoulders are straight
+        frame = cv2.flip(frame, 1)
+        poseLandmarks = bodyPoseDetection.getPose(frame)
+        leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
+        if leftShoulderAngles is not None:
+            if abs(leftShoulderAngles["xy"]) < 10:
+                return True
+        return False
+    # This function checks if the user (specifically the torso) is facing the camera.
+    def userIsFacingTheCamera(bodyPoseDetection, frame):
+        frame = cv2.flip(frame, 1)
+        poseLandmarks = bodyPoseDetection.getPose(frame)
+        leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
+        if leftShoulderAngles is not None:
+            if abs(leftShoulderAngles["xz"]) < 35:
+                # The shoulders are correct, but the user could be rotated 180 degrees. So, check if the nose is in view.
+                if bodyPoseDetection._getPoseLandmark(BodyJointType.NOSE, poseLandmarks) is not None:
+                    return True
+        return False
+    # Wrapper function to see if the user is facing the camera (and thus is ready).
+    def isUserReady(bodyPoseDetection, frame):
+        return FuglMeyer.areShouldersStraight(bodyPoseDetection, frame) and FuglMeyer.userIsFacingTheCamera(bodyPoseDetection, frame)
+
     def areBodyPartsInView(exerciseData, bodyPoseDetection, poseLandmarks):
         for exercisePart in exerciseData["parts"]:
             # check landmark visibility for each body part
