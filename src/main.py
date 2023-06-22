@@ -41,79 +41,79 @@ def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
     return score, xyAngle
 
 def main():
+
+    # bodyPartTypes = [BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
+
+    # # get neutral pose
+    # frame = camera.getFrame()
+    # poseLandmarks = bodyPoseDetection.getPose(frame)
+    # startPose = BodyPose()
+    # currentPose = BodyPose()
+    # startPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
+    # print(startPose)
+
+    # timer = Timer()
+    # print(timer.hasElapsed())
+
+    # fuglMeyer = FuglMeyer()
+
+    # while True:
+    #     frame = camera.getFrame()
+    #     cv2.imshow('frame', frame)
+    #     if cv2.waitKey(1) == ord('q'):
+    #         exit(0)
+    #     if not FuglMeyer.isUserReady(bodyPoseDetection, frame):
+    #         print(str(time())+": Please face the camera and sit up straight")
+    #         continue
+    #     poseLandmarks = bodyPoseDetection.getPose(frame)
+    #     currentPose.createPose(poseLandmarks, ["LEFT_SHOULDER", "RIGHT_SHOULDER", "LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
+    #     diffs = BodyPose.getDiffs(startPose.getBodyPose(), currentPose.getBodyPose())
+    #     if BodyPose.isPoseSimilar(diffs):
+    #         if not timer.isRunning():
+    #             timer.setIntervalMs(3000)
+    #             timer.start()
+    #         elif timer.hasElapsed():
+    #             print(json.dumps(currentPose.getBodyPose(), indent=4))
+    #             exit(1)
+    #         else:
+    #             print("Please hold this pose!")
+    #     else:
+    #         print(time(),": User moved")
+    #         startPose.setBodyPose(currentPose.getBodyPose())
+    #         timer.stop()
+
+
+    # # kleine demo
+    # while True:
+    #     frame = camera.getFrame()
+    #     frame = cv2.flip(frame, 1)
+    #     shouldersStraight = areShouldersStraight(bodyPoseDetection, frame)
+    #     cv2.putText(frame, "Schouders recht: "+str(shouldersStraight), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
+    #     facingCamera = userIsFacingTheCamera(bodyPoseDetection, frame)
+    #     cv2.putText(frame, "Gebruiker naar camera gericht: "+str(facingCamera), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
+    #     for index, bodyPartType in enumerate(bodyPartTypes):
+    #         score, angle = getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection)
+    #         cv2.putText(frame, "Body part: "+BodyPartType.serialize(bodyPartType)+"; Score: "+str(score)+"; Hoek: "+str(angle), (0,50*(index+3)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
+    #     cv2.imshow('frame', frame)
+    #     if cv2.waitKey(1) == ord('q'):
+    #         exit(0)
+
+
+
+
+
+
+
+
+
+
+
+
+
     # kleine interactieve demo
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
-    bodyPartTypes = [BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
-
-    # get neutral pose
-    frame = camera.getFrame()
-    poseLandmarks = bodyPoseDetection.getPose(frame)
-    startPose = BodyPose()
-    currentPose = BodyPose()
-    startPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
-    print(startPose)
-
-    timer = Timer()
-    print(timer.hasElapsed())
-
-    fuglMeyer = FuglMeyer()
-
-    while True:
-        frame = camera.getFrame()
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(1) == ord('q'):
-            exit(0)
-        if not FuglMeyer.isUserReady(bodyPoseDetection, frame):
-            print(str(time())+": Please face the camera")
-            continue
-        poseLandmarks = bodyPoseDetection.getPose(frame)
-        currentPose.createPose(poseLandmarks, ["LEFT_SHOULDER", "RIGHT_SHOULDER", "LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
-        diffs = BodyPose.getDiffs(startPose.getBodyPose(), currentPose.getBodyPose())
-        if BodyPose.isPoseSimilar(diffs):
-            if not timer.isRunning():
-                timer.setIntervalMs(3000)
-                timer.start()
-            elif timer.hasElapsed():
-                print(currentPose.getBodyPose())
-                exit(1)
-            else:
-                print("Please hold this pose!")
-        else:
-            currentPose.setBodyPose(startPose.getBodyPose())
-            timer.stop()
-
-
-    # kleine demo
-    while True:
-        frame = camera.getFrame()
-        frame = cv2.flip(frame, 1)
-        shouldersStraight = areShouldersStraight(bodyPoseDetection, frame)
-        cv2.putText(frame, "Schouders recht: "+str(shouldersStraight), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
-        facingCamera = userIsFacingTheCamera(bodyPoseDetection, frame)
-        cv2.putText(frame, "Gebruiker naar camera gericht: "+str(facingCamera), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
-        for index, bodyPartType in enumerate(bodyPartTypes):
-            score, angle = getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection)
-            cv2.putText(frame, "Body part: "+BodyPartType.serialize(bodyPartType)+"; Score: "+str(score)+"; Hoek: "+str(angle), (0,50*(index+3)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
-        cv2.imshow('frame', frame)
-        if cv2.waitKey(1) == ord('q'):
-            exit(0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     # # Read JSON containing an exerciseDescription
     exerciseDescriptionFilepath = "./exerciseDescriptions/arm_to_side.json"    # body pose exercise demo

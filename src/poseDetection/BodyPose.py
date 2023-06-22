@@ -23,6 +23,10 @@ class BodyPose:
                     "heading": bodyPart.getHeading(),
                     "timestamp": round(time()*1000)
                 })
+        if not len(self.bodyPose) == len(relevantBodyPartTypeStrings):
+            print("Not all body parts were in view, not saving body pose")
+            self.clear()
+            return None
         return self.bodyPose
     @staticmethod
     def getDiffs(bodyPose, otherBodyPose):
@@ -73,7 +77,7 @@ class BodyPose:
         if len(bodyPoseDiffs) == 0:
             return False
         for diff in bodyPoseDiffs:
-            if diff["heading"]["xy"] > 20 or diff["heading"]["yz"] > 20 or diff["heading"]["xz"] > 20:
+            if diff["heading"]["xy"] > 35 or diff["heading"]["yz"] > 35 or diff["heading"]["xz"] > 35:
                 return False
         return True
 

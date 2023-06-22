@@ -65,6 +65,13 @@ class FuglMeyer:
                     return False
         return True
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
+        # make sure the user is ready first
+        frame = camera.getFrame()
+        while not FuglMeyer.isUserReady(bodyPoseDetection, frame):
+            print("Face the camera and sit up straight")
+            frame = camera.getFrame()
+
+        # score the exercise
         _exerciseData = json.loads(exerciseData)
         if _exerciseData["pose_detection_type"] == "body_pose":
             return FuglMeyer.scoreBodyExercise(camera, bodyPoseDetection, exerciseData)
