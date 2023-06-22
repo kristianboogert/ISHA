@@ -12,10 +12,9 @@ class ExerciseDataReader:
                 return item["angles"]["plane"]
         return None
     @staticmethod
-    def getCorrectBodyPartAngleOffsets(exerciseData, exercisePart, bodyPartType):
+    def getCorrectBodyPartAngleOffsets(exerciseData, exercisePart, bodyPartType, plane):
         for item in exerciseData["parts"][exercisePart]:
-            plane = item["angles"]["plane"]
-            if item["body_part"] == bodyPartType:
+            if item["body_part"] == bodyPartType and item["angles"]["plane"] == plane:
                 return [item["angles"]["score_2_min"], item["angles"]["score_2_max"]]
         return None
     @staticmethod

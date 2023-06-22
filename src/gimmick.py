@@ -117,15 +117,15 @@ def main():
         elif started == False:
             started = True
             print("Please provide the correct body pose for the new exercise")
-            # for counter in range(5):
-            #     print(5-counter)
-            #     sleep(1)
+            for counter in range(5):
+                print(5-counter)
+                sleep(1)
         poseLandmarks = bodyPoseDetection.getPose(frame)
         currentPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
         diffs = BodyPose.getDiffs(startPose.getBodyPose(), currentPose.getBodyPose())
         if BodyPose.isPoseSimilar(diffs):
             if not timer.isRunning():
-                timer.setIntervalMs(500)
+                timer.setIntervalMs(2500)
                 timer.start()
             elif timer.hasElapsed():
                 print(json.dumps(convertPoseToDescription(currentPose), indent=4))

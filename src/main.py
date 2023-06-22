@@ -137,7 +137,7 @@ def main():
     # Try to get a score by looking at a user's movements
     print(exerciseData)
     score, pose_metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData)
-    print(pose_metadata)
+    # print(pose_metadata)
     print(score)
 
 

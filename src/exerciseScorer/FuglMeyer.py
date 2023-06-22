@@ -32,7 +32,7 @@ class FuglMeyer:
         poseLandmarks = bodyPoseDetection.getPose(frame)
         leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
         if leftShoulderAngles is not None:
-            if abs(leftShoulderAngles["xy"]) < 10:
+            if abs(leftShoulderAngles["xy"]) < 25:
                 return True
         return False
     # This function checks if the user (specifically the torso) is facing the camera.
@@ -63,6 +63,23 @@ class FuglMeyer:
                 if not handPoseDetection.isBodyPartVisible(handPart["hand_part"], poseLandmarks):
                     return False
         return True
+    def bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart):
+        total = 0
+        correct = 0
+        for bodyPart in exerciseData["parts"][currentExercisePart]:
+            for bodyPartData in currentBodyPose:
+                # get correct body part
+                for plane in ["xy", "yz", "xz"]:
+                    correctAngles = ExerciseDataReader.getCorrectBodyPartAngleOffsets(exerciseData, currentExercisePart, bodyPart["body_part"], plane)
+                    currentAngle = bodyPartData["heading"][plane]
+                    print("CORRECT:", correctAngles)
+                    print("CURRENT:", currentAngle)
+                    total+=1
+                    if not (currentAngle < correctAngles[0] or currentAngle > correctAngles[1]):
+                        correct+=1
+        print("TOTAL:", total)
+        print("CORRECT:", correct)
+        return (correct/total*9+1) >= 7
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
         # make sure the user is ready first
         frame = camera.getFrame()
@@ -169,12 +186,7 @@ class FuglMeyer:
             # Is the user sitting correctly?
             ###
             # Detect if shoulders are straight
-            shouldersStraight = False
-            leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
-            if leftShoulderAngles is not None:
-                if abs(leftShoulderAngles["xy"]) < 5:
-                    shouldersStraight = True
-            if not shouldersStraight:
+            if not FuglMeyer.areShouldersStraight(bodyPoseDetection, frame):
                 print("Shoulders are not straight, pausing exercise until shoulders are straight")
                 continue
             ###
@@ -197,34 +209,21 @@ class FuglMeyer:
             # Create current body pose
             ###
             currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[currentExercisePart])
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             ###
             # See if the user moved (score 1)
             ###
-            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
-            for diff in bodyPoseDiffs:
-                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
-                if diff["heading"][plane]>20:
-                    if score[currentExercisePart] < 1:
-                        score[currentExercisePart] = 1
-            if score[currentExercisePart]:
-                print("USER SCORED 1!")
+            # for diff in bodyPoseDiffs:
+            #     plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
+            #     if diff["heading"][plane]>20:
+            #         if score[currentExercisePart] < 1:
+            #             score[currentExercisePart] = 1
+            # if score[currentExercisePart]:
+            #     print("USER SCORED 1!")
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
-            userHasCorrectBodyPose = False
-            for bodyPartData in currentBodyPose:
-                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
-                currentBodyPartAngle = bodyPartData["heading"][plane]
-                maxScoreAngles = ExerciseDataReader.getCorrectBodyPartAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
-                print(maxScoreAngles)
-                print(currentBodyPartAngle)
-                if maxScoreAngles[0] > currentBodyPartAngle and currentBodyPartAngle > maxScoreAngles[1]:
-                    userHasCorrectBodyPose = True
-                else:
-                    userHasCorrectBodyPose = False
-                    break
-
-            if userHasCorrectBodyPose:
+            if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart):
                 print("USER SCORED 2!")
                 score[currentExercisePart] = 2
             ###
@@ -254,7 +253,6 @@ class FuglMeyer:
                 if currentBodyPartAngles is None:
                     print(time(), "Skipping frame, because user is not fully in view anymore (?)")
                     break
-                print("TESTING:", currentBodyPartAngles)
                 plane = bodyPart["angles"]["plane"]
                 currentBodyPartAngle = currentBodyPartAngles[plane]
                 givenAngles = bodyPart["angles"]
@@ -265,13 +263,7 @@ class FuglMeyer:
                     "score": 0
                 }
                 if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
-                    print(time(), "user scored 2 on bodypart:", BodyPartType.serialize(bodyPart["body_part"]))
-                    score[currentExercisePart] = 2
                     poseMetadata.update({"score": 2})
-                else:
-                    if score[currentExercisePart] == 2:
-                        score[currentExercisePart] = 1
-                        poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
         return score, json.dumps(metadata.getMetadata(), indent=4)
     def scoreHandExercise(camera, handPoseDetection, exerciseData):
