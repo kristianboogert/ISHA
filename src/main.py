@@ -82,16 +82,24 @@ def main():
     timer = Timer()
     timer.setIntervalMs(1000)
     timer.start()
+    print(timer.hasElapsed())
 
     while True:
-        if timer.hasElapsed():
-            exit(0)
         frame = camera.getFrame()
         poseLandmarks = bodyPoseDetection.getPose(frame)
         currentPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
-        diffsPercent = BodyPose.getDiffsPercent(startPose.getBodyPose(), currentPose.getBodyPose())
-        for item in diffsPercent:
-            print(item)
+        diffs = BodyPose.getDiffs(startPose.getBodyPose(), currentPose.getBodyPose())
+        if BodyPose.isPoseSimilar(diffs):
+            if not timer.isRunning():
+                timer.setIntervalMs(1000)
+                timer.start()
+            elif timer.hasElapsed():
+                print(currentPose.getBodyPose())
+                exit(1)
+        else:
+            currentPose.setBodyPose(startPose.getBodyPose())
+            timer.stop()
+
 
     # kleine demo
     while True:
