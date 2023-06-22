@@ -18,6 +18,7 @@ from exerciseDataCreator.ImpairedSideType import ImpairedSideType
 from exerciseDataCreator.PoseDetectionType import PoseDetectionType
 from exerciseDataCreator.BodyPartDescriptionType import BodyPartDescriptionType
 from exerciseDataCreator.ExerciseDataCreator import ExerciseDataCreator
+from Timer.Timer import Timer
 from time import time
 from time import sleep
 import cv2
@@ -70,6 +71,29 @@ def main():
     bodyPoseDetection = BodyPoseDetection()
     bodyPartTypes = [BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
 
+    # get neutral pose
+    frame = camera.getFrame()
+    poseLandmarks = bodyPoseDetection.getPose(frame)
+    startPose = BodyPose()
+    currentPose = BodyPose()
+    startPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
+    print(startPose)
+
+    timer = Timer()
+    timer.setIntervalMs(1000)
+    timer.start()
+
+    while True:
+        if timer.hasElapsed():
+            exit(0)
+        frame = camera.getFrame()
+        poseLandmarks = bodyPoseDetection.getPose(frame)
+        currentPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
+        diffsPercent = BodyPose.getDiffsPercent(startPose.getBodyPose(), currentPose.getBodyPose())
+        for item in diffsPercent:
+            print(item)
+
+    # kleine demo
     while True:
         frame = camera.getFrame()
         frame = cv2.flip(frame, 1)
