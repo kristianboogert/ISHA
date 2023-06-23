@@ -23,105 +23,19 @@ from time import time
 from time import sleep
 import cv2
 import requests
-
-# This function generates a score. It is for demo purposes only.
-# Please use the code from the `exerciseScorer` folder for testing/production purposes.
-def getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection):
-    frame = cv2.flip(frame, 1)
-    poseData = bodyPoseDetection.getPose(frame)
-    angles = bodyPoseDetection.getAnglesForBodyPart(bodyPartType, poseData)
-    if angles is None:
-        return 0, "??"
-    xyAngle = angles["xy"]
-    score = 0
-    if xyAngle > -90+20:
-        score = 1
-    if abs(xyAngle) < 20:
-        score = 2
-    return score, xyAngle
+from os.path import exists
+from sys import argv
 
 def main():
-
-    # bodyPartTypes = [BodyPartType.LEFT_UPPER_ARM, BodyPartType.LEFT_FOREARM, BodyPartType.RIGHT_UPPER_ARM, BodyPartType.RIGHT_FOREARM]
-
-    # # get neutral pose
-    # frame = camera.getFrame()
-    # poseLandmarks = bodyPoseDetection.getPose(frame)
-    # startPose = BodyPose()
-    # currentPose = BodyPose()
-    # startPose.createPose(poseLandmarks, ["LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
-    # print(startPose)
-
-    # timer = Timer()
-    # print(timer.hasElapsed())
-
-    # fuglMeyer = FuglMeyer()
-
-    # while True:
-    #     frame = camera.getFrame()
-    #     cv2.imshow('frame', frame)
-    #     if cv2.waitKey(1) == ord('q'):
-    #         exit(0)
-    #     if not FuglMeyer.isUserReady(bodyPoseDetection, frame):
-    #         print(str(time())+": Please face the camera and sit up straight")
-    #         continue
-    #     poseLandmarks = bodyPoseDetection.getPose(frame)
-    #     currentPose.createPose(poseLandmarks, ["LEFT_SHOULDER", "RIGHT_SHOULDER", "LEFT_UPPER_ARM", "LEFT_FOREARM", "RIGHT_UPPER_ARM", "RIGHT_FOREARM"])
-    #     diffs = BodyPose.getDiffs(startPose.getBodyPose(), currentPose.getBodyPose())
-    #     if BodyPose.isPoseSimilar(diffs):
-    #         if not timer.isRunning():
-    #             timer.setIntervalMs(3000)
-    #             timer.start()
-    #         elif timer.hasElapsed():
-    #             print(json.dumps(currentPose.getBodyPose(), indent=4))
-    #             exit(1)
-    #         else:
-    #             print("Please hold this pose!")
-    #     else:
-    #         print(time(),": User moved")
-    #         startPose.setBodyPose(currentPose.getBodyPose())
-    #         timer.stop()
-
-
-    # # kleine demo
-    # while True:
-    #     frame = camera.getFrame()
-    #     frame = cv2.flip(frame, 1)
-    #     shouldersStraight = areShouldersStraight(bodyPoseDetection, frame)
-    #     cv2.putText(frame, "Schouders recht: "+str(shouldersStraight), (0,50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
-    #     facingCamera = userIsFacingTheCamera(bodyPoseDetection, frame)
-    #     cv2.putText(frame, "Gebruiker naar camera gericht: "+str(facingCamera), (0,100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
-    #     for index, bodyPartType in enumerate(bodyPartTypes):
-    #         score, angle = getScoreForBodyPart(bodyPartType, frame, bodyPoseDetection)
-    #         cv2.putText(frame, "Body part: "+BodyPartType.serialize(bodyPartType)+"; Score: "+str(score)+"; Hoek: "+str(angle), (0,50*(index+3)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,0), 1, cv2.LINE_AA)
-    #     cv2.imshow('frame', frame)
-    #     if cv2.waitKey(1) == ord('q'):
-    #         exit(0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # kleine interactieve demo
     camera = Camera(cameraId=0)
     camera.start()
     bodyPoseDetection = BodyPoseDetection()
-
-    # # Read JSON containing an exerciseDescription
-    exerciseDescriptionFilepath = "./exerciseDescriptions/memetest.json"    # body pose exercise demo
-    # # exerciseDescriptionFilepath = "./exerciseDescriptions/hand_rotation.json"  # hand rotation exercise demo
-    # exerciseDescriptionFilepath = "./exerciseDescriptions/fist.json"           # hand exercise demo
-
+    # Read exercise description from given file
+    exerciseDescriptionFilepath = argv[1]
+    if not exists(exerciseDescriptionFilepath):
+        print("Invalid path given. Exiting")
+        exit(1)
     exerciseDescription = open(exerciseDescriptionFilepath).read()
-    # print(exerciseDescription)
     # # Convert the exerciseDescription to exerciseData, so the pose detection can just follow instructions,
     # # without having any real world knowlegde
     exerciseData = ExerciseDataCreator.createExerciseData(exerciseDescription, ImpairedSideType.LEFT)
@@ -131,11 +45,9 @@ def main():
     # Initialize pose detections
     bodyPoseDetection = BodyPoseDetection()
     handPoseDetection = HandPoseDetection()
-
-    metadata = [[], [], [], []]
-
     # Try to get a score by looking at a user's movements
-    print(exerciseData)
+    print("Converted exercise data:\n",exerciseData)
+    metadata = [[], [], [], []]
     score, pose_metadata = FuglMeyer.scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData)
     # print(pose_metadata)
     print(score)
@@ -143,13 +55,13 @@ def main():
 
 
 
-
+    # # Upload to API
     # pose_metadata_txt = open("real_exercise_data.json").read()
     # print(pose_metadata_txt)
     # pose_metadata = json.loads(pose_metadata_txt)
     # print(pose_metadata)
     # # url moet nog verbeterd, maar zou moeten werken
-    # url = 'http://127.0.0.1:8000/metadata'
+    # url = 'http://<CLOUD_API_HOST_GOES_HERE>:8000/metadata'
     # for exercisePart in pose_metadata["exercise_parts"]:
     #     for bodyPart in exercisePart:
     #         dict_thing = {

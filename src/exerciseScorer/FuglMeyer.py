@@ -41,7 +41,7 @@ class FuglMeyer:
         poseLandmarks = bodyPoseDetection.getPose(frame)
         leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
         if leftShoulderAngles is not None:
-            if abs(leftShoulderAngles["xz"]) < 35:
+            if abs(leftShoulderAngles["xz"]) < 25:
                 # The shoulders are correct, but the user could be rotated 180 degrees. So, check if the nose is in view.
                 if bodyPoseDetection._getPoseLandmark(BodyJointType.NOSE, poseLandmarks) is not None:
                     return True
@@ -72,9 +72,7 @@ class FuglMeyer:
         total = 0
         correct = 0
 
-        # for bodypart in exerciseData
-        #    vergelijk xy, yz en xz met de gegeven hoeken
-
+        # Compare current body pose to correct body pose
         for bodyPart in currentBodyPose:
             for score in exerciseData["parts"][currentExercisePart]:
                 if bodyPart["body_part"] != score["body_part"]:
@@ -84,15 +82,16 @@ class FuglMeyer:
                 correctAngles = [score["angles"]["score_2_min"], score["angles"]["score_2_max"]]
                 total+=1
                 if (currentAngle >= correctAngles[0] and currentAngle <= correctAngles[1]):
-                    print("GOED", plane, currentAngle, correctAngles)
+                    # print("GOED", plane, currentAngle, correctAngles)
                     correct+=1
                 elif currentAngle < 0 and (currentAngle <= correctAngles[0] and currentAngle >= correctAngles[1]):
-                    print("GOED", plane, currentAngle, correctAngles)
+                    # print("GOED", plane, currentAngle, correctAngles)
                     correct+=1
-                else:
-                    print("FOUT", plane, currentAngle, correctAngles, score, bodyPart)
-        print("TOTAL:", total)
-        print("CORRECT:", correct)
+                # else:
+                    # print("FOUT", plane, currentAngle, correctAngles, score, bodyPart)
+        # calculate a score
+        # print("TOTAL:", total)
+        # print("CORRECT:", correct)
         return (correct/total*9+1) >= desiredScore
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
         # make sure the user is ready first
@@ -231,7 +230,8 @@ class FuglMeyer:
             # # OOK LIJKT DE XZ-HOEK NIET ALTIJD JUIST TE WORDEN BEREKEND!
             if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=5):
                 print("USER SCORED 1!")
-                score[currentExercisePart] = 1
+                if score[currentExercisePart] < 1:
+                    score[currentExercisePart] = 1
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
@@ -250,7 +250,7 @@ class FuglMeyer:
                 for diff in bodyPoseDiffs:
                     if diff["heading"]["xy"]>20:
                         userInNeutralPosition = False
-            print(userInNeutralPosition)
+            print("RUSTPOSITIE?", userInNeutralPosition)
             if userInNeutralPosition:
                 currentExercisePart+=1
             if currentExercisePart >= 2:

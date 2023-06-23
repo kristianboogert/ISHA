@@ -6,9 +6,10 @@ from poseDetection.BodyJointType import *
 from Timer.Timer import Timer
 import cv2
 from time import time, sleep
+from sys import argv
 #####
 ###
-# Voeg een oefening toe door deze zelf te doen
+# Voeg een oefening toe door deze voor te doen
 ###
 #####
 
@@ -47,10 +48,6 @@ def getCorrectHeadingForBodyPart(correctBodyPose, bodyPartDescriptionString):
         if convertBodyPartToDescription(BodyPartType.serialize(item["body_part"])) == bodyPartDescriptionString:
             return item["heading"]
     return None
-
-# eerst maximaal (dus met overshoot)
-# dan minimaal (dus met undershoot)
-# score 1 blijft hetzelfde
 
 def bodyPartExists(out, bodyPartDescriptionString):
     for item in out["body_parts"]:
@@ -122,7 +119,7 @@ def main():
                 timer.start()
             elif timer.hasElapsed():
                 print(json.dumps(convertPoseToDescription(currentPose), indent=4))
-                f = open("exerciseDescriptions/memetest.json", "w")
+                f = open(argv[1], "w")
                 f.write(json.dumps(convertPoseToDescription(currentPose), indent=4))
                 f.close()
                 exit(1)
@@ -133,32 +130,3 @@ def main():
             startPose.setBodyPose(currentPose.getBodyPose())
             timer.stop()
 main()
-
-
-# {
-#     "name": "Raise arm to side",
-#     "pose_detection_type": "body_pose",
-#     "body_parts":
-#     [
-#         {
-#             "body_part": "upper_arm",
-#             "angles":
-#             {
-#                 "plane": "xy",
-#                 "score_1_min_diff": 20,
-#                 "score_2_min": -15,
-#                 "score_2_max": 15
-#             }
-#         },
-#         {
-#             "body_part": "forearm",
-#             "angles":
-#             {
-#                 "plane": "xy",
-#                 "score_1_min_diff": 20,
-#                 "score_2_min": -15,
-#                 "score_2_max": 15
-#             }
-#         }
-#     ]
-# }
