@@ -65,7 +65,6 @@ def convertPoseToDescription(correctBodyPose):
     out.update({"body_parts": []})
 
     for item in correctBodyPose.getBodyPose():
-        print(item)
         # convert body part type to a description
         bodyPartDescriptionString = convertBodyPartToDescription(BodyPartType.serialize(item["body_part"]))
         # make sure there are no duplicates
@@ -87,12 +86,9 @@ def convertPoseToDescription(correctBodyPose):
             }
             # add body part entry to out
             out["body_parts"].append(body_part_entry)
+    print("THE POSE:", json.dumps(correctBodyPose.getBodyPose(), indent=4))
     print("OUT:", json.dumps(out, indent=4))
     return out
-        
-
-
-
 
 def main():
     camera = Camera(cameraId=0)
@@ -126,7 +122,7 @@ def main():
                 timer.start()
             elif timer.hasElapsed():
                 print(json.dumps(convertPoseToDescription(currentPose), indent=4))
-                f = open("exerciseDescriptions/hoofd2.json", "w")
+                f = open("exerciseDescriptions/memetest.json", "w")
                 f.write(json.dumps(convertPoseToDescription(currentPose), indent=4))
                 f.close()
                 exit(1)

@@ -63,26 +63,36 @@ class FuglMeyer:
                 if not handPoseDetection.isBodyPartVisible(handPart["hand_part"], poseLandmarks):
                     return False
         return True
+    def convertBodyPartToDescription(bodyPartTypeString):
+        if bodyPartTypeString == "LEFT_UPPER_ARM" or bodyPartTypeString == "RIGHT_UPPER_ARM":
+            return "UPPER_ARM"
+        if bodyPartTypeString == "LEFT_FOREARM" or bodyPartTypeString == "RIGHT_FOREARM":
+            return "FOREARM"
     def bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=7):
         total = 0
         correct = 0
-        for bodyPart in exerciseData["parts"][currentExercisePart]:
-            for bodyPartData in currentBodyPose:
-                # get correct body part
-                for plane in ["xy", "yz", "xz"]:
-                    correctAngles = ExerciseDataReader.getCorrectBodyPartAngleOffsets(exerciseData, currentExercisePart, bodyPart["body_part"], plane)
-                    currentAngle = bodyPartData["heading"][plane]
-                    print("BODY_PART:", BodyPartType.serialize(bodyPart["body_part"]))
-                    print("PLANE:", plane)
-                    print("CORRECT:", correctAngles)
-                    print("CURRENT:", currentAngle)
-                    total+=1
-                    if not (currentAngle < correctAngles[0] or currentAngle > correctAngles[1]):
-                        print("SEEN AS CORRECT!")
-                        correct+=1
+
+        # for bodypart in exerciseData
+        #    vergelijk xy, yz en xz met de gegeven hoeken
+
+        for bodyPart in currentBodyPose:
+            for score in exerciseData["parts"][currentExercisePart]:
+                if bodyPart["body_part"] != score["body_part"]:
+                    continue
+                plane = score["angles"]["plane"]
+                currentAngle = bodyPart["heading"][plane]
+                correctAngles = [score["angles"]["score_2_min"], score["angles"]["score_2_max"]]
+                total+=1
+                if (currentAngle >= correctAngles[0] and currentAngle <= correctAngles[1]):
+                    print("GOED", plane, currentAngle, correctAngles)
+                    correct+=1
+                elif currentAngle < 0 and (currentAngle <= correctAngles[0] and currentAngle >= correctAngles[1]):
+                    print("GOED", plane, currentAngle, correctAngles)
+                    correct+=1
+                else:
+                    print("FOUT", plane, currentAngle, correctAngles, score, bodyPart)
         print("TOTAL:", total)
         print("CORRECT:", correct)
-        print("\n\n\n\n")
         return (correct/total*9+1) >= desiredScore
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
         # make sure the user is ready first
