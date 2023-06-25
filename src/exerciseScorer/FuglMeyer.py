@@ -250,7 +250,6 @@ class FuglMeyer:
                 for diff in bodyPoseDiffs:
                     if diff["heading"]["xy"]>20:
                         userInNeutralPosition = False
-            print("RUSTPOSITIE?", userInNeutralPosition)
             if userInNeutralPosition:
                 currentExercisePart+=1
             if currentExercisePart >= 2:
