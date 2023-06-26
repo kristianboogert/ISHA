@@ -24,6 +24,31 @@ from poseDetection.HandPart import *
 ###
 
 class FuglMeyer:
+    # This function checks if a user is sitting up straight,
+    # and is not leaning to the left or right.
+    def areShouldersStraight(bodyPoseDetection, frame):
+        # Detect if shoulders are straight
+        frame = cv2.flip(frame, 1)
+        poseLandmarks = bodyPoseDetection.getPose(frame)
+        leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
+        if leftShoulderAngles is not None:
+            if abs(leftShoulderAngles["xy"]) < 25:
+                return True
+        return False
+    # This function checks if the user (specifically the torso) is facing the camera.
+    def userIsFacingTheCamera(bodyPoseDetection, frame):
+        frame = cv2.flip(frame, 1)
+        poseLandmarks = bodyPoseDetection.getPose(frame)
+        leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
+        if leftShoulderAngles is not None:
+            if abs(leftShoulderAngles["xz"]) < 25:
+                # The shoulders are correct, but the user could be rotated 180 degrees. So, check if the nose is in view.
+                if bodyPoseDetection._getPoseLandmark(BodyJointType.NOSE, poseLandmarks) is not None:
+                    return True
+        return False
+    # Wrapper function to see if the user is facing the camera (and thus is ready).
+    def isUserReady(bodyPoseDetection, frame):
+        return FuglMeyer.areShouldersStraight(bodyPoseDetection, frame) and FuglMeyer.userIsFacingTheCamera(bodyPoseDetection, frame)
     def areBodyPartsInView(exerciseData, bodyPoseDetection, poseLandmarks):
         for exercisePart in exerciseData["parts"]:
             # check landmark visibility for each body part
@@ -38,7 +63,44 @@ class FuglMeyer:
                 if not handPoseDetection.isBodyPartVisible(handPart["hand_part"], poseLandmarks):
                     return False
         return True
+    def convertBodyPartToDescription(bodyPartTypeString):
+        if bodyPartTypeString == "LEFT_UPPER_ARM" or bodyPartTypeString == "RIGHT_UPPER_ARM":
+            return "UPPER_ARM"
+        if bodyPartTypeString == "LEFT_FOREARM" or bodyPartTypeString == "RIGHT_FOREARM":
+            return "FOREARM"
+    def bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=7):
+        total = 0
+        correct = 0
+
+        # Compare current body pose to correct body pose
+        for bodyPart in currentBodyPose:
+            for score in exerciseData["parts"][currentExercisePart]:
+                if bodyPart["body_part"] != score["body_part"]:
+                    continue
+                plane = score["angles"]["plane"]
+                currentAngle = bodyPart["heading"][plane]
+                correctAngles = [score["angles"]["score_2_min"], score["angles"]["score_2_max"]]
+                total+=1
+                if (currentAngle >= correctAngles[0] and currentAngle <= correctAngles[1]):
+                    # print("GOED", plane, currentAngle, correctAngles)
+                    correct+=1
+                elif currentAngle < 0 and (currentAngle <= correctAngles[0] and currentAngle >= correctAngles[1]):
+                    # print("GOED", plane, currentAngle, correctAngles)
+                    correct+=1
+                # else:
+                    # print("FOUT", plane, currentAngle, correctAngles, score, bodyPart)
+        # calculate a score
+        # print("TOTAL:", total)
+        # print("CORRECT:", correct)
+        return (correct/total*9+1) >= desiredScore
     def scoreExercise(camera, bodyPoseDetection, handPoseDetection, exerciseData):
+        # make sure the user is ready first
+        frame = camera.getFrame()
+        while not FuglMeyer.isUserReady(bodyPoseDetection, frame):
+            print("Face the camera and sit up straight")
+            frame = camera.getFrame()
+
+        # score the exercise
         _exerciseData = json.loads(exerciseData)
         if _exerciseData["pose_detection_type"] == "body_pose":
             return FuglMeyer.scoreBodyExercise(camera, bodyPoseDetection, exerciseData)
@@ -137,12 +199,7 @@ class FuglMeyer:
             # Is the user sitting correctly?
             ###
             # Detect if shoulders are straight
-            shouldersStraight = False
-            leftShoulderAngles = bodyPoseDetection.getAnglesForBodyPart(BodyPartType.LEFT_SHOULDER, poseLandmarks)
-            if leftShoulderAngles is not None:
-                if abs(leftShoulderAngles["xy"]) < 5:
-                    shouldersStraight = True
-            if not shouldersStraight:
+            if not FuglMeyer.areShouldersStraight(bodyPoseDetection, frame):
                 print("Shoulders are not straight, pausing exercise until shoulders are straight")
                 continue
             ###
@@ -165,34 +222,20 @@ class FuglMeyer:
             # Create current body pose
             ###
             currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[currentExercisePart])
+            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             ###
             # See if the user moved (score 1)
             ###
-            bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
-            for diff in bodyPoseDiffs:
-                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
-                if diff["heading"][plane]>20:
-                    if score[currentExercisePart] < 1:
-                        score[currentExercisePart] = 1
-            if score[currentExercisePart]:
+            # # hier was je gebleven, HET DUURT TE LANG VOORDAT EEN SCORE GOED WORDT BEVONDEN!
+            # # OOK LIJKT DE XZ-HOEK NIET ALTIJD JUIST TE WORDEN BEREKEND!
+            if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=5):
                 print("USER SCORED 1!")
+                if score[currentExercisePart] < 1:
+                    score[currentExercisePart] = 1
             ###
             # See if the user's body position is close to the correct one (score 2)
             ###
-            userHasCorrectBodyPose = False
-            for bodyPartData in currentBodyPose:
-                plane = ExerciseDataReader.getPlaneForBodyPart(exerciseData, currentExercisePart, diff["body_part"])
-                currentBodyPartAngle = bodyPartData["heading"][plane]
-                maxScoreAngles = ExerciseDataReader.getCorrectBodyPartAngleOffsets(exerciseData, currentExercisePart, diff["body_part"])
-                print(maxScoreAngles)
-                print(currentBodyPartAngle)
-                if maxScoreAngles[0] > currentBodyPartAngle and currentBodyPartAngle > maxScoreAngles[1]:
-                    userHasCorrectBodyPose = True
-                else:
-                    userHasCorrectBodyPose = False
-                    break
-
-            if userHasCorrectBodyPose:
+            if FuglMeyer.bodyPoseIsCorrect(currentBodyPose, exerciseData, currentExercisePart, desiredScore=7): # desired score should not exceed 7, MediaPipe is not perfect
                 print("USER SCORED 2!")
                 score[currentExercisePart] = 2
             ###
@@ -207,7 +250,6 @@ class FuglMeyer:
                 for diff in bodyPoseDiffs:
                     if diff["heading"]["xy"]>20:
                         userInNeutralPosition = False
-            print(userInNeutralPosition)
             if userInNeutralPosition:
                 currentExercisePart+=1
             if currentExercisePart >= 2:
@@ -222,7 +264,6 @@ class FuglMeyer:
                 if currentBodyPartAngles is None:
                     print(time(), "Skipping frame, because user is not fully in view anymore (?)")
                     break
-                print("TESTING:", currentBodyPartAngles)
                 plane = bodyPart["angles"]["plane"]
                 currentBodyPartAngle = currentBodyPartAngles[plane]
                 givenAngles = bodyPart["angles"]
@@ -233,13 +274,7 @@ class FuglMeyer:
                     "score": 0
                 }
                 if givenAngles["score_2_min"] < currentBodyPartAngle < givenAngles["score_2_max"]:
-                    print(time(), "user scored 2 on bodypart:", BodyPartType.serialize(bodyPart["body_part"]))
-                    score[currentExercisePart] = 2
                     poseMetadata.update({"score": 2})
-                else:
-                    if score[currentExercisePart] == 2:
-                        score[currentExercisePart] = 1
-                        poseMetadata.update({"score": 1})
                 metadata.addPose(BodyPartType.serialize(bodyPart["body_part"]), plane, currentBodyPartAngles, score[currentExercisePart], currentExercisePart, startTime)
         return score, json.dumps(metadata.getMetadata(), indent=4)
     def scoreHandExercise(camera, handPoseDetection, exerciseData):

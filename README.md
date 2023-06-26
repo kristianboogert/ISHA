@@ -6,7 +6,7 @@ Create CVA appropriate score using computer vision and pose detection.
 
 # Installing dependencies
 
-```sh
+```bash
 python3 -m pip install -r requirements.txt
 ```
 
@@ -16,7 +16,7 @@ This project uses an older version of MediaPipe, so it can run on a Raspberry Pi
 
 Execute
 
-```sh
+```bash
 scripts/download_lite_models.bat
 ```
 
@@ -28,11 +28,36 @@ scripts/download_lite_models.sh
 
 on Linux.
 
-# Running the score system
+# Usage (pose scoring system)
 
-```sh
-python3 src/main.py
+## Look at a defined exercise description and give a score
+
+The pose scoring system uses a `json` file to score a certain body pose. When a correctly formatted `json` file is given, the body pose is automatically scored.
+
+The pose scoring system can be started as follows:
+
+```bash
+python3 src/main.py <description_file.json>
 ```
 
-# To run local machine
+## Create a new exercise description by showing how to do an exercise
+
+To add a new body pose to the exercises, a separate python script is created. It looks at the given body pose and creates a `json` file. The generated `json` file can then be used to score an exercise.
+
+```bash
+python3 src/createExerciseDescription.py <description_file.json>
+```
+
+## Debug/view pose detection data
+
+To debug the pose detection system, a small script is created. It shows the detected heading for the given body parts.
+
+```bash
+python3 src/poseDetectionDebugDemo.py
+```
+
+# API
+
+## To run local machine
+
 uvicorn api.app.main:app --reload

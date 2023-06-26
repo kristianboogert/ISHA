@@ -1,0 +1,60 @@
+{
+    "name": "test",
+    "pose_detection_type": "body_pose",
+    "body_parts": [
+        {
+            "body_part": "UPPER_ARM",
+            "angles": {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": -100.97344674644135,
+                "score_2_max": -60.973446746441354
+            }
+        },
+        {
+            "body_part": "UPPER_ARM",
+            "angles": {
+                "plane": "yz",
+                "score_1_min_diff": 20,
+                "score_2_min": 130.75808447838915,
+                "score_2_max": 170.75808447838915
+            }
+        },
+        {
+            "body_part": "UPPER_ARM",
+            "angles": {
+                "plane": "xz",
+                "score_1_min_diff": 20,
+                "score_2_min": 54.15828331249082,
+                "score_2_max": 94.15828331249082
+            }
+        },
+        {
+            "body_part": "FOREARM",
+            "angles": {
+                "plane": "xy",
+                "score_1_min_diff": 20,
+                "score_2_min": -99.50676668655166,
+                "score_2_max": -59.50676668655166
+            }
+        },
+        {
+            "body_part": "FOREARM",
+            "angles": {
+                "plane": "yz",
+                "score_1_min_diff": 20,
+                "score_2_min": 106.12638753616432,
+                "score_2_max": 146.12638753616432
+            }
+        },
+        {
+            "body_part": "FOREARM",
+            "angles": {
+                "plane": "xz",
+                "score_1_min_diff": 20,
+                "score_2_min": 62.30068201371574,
+                "score_2_max": 102.30068201371574
+            }
+        }
+    ]
+}

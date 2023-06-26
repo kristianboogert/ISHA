@@ -8,6 +8,8 @@ class BodyPose:
         self.clear()
     def clear(self):
         self.bodyPose = []
+    def setBodyPose(self, bodyPose):
+        self.bodyPose = bodyPose
     def getBodyPose(self):
         return self.bodyPose
     def createPose(self, poseLandmarks, relevantBodyPartTypeStrings):
@@ -21,6 +23,10 @@ class BodyPose:
                     "heading": bodyPart.getHeading(),
                     "timestamp": round(time()*1000)
                 })
+        if not len(self.bodyPose) == len(relevantBodyPartTypeStrings):
+            print("Not all body parts were in view, not saving body pose")
+            self.clear()
+            return None
         return self.bodyPose
     @staticmethod
     def getDiffs(bodyPose, otherBodyPose):
@@ -43,6 +49,38 @@ class BodyPose:
                         }
                     })
         return diffs
+    # @staticmethod
+    # # Find how much % a body pose differs from another.
+    # # Formula used: |diff/avg|*100
+    # def getDiffsPercent(bodyPose, otherBodyPose):
+    #     diffs = []
+    #     for item in bodyPose:
+    #         # find the same item in otherBodyPose
+    #         for otherItem in otherBodyPose:
+    #             if item["body_part"] == otherItem["body_part"]:
+    #                 diffs.append({
+    #                     "body_part": item["body_part"],
+    #                     "origin": {
+    #                         "x": abs((otherItem["origin"]["x"] - item["origin"]["x"]) / (otherItem["origin"]["x"] + item["origin"]["x"]))*100,
+    #                         "y": abs((otherItem["origin"]["z"] - item["origin"]["y"]) / (otherItem["origin"]["y"] + item["origin"]["y"]))*100,
+    #                         "z": abs((otherItem["origin"]["z"] - item["origin"]["z"]) / (otherItem["origin"]["z"] + item["origin"]["z"]))*100
+    #                     },
+    #                     "heading": {
+    #                         "xy": BodyPart.getAngleDiff(otherItem["heading"]["xy"], item["heading"]["xy"]),
+    #                         "yz": BodyPart.getAngleDiff(otherItem["heading"]["yz"], item["heading"]["yz"]),
+    #                         "xz": BodyPart.getAngleDiff(otherItem["heading"]["xz"], item["heading"]["xz"])
+    #                     }
+    #                 })
+    #     return diffs
+    @staticmethod
+    def isPoseSimilar(bodyPoseDiffs):
+        if len(bodyPoseDiffs) == 0:
+            return False
+        for diff in bodyPoseDiffs:
+            if diff["heading"]["xy"] > 35 or diff["heading"]["yz"] > 35 or diff["heading"]["xz"] > 35:
+                return False
+        return True
+
 
 
 
