@@ -224,6 +224,18 @@ class FuglMeyer:
             currentBodyPose = currentBodyPoseCreator.createPose(poseLandmarks, relevantBodyPartTypeStrings[currentExercisePart])
             bodyPoseDiffs = BodyPose.getDiffs(currentBodyPose, neutralBodyPose[currentExercisePart])
             ###
+            # See if the user did anything at all
+            ###
+            userMoved = False
+            for diff in bodyPoseDiffs:
+                xyDiff = diff["heading"]["xy"]
+                yzDiff = diff["heading"]["yz"]
+                xzDiff = diff["heading"]["xz"]
+                if xyDiff >= 20 or yzDiff >= 20 or xzDiff >= 20:
+                    userMoved = True
+            if not userMoved:
+                continue
+            ###
             # See if the user moved (score 1)
             ###
             # # hier was je gebleven, HET DUURT TE LANG VOORDAT EEN SCORE GOED WORDT BEVONDEN!
